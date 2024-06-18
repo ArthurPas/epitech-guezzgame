@@ -89,7 +89,6 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
             lineHeight: 'var(--link-line-height)',
             color: 'white',
             cursor: 'pointer',
-            textDecoration: 'underline',
 
             '&:hover': {
                 opacity: '0.7',
@@ -104,21 +103,6 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
             '@screen 4xl': {
                 fontSize: 'var(--link-desktop-font-size)',
                 lineHeight: 'var(--link-desktop-line-height)'
-            }
-        },
-
-        '.caption': {
-            fontSize: 'var(--caption-font-size)',
-            lineHeight: 'var(--caption-line-height)',
-
-            '@screen sm': {
-                fontSize: 'var(--caption-tablet-and-laptop-font-size)',
-                lineHeight: 'var(--caption-tablet-and-laptop-line-height)'
-            },
-
-            '@screen 4xl': {
-                fontSize: 'var(--caption-desktop-font-size)',
-                lineHeight: 'var(--caption-desktop-line-height)'
             }
         },
     };
