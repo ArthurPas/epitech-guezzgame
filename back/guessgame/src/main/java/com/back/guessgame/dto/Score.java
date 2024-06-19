@@ -1,0 +1,16 @@
+package com.back.guessgame.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class Score {
+	@JsonProperty(value = "userId")
+	private long userId;
+	@JsonProperty(value = "nbPoints")
+	private int nbPoint;
+
+
+}
