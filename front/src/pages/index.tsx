@@ -1,6 +1,5 @@
-import Image from "next/image";
 import { Inter } from "next/font/google";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 const inter = Inter({ subsets: ["latin"] });
 
