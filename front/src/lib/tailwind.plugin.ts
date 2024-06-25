@@ -7,6 +7,7 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
             fontSize: 'var(--title-large-mobile-font-size)',
             lineHeight: 'var(--title-large-mobile-line-height)',
             fontWeight: 'bold',
+            fontFamily: 'var(--font-primary)',
 
             '@screen sm': {
                 fontSize: 'var(--title-large-tablet-font-size)',
