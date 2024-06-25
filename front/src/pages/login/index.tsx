@@ -1,7 +1,7 @@
-import { LoginForm } from '@/components/LoginForm/LoginForm';
+import { LoginForm } from '@/components/forms/LoginForm';
 import { Button } from '@/components/ui/button';
 
-const index = () => {
+const LoginPage = () => {
     return (
         <>
             <div className="flex justify-end items-end h-full py-[39px] px-[47px]">
@@ -17,4 +17,4 @@ const index = () => {
     );
 };
 
-export default index;
+export default LoginPage;
