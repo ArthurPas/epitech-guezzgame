@@ -4,7 +4,6 @@ import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar'
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
 
 const currentUser = {
   name: "Player",
