@@ -28,6 +28,7 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
         '.title-medium': {
             fontSize: 'var(--title-medium-mobile-font-size)',
             lineHeight: 'var(--title-medium-mobile-line-height)',
+            fontFamily: 'var(--font-secondary)',
 
             '@screen sm': {
                 fontSize: 'var(--title-medium-tablet-and-laptop-font-size)',
@@ -43,6 +44,7 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
         '.title-small': {
             fontSize: 'var(--title-small-mobile-font-size)',
             lineHeight: 'var(--title-small-mobile-line-height)',
+            fontFamily: 'var(--font-secondary)',
 
             '@screen sm': {
                 fontSize: 'var(--title-small-tablet-and-laptop-font-size)',
@@ -58,6 +60,7 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
         '.paragraph': {
             fontSize: 'var(--paragraph-font-size)',
             lineHeight: 'var(--paragraph-line-height)',
+            fontFamily: 'var(--font-secondary)',
 
             '@screen sm': {
                 fontSize: 'var(--paragraph-tablet-and-laptop-font-size)',
@@ -73,6 +76,7 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
         '.paragraph-large': {
             fontSize: 'var(--paragraph-large-font-size)',
             lineHeight: 'var(--paragraph-large-line-height)',
+            fontFamily: 'var(--font-secondary)',
 
             '@screen md': {
                 fontSize: 'var(--paragraph-large-tablet-and-laptop-font-size)',
