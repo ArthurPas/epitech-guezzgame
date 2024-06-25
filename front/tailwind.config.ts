@@ -86,7 +86,7 @@ const config = {
                 }
             },
             borderRadius: {
-                base: '8px'
+                base: '87px'
                 // lg: 'var(--radius)',
                 // md: 'calc(var(--radius) - 2px)',
                 // sm: 'calc(var(--radius) - 4px)'
@@ -118,7 +118,7 @@ const config = {
             animation: {
                 'accordion-down': 'accordion-down 0.2s ease-out',
                 'accordion-up': 'accordion-up 0.2s ease-out'
-            },
+            }
         }
     },
     plugins: [require('tailwindcss-animate'), responsiveFontSizes]

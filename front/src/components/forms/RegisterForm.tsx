@@ -20,12 +20,12 @@ const avatarSelection = [
 
 export const RegisterForm = (props: LoginFormProps) => {
     return (
-        <Card className="w-3/4 rounded-3xl">
+        <Card className="w-[1182px] rounded-3xl h-[479px] flex justify-center flex-col bg-opacity-80">
             <CardContent className="flex flex-col gap-4 mx-3 justify-evenly my-6 w-full items-center">
-                <form className="w-[80%]">
-                    <div className="flex justify-between items-center gap-4 space-y-1.5">
+                <form className="w-[100%]">
+                    <div className="flex justify-center items-center gap-[48px] space-y-1.5">
                         <div className="flex justify-end items-end gap-[16px]">
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-2 gap-2 mb-2">
                                 {avatarSelection.map((avatar, index) => (
                                     <Avatar
                                         key={avatar}
@@ -37,26 +37,32 @@ export const RegisterForm = (props: LoginFormProps) => {
                                 ))}
                             </div>
                             <div className="flex flex-col items-center">
-                                <Label htmlFor="pseudo" className="mb-2">
-                                    Avatar
-                                </Label>
+                                <Label htmlFor="pseudo">Avatar</Label>
                                 <Avatar className="w-[200px] h-[200px] border-[2.5px]">
                                     <AvatarImage src={avatarSelection[0]} />
                                     <AvatarFallback>SB</AvatarFallback>
                                 </Avatar>
                             </div>
                         </div>
-                        <div>
-                            <Label htmlFor="pseudo">Pseudo</Label>
-                            <Input id="pseudo" placeholder="Ton pseudo" />
-                            <Label htmlFor="mail">Mail</Label>
-                            <Input id="mail" placeholder="Ton mail" />
-                        </div>
-                        <div>
-                            <Label htmlFor="password">Mot de passe</Label>
-                            <Input id="password" placeholder="Ton mot de passe" />
-                            <Label htmlFor="confirm-password">Confirmation</Label>
-                            <Input id="confirm-password" placeholder="Confirmation de ton mot de passe" />
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="flex flex-col items-center w-[220px]">
+                                <Label htmlFor="pseudo">Pseudo</Label>
+                                <Input id="pseudo" placeholder="Ton pseudo" />
+                            </div>
+
+                            <div className="flex flex-col items-center">
+                                <Label htmlFor="mail">Mail</Label>
+                                <Input id="mail" placeholder="Ton mail" />
+                            </div>
+                            <div className="flex flex-col items-center">
+                                <Label htmlFor="password">Mot de passe</Label>
+                                <Input id="password" placeholder="Ton mot de passe" />
+                            </div>
+                            <div className="flex flex-col items-center">
+                                <Label htmlFor="confirm-password">Confirmation</Label>
+                                <Input id="confirm-password" placeholder="Confirmation du mot de passe" />
+                            </div>
                         </div>
                     </div>
                 </form>

@@ -9,11 +9,11 @@ export type LoginFormProps = {};
 
 export const LoginForm = (props: LoginFormProps) => {
     return (
-        <Card className="w-3/4 rounded-3xl">
-            <CardContent className="flex mx-3 justify-evenly my-6 w-full items-center">
+        <Card className="w-1/2 rounded-3xl h-[371px] flex justify-center bg-opacity-80">
+            <CardContent className="flex mx-3 justify-center gap-[100px] my-6 w-full items-center">
                 <form>
                     <div className="grid w-full items-center gap-4">
-                        <div className="flex flex-col space-y-1.5">
+                        <div className="flex flex-col items-center">
                             <Label htmlFor="email">Anonymous</Label>
                             <Input id="email" placeholder="Identifiant" />
                         </div>
@@ -22,15 +22,15 @@ export const LoginForm = (props: LoginFormProps) => {
                         </Button>
                     </div>
                 </form>
-                <Separator className="bg-white w-[1px] h-[130px] rounded-2xl" orientation="vertical" />
+                <Separator className="bg-white w-[1px] h-[200px] rounded-2xl" orientation="vertical" />
                 <div>
                     <form>
                         <div className="grid w-full items-center gap-4">
-                            <div className="flex flex-col space-y-1.5">
+                            <div className="flex flex-col items-center">
                                 <Label htmlFor="name">Pseudo</Label>
                                 <Input id="name" placeholder="Ton pseudo" />
                             </div>
-                            <div className="flex flex-col space-y-1.5">
+                            <div className="flex flex-col items-center">
                                 <Label htmlFor="password">Mot de passe</Label>
                                 <Input id="password" placeholder="Ton mot de passe" />
                             </div>
