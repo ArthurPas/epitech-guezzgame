@@ -53,7 +53,7 @@ const UserProfile: React.FC = () => {
   return (
     <>
       <div className="flex justify-between p-5">
-        <Button className='bg-[#eec17e]'>Mon profil</Button>
+        <Button className='bg-[#eec17e]'><a href="/" className='text-[#000000]'>Retour</a></Button>
         <Button className='bg-[#eec17e]'>Marketplace</Button>
       </div>
       <div className="flex justify-center">
@@ -68,8 +68,8 @@ const UserProfile: React.FC = () => {
           >
             <FontAwesomeIcon icon={faPencil} />
           </button>
-          <h2 className="mt-4 text-[#eec17e] font-bangers text-lg md:text-xl font-Bangers">{currentUser.name}</h2>
-          <h3 className="text-[#eec17e] font-bangers text-md md:text-lg font-Bangers">Rank: {currentUser.rank} - XP: {currentUser.xp}</h3>
+          <h1 className="mt-4 text-[#eec17e]">{currentUser.name}</h1>
+          <h3 className="text-[#eec17e] text-md md:text-lg">Rank: {currentUser.rank} - XP: {currentUser.xp}</h3>
         </div>
       </div>
       <div className="flex flex-col md:flex-row p-5 pb-0 md:m-40 md:mt-0">
@@ -89,7 +89,7 @@ const UserProfile: React.FC = () => {
           </div>
         </div>
         <div className="bg-purple-300 rounded-lg p-5 w-full md:w-1/2 mx-auto md:ml-5">
-          <h2 className="text-center mb-5 text-[#37034e] text-lg md:text-xl">Mes amis</h2>
+          <div className="text-2xl md:text-3xl text-center mb-5 text-[#37034e]">Mes amis</div>
           <ScrollArea className="h-72 w-full rounded-md">
             {friends.map((friend, index) => (
               <div key={index} className="flex items-center bg-purple-100 mb-4 p-3 rounded-lg">
