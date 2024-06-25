@@ -79,4 +79,8 @@
     a {
         @apply link;
     }
+
+    label {
+        @apply paragraph-large;
+    }
 }

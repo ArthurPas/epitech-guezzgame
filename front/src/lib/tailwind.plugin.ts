@@ -8,6 +8,7 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
             lineHeight: 'var(--title-large-mobile-line-height)',
             fontWeight: 'bold',
             fontFamily: 'var(--font-primary)',
+            letterSpacing: '0.04em',
 
             '@screen sm': {
                 fontSize: 'var(--title-large-tablet-font-size)',
@@ -109,7 +110,7 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
                 fontSize: 'var(--link-desktop-font-size)',
                 lineHeight: 'var(--link-desktop-line-height)'
             }
-        },
+        }
     };
 
     addUtilities(utilities);
