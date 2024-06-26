@@ -110,6 +110,13 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
                 fontSize: 'var(--link-desktop-font-size)',
                 lineHeight: 'var(--link-desktop-line-height)'
             }
+        },
+
+        '.bg-global-gradient': {
+            backgroundImage: 'linear-gradient(to bottom, #c44fed, #8c28c1, #6f1eae)',
+            minHeight: '100vh',
+            overflowX: 'hidden',
+            overflowY: 'hidden'
         }
     };
 
