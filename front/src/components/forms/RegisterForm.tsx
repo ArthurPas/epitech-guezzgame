@@ -20,10 +20,10 @@ const avatarSelection = [
 
 export const RegisterForm = (props: LoginFormProps) => {
     return (
-        <Card className="w-[1182px] rounded-3xl h-[479px] flex justify-center flex-col bg-opacity-80">
+        <Card className="w-[90%] xl:w-[1182px] rounded-3xl xl:h-[479px] flex justify-center flex-col bg-opacity-80">
             <CardContent className="flex flex-col gap-4 mx-3 justify-evenly my-6 w-full items-center">
                 <form className="w-[100%]">
-                    <div className="flex justify-center items-center gap-[48px] space-y-1.5">
+                    <div className="flex flex-col xl:flex-row justify-center items-center gap-[48px] space-y-1.5">
                         <div className="flex justify-end items-end gap-[16px]">
                             <div className="grid grid-cols-2 gap-2 mb-2">
                                 {avatarSelection.map((avatar, index) => (
@@ -38,14 +38,14 @@ export const RegisterForm = (props: LoginFormProps) => {
                             </div>
                             <div className="flex flex-col items-center">
                                 <Label htmlFor="pseudo">Avatar</Label>
-                                <Avatar className="w-[200px] h-[200px] border-[2.5px]">
+                                <Avatar className="w-[150px] md:w-[200px] h-[200px] border-[2.5px]">
                                     <AvatarImage src={avatarSelection[0]} />
                                     <AvatarFallback>SB</AvatarFallback>
                                 </Avatar>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid md:grid-cols-2 gap-4">
                             <div className="flex flex-col items-center w-[220px]">
                                 <Label htmlFor="pseudo">Pseudo</Label>
                                 <Input id="pseudo" placeholder="Ton pseudo" />
