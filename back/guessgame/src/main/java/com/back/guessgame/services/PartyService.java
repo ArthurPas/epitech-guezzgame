@@ -4,23 +4,25 @@ import com.back.guessgame.controllers.PartyController;
 import com.back.guessgame.dto.GeneralPartyDto;
 import com.back.guessgame.dto.PartyResultDto;
 import com.back.guessgame.dto.Score;
-import com.back.guessgame.dto.UserDto;
+import com.back.guessgame.entities.Game;
 import com.back.guessgame.entities.Party;
 import com.back.guessgame.entities.User;
 import com.back.guessgame.repository.PartyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Service
 public class PartyService {
 	Logger logger = LoggerFactory.getLogger(PartyController.class);
 
 	private final PartyRepository partyRepository;
 
-	public PartyService(PartyRepository userRepository) {
-		this.partyRepository = userRepository;
+	public PartyService(PartyRepository partyRepository) {
+		this.partyRepository = partyRepository;
 	}
 
 	public Set<GeneralPartyDto> findAll() {
@@ -55,5 +57,16 @@ public class PartyService {
 			scores.add(score);
 		}
 		return new PartyResultDto(scores, parties.get(0).getPartyCode());
+	}
+
+	public long newParty(GeneralPartyDto partyDto, User user, Set<Game> games) {
+		Party party = new Party();
+		party.setPartyCode(partyDto.getPartyCode());
+		party.setUser(user);
+		party.setLeaderRank(partyDto.getLeaderRank());
+		party.setGames(games);
+		party.setNbPoints(partyDto.getNbPoints());
+		partyRepository.save(party);
+		return party.getId();
 	}
 }

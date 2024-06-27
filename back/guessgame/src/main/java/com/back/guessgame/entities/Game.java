@@ -21,6 +21,7 @@ public class Game {
 	private String rules;
 	private Boolean isRemoteCompatible;
 
-	@OneToMany(mappedBy = "id")
+	@ManyToMany(targetEntity = Party.class)
+	@JoinTable(name = "game_party", joinColumns = @JoinColumn(name = "game_id"), inverseJoinColumns = @JoinColumn(name = "party_id"))
 	private List<Party> parties;
 }

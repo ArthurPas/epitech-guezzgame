@@ -1,4 +1,4 @@
-package com.back.guessgame.entities;
+package com.back.guessgame.dto;
 import lombok.Data;
 
 @Data

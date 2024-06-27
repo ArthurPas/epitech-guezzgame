@@ -2,20 +2,26 @@ package com.back.guessgame.dto;
 
 import com.back.guessgame.entities.Game;
 import com.back.guessgame.entities.Party;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Data
-public class GeneralPartyDto extends Party {
+@NoArgsConstructor
+@AllArgsConstructor
+public class GeneralPartyDto {
 	private Long id;
-	private Integer rank;
+	private Integer leaderRank;
 	private Integer nbPoints;
 	private long userId;
-	private Set<Long> gamesId;
+	@JsonProperty("gamesId")
+	private Set<Long> gamesId = new HashSet<>();
 	private long partyCode;
 
 
@@ -23,10 +29,13 @@ public class GeneralPartyDto extends Party {
 		Logger logger = LoggerFactory.getLogger(GeneralPartyDto.class);
 		this.id = party.getId();
 		this.partyCode = party.getPartyCode();
-		this.rank = party.getRank();
+		this.leaderRank = party.getLeaderRank();
 		this.nbPoints = party.getNbPoints();
 		this.userId = party.getUser().getId();
-		this.gamesId = party.getGames().stream().map(Game::getId).collect(Collectors.toSet());
-		/*Beau gosse nan ??*/
+		for (Game game : party.getGames()) {
+			logger.warn("titi" + game.getId());
+			this.gamesId.add(game.getId());
+		}
+		logger.warn(this.getGamesId().toString() + "toto");
 	}
 }

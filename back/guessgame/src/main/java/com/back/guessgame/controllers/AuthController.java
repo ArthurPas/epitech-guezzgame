@@ -1,6 +1,6 @@
 package com.back.guessgame.controllers;
 import com.back.guessgame.dto.LoginDto;
-import com.back.guessgame.entities.SignUpDto;
+import com.back.guessgame.dto.SignUpDto;
 import com.back.guessgame.entities.User;
 import com.back.guessgame.repository.UserRepository;
 import org.slf4j.Logger;

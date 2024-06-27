@@ -1,9 +1,9 @@
 package com.back.guessgame.controllers;
 
 import com.back.guessgame.dto.FriendDto;
+import com.back.guessgame.dto.UserDto;
 import com.back.guessgame.entities.Friendship;
 import com.back.guessgame.entities.User;
-import com.back.guessgame.dto.UserDto;
 import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.services.UserService;
 import org.slf4j.Logger;
@@ -17,12 +17,13 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	private final UserRepository userRepository;
 
+	@Autowired
 	private UserService userService;
 
 	Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -32,7 +33,7 @@ public class UserController {
 		this.userService = new UserService(userRepository);
 	}
 
-	@GetMapping
+	@GetMapping("/list")
 	public List<UserDto> getAllUsers() {
 
 		return userService.findAll();
@@ -43,26 +44,23 @@ public class UserController {
 		return userService.findById(id).orElse(null);
 	}
 
-	@PostMapping()
-	public Long createUser(@RequestBody UserDto user, @RequestBody String password) {
-		return userService.newUser(user, password);
-	}
-
+	//TODO: put route for changing password
 	@PutMapping("/{id}")
-	public User updateUser(@PathVariable Long id, @RequestBody UserDto userDetails, @RequestBody String password) {
+	public UserDto updateUser(@PathVariable Long id, @RequestBody UserDto userDetails) {
 		User user = userRepository.findById(id).orElse(null);
 		if(user != null) {
 			user.setMail(userDetails.getMail());
 			user.setLogin(userDetails.getLogin());
-			user.setPassword(passwordEncoder.encode(password));
 			user.setPicture(userDetails.getPicture());
 			user.setNbCoin(userDetails.getNbCoin());
 			user.setIsVip(userDetails.getIsVip());
 			user.setXpPoint(userDetails.getXpPoint());
-			return userRepository.save(user);
+			userRepository.save(user);
+			return new UserDto(user);
 		}
 		return null;
 	}
+
 
 	@GetMapping("/friends/{id}")
 	public Set<FriendDto> getFriend(@PathVariable long id) {

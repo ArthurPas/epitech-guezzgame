@@ -2,19 +2,22 @@ package com.back.guessgame.controllers;
 
 import com.back.guessgame.entities.Inventory;
 import com.back.guessgame.repository.InventoryRepository;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/inventories")
+@RequestMapping("/inventorie")
+
+@Hidden
 public class InventoryController {
 
 	@Autowired
 	private InventoryRepository inventoryRepository;
 
-	@GetMapping
+	@GetMapping("/list")
 	public List<Inventory> getAllInventories() {
 		return inventoryRepository.findAll();
 	}

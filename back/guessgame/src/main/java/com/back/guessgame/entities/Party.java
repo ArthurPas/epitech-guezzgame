@@ -1,30 +1,32 @@
 package com.back.guessgame.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import java.util.List;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "party")
 public class Party {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
 	private Long id;
 
-	private Integer rank;
+	private Integer leaderRank;
 
 	private Integer nbPoints;
 
-	private long partyCode;
+	@Column(name = "party_code")
+	private long partyCode = -1;
 
 	@ManyToOne
 	private User user;
 
-	@OneToMany(mappedBy = "id")
+	@ManyToMany(mappedBy = "parties")
 	private Set<Game> games;
 }

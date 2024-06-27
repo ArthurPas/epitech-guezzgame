@@ -1,20 +1,32 @@
 package com.back.guessgame.dto;
 
 import com.back.guessgame.entities.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.boot.convert.DataSizeUnit;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDto {
 
+	@JsonProperty("id")
 	private Long id;
+	@JsonProperty("mail")
 	private String mail;
+	@JsonProperty("login")
 	private String login;
+	@Column(nullable = false)
+	@JsonProperty("picture")
 	private String picture;
-	private Integer nbCoin = 0;
-	private Boolean isVip = false;
-	private Integer xpPoint = 0;
+	@JsonProperty("nbCoin")
+	private Integer nbCoin;
+	@JsonProperty("isVip")
+	private Boolean isVip;
+	@JsonProperty("xpPoint")
+	private Integer xpPoint;
 
 	public UserDto(User user) {
 		this.id = user.getId();

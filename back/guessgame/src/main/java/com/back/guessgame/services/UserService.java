@@ -1,8 +1,9 @@
 package com.back.guessgame.services;
 
-import com.back.guessgame.entities.User;
 import com.back.guessgame.dto.UserDto;
+import com.back.guessgame.entities.User;
 import com.back.guessgame.repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -39,17 +39,22 @@ public class UserService implements UserDetailsService {
 		return Optional.of(new UserDto(userRepository.findById(id).orElseThrow(null)));
 	}
 
-	public long newUser(UserDto user, String password) {
-		User newUser = new User();
-		newUser.setPassword(passwordEncoder.encode(password));
-		newUser.setMail(user.getMail());
-		newUser.setPicture(user.getPicture());
-		newUser.setNbCoin(user.getNbCoin());
-		newUser.setXpPoint(user.getXpPoint());
-		newUser.setMail(user.getMail());
-		newUser.setIsVip(user.getIsVip());
-		userRepository.save(newUser);
-		return newUser.getId();
+	public User convertToUserFromDto(UserDto userDto) {
+		ModelMapper modelMapper = new ModelMapper();
+		User user = modelMapper.map(userDto, User.class);
+		user.setMail(userDto.getMail());
+		user.setPicture(userDto.getPicture());
+		user.setNbCoin(userDto.getNbCoin());
+		user.setXpPoint(userDto.getXpPoint());
+		user.setMail(userDto.getMail());
+		user.setIsVip(userDto.getIsVip());
+		return user;
+	}
+
+	public UserDto newUser(User user, String password) {
+		user.setPassword(passwordEncoder.encode(password));
+		userRepository.save(user);
+		return new UserDto(user);
 	}
 
 	public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {

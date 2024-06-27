@@ -1,44 +1,51 @@
 package com.back.guessgame.controllers;
 
+import com.back.guessgame.dto.GameDto;
 import com.back.guessgame.entities.Game;
 import com.back.guessgame.repository.GameRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.back.guessgame.services.GameService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/games")
+@RequestMapping("/game")
 public class GameController {
-
-	@Autowired
 	private GameRepository gameRepository;
 
-	@GetMapping
-	public List<Game> getAllGames() {
-		return gameRepository.findAll();
+	private final GameService gameService;
+
+	public GameController(GameRepository gameRepository) {
+		this.gameRepository = gameRepository;
+		this.gameService = new GameService(gameRepository);
+	}
+
+	@GetMapping("/list")
+	public List<GameDto> getAllGames() {
+		return gameService.findAll();
 	}
 
 	@GetMapping("/{id}")
-	public Game getGameById(@PathVariable Long id) {
-		return gameRepository.findById(id).orElse(null);
+	public GameDto getGameById(@PathVariable Long id) {
+		return gameService.findById(id).orElse(null);
 	}
 
 	@PostMapping
-	public Game createGame(@RequestBody Game game) {
-		return gameRepository.save(game);
+	public long createGame(@RequestBody GameDto gameDto) {
+		return gameService.newGame(gameDto);
 	}
 
 	@PutMapping("/{id}")
-	public Game updateGame(@PathVariable Long id, @RequestBody Game gameDetails) {
+	public GameDto updateGame(@PathVariable Long id, @RequestBody GameDto gameDetails) {
 		Game game = gameRepository.findById(id).orElse(null);
-		if (game != null) {
+		if(game != null) {
 			game.setName(gameDetails.getName());
 			game.setNbPlayerMax(gameDetails.getNbPlayerMax());
 			game.setNbPlayerMin(gameDetails.getNbPlayerMin());
 			game.setRules(gameDetails.getRules());
 			game.setIsRemoteCompatible(gameDetails.getIsRemoteCompatible());
-			return gameRepository.save(game);
+			gameRepository.save(game);
+			return new GameDto(game);
 		}
 		return null;
 	}
