@@ -9,6 +9,8 @@ import lombok.Data;
 public class Score {
 	@JsonProperty(value = "userId")
 	private long userId;
+	@JsonProperty(value = "login")
+	private String login = "";
 	@JsonProperty(value = "nbPoints")
 	private int nbPoint;
 

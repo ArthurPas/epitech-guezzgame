@@ -77,7 +77,11 @@ public class PartyController {
 
 	@GetMapping("/result/{partycode}")
 	public ResponseEntity<PartyResultDto> getResult(@PathVariable long partycode) {
-		return new ResponseEntity<>(partyService.getResultScores(partycode), HttpStatus.OK);
+		PartyResultDto partyResultDto = partyService.getResultScores(partycode);
+		partyResultDto.getScores().forEach(score -> {
+			score.setLogin(userRepository.findById(score.getUserId()).orElse(new User()).getLogin());
+		});
+		return new ResponseEntity<>(partyResultDto, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")

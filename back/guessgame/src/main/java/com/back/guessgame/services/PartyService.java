@@ -53,7 +53,7 @@ public class PartyService {
 		List<Score> scores = new ArrayList<>();
 
 		for (GeneralPartyDto party : parties) {
-			Score score = new Score(party.getUserId(), party.getNbPoints());
+			Score score = new Score(party.getUserId(), "", party.getNbPoints());
 			scores.add(score);
 		}
 		return new PartyResultDto(scores, parties.get(0).getPartyCode());
