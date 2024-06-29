@@ -1,8 +1,8 @@
 package com.back.guessgame.services;
 
-import com.back.guessgame.dto.UserDto;
 import com.back.guessgame.entities.User;
-import com.back.guessgame.repository.UserRepository;
+import com.back.guessgame.entities.dto.UserDto;
+import com.back.guessgame.services.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,4 +1,4 @@
-package com.back.guessgame.repository;
+package com.back.guessgame.services.repository;
 
 import com.back.guessgame.entities.Friendship;
 import org.springframework.data.jpa.repository.JpaRepository;

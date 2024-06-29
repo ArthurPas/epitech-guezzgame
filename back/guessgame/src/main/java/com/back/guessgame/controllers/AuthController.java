@@ -1,8 +1,9 @@
 package com.back.guessgame.controllers;
-import com.back.guessgame.dto.LoginDto;
-import com.back.guessgame.dto.SignUpDto;
+
 import com.back.guessgame.entities.User;
-import com.back.guessgame.repository.UserRepository;
+import com.back.guessgame.entities.dto.LoginDto;
+import com.back.guessgame.entities.dto.SignUpDto;
+import com.back.guessgame.services.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

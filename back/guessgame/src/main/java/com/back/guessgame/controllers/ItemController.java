@@ -1,7 +1,7 @@
 package com.back.guessgame.controllers;
 
 import com.back.guessgame.entities.Item;
-import com.back.guessgame.repository.ItemRepository;
+import com.back.guessgame.services.repository.ItemRepository;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

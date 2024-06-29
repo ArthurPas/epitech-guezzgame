@@ -1,4 +1,4 @@
-package com.back.guessgame.dto;
+package com.back.guessgame.entities.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

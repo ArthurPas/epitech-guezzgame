@@ -1,4 +1,4 @@
-package com.back.guessgame.dto;
+package com.back.guessgame.entities.dto;
 
 import com.back.guessgame.entities.User;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,13 +1,13 @@
 package com.back.guessgame.services;
 
 import com.back.guessgame.controllers.PartyController;
-import com.back.guessgame.dto.GeneralPartyDto;
-import com.back.guessgame.dto.PartyResultDto;
-import com.back.guessgame.dto.Score;
 import com.back.guessgame.entities.Game;
 import com.back.guessgame.entities.Party;
 import com.back.guessgame.entities.User;
-import com.back.guessgame.repository.PartyRepository;
+import com.back.guessgame.entities.dto.GeneralPartyDto;
+import com.back.guessgame.entities.dto.PartyResultDto;
+import com.back.guessgame.entities.dto.Score;
+import com.back.guessgame.services.repository.PartyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

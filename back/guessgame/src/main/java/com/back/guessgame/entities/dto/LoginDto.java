@@ -1,6 +1,5 @@
-package com.back.guessgame.dto;
+package com.back.guessgame.entities.dto;
 
-import jakarta.persistence.Entity;
 import lombok.*;
 
 @Setter

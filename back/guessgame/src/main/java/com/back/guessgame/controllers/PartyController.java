@@ -1,14 +1,14 @@
 package com.back.guessgame.controllers;
 
-import com.back.guessgame.dto.GeneralPartyDto;
-import com.back.guessgame.dto.PartyResultDto;
 import com.back.guessgame.entities.Game;
 import com.back.guessgame.entities.Party;
 import com.back.guessgame.entities.User;
-import com.back.guessgame.repository.GameRepository;
-import com.back.guessgame.repository.PartyRepository;
-import com.back.guessgame.repository.UserRepository;
+import com.back.guessgame.entities.dto.GeneralPartyDto;
+import com.back.guessgame.entities.dto.PartyResultDto;
 import com.back.guessgame.services.PartyService;
+import com.back.guessgame.services.repository.GameRepository;
+import com.back.guessgame.services.repository.PartyRepository;
+import com.back.guessgame.services.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
