@@ -6,6 +6,7 @@ import com.back.guessgame.entities.Friendship;
 import com.back.guessgame.entities.User;
 import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.services.UserService;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/user")
+@Hidden
 public class UserController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;

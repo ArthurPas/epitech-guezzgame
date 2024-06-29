@@ -3,6 +3,7 @@ import com.back.guessgame.dto.LoginDto;
 import com.back.guessgame.dto.SignUpDto;
 import com.back.guessgame.entities.User;
 import com.back.guessgame.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Hidden
 public class AuthController {
 
 	@Autowired
