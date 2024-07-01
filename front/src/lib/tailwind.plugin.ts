@@ -8,6 +8,7 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
             lineHeight: 'var(--title-large-mobile-line-height)',
             fontWeight: 'bold',
             fontFamily: 'var(--font-primary)',
+            letterSpacing: '0.04em',
 
             '@screen sm': {
                 fontSize: 'var(--title-large-tablet-font-size)',
@@ -110,6 +111,13 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
                 lineHeight: 'var(--link-desktop-line-height)'
             }
         },
+
+        '.bg-global-gradient': {
+            backgroundImage: 'linear-gradient(to bottom, #c44fed, #8c28c1, #6f1eae)',
+            minHeight: '100vh',
+            overflowX: 'hidden',
+            overflowY: 'hidden'
+        }
     };
 
     addUtilities(utilities);

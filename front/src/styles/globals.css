@@ -55,7 +55,7 @@
         @apply border-border;
     }
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background bg-global-gradient text-foreground;
     }
     h1 {
         @apply title-large text-white;
@@ -78,5 +78,9 @@
 
     a {
         @apply link;
+    }
+
+    label {
+        @apply paragraph-large;
     }
 }
