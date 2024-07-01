@@ -114,9 +114,10 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
 
         '.bg-global-gradient': {
             backgroundImage: 'linear-gradient(to bottom, #c44fed, #8c28c1, #6f1eae)',
-            minHeight: '100vh',
-            overflowX: 'hidden',
-            overflowY: 'hidden'
+            backgroundSize: 'cover',
+            backgroundAttachment: 'fixed',
+            height: '100vh',
+            overflowX: 'hidden'
         }
     };
 
