@@ -9,7 +9,7 @@ export type LoginFormProps = {};
 
 export const LoginForm = (props: LoginFormProps) => {
     return (
-        <Card className="w-[90%] xl:w-1/2 rounded-3xl xl:h-[371px] flex justify-center bg-opacity-80">
+        <Card className="w-[90%] xl:w-1/2 rounded-3xl xl:h-[371px] flex justify-center bg-opacity-80 mb-[6rem]">
             <CardContent className="flex-col xl:flex-row flex mx-3 justify-center gap-[60px] xl:gap-[100px] my-6 w-full items-center">
                 <form>
                     <div className="grid w-full items-center gap-2">
