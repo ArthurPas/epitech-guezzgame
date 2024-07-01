@@ -21,6 +21,19 @@ export const useGetFooterLinks = () => {
     });
 };
 
+//src/components/Footer.tsx
+const { data, isError, isPending } = useGetFooterLinks(); 
+
+    if (isPending) {
+        return <span>Chargement</span>;
+    }
+
+    if (isError) {
+        return <span>Erreur</span>;
+    }
+
+    console.log(data);
+
 ```
 
 ```tsx
