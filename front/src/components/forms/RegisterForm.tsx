@@ -20,7 +20,7 @@ const avatarSelection = [
 
 export const RegisterForm = (props: LoginFormProps) => {
     return (
-        <Card className="w-[90%] xl:w-[1182px] rounded-3xl xl:h-[479px] flex justify-center flex-col bg-opacity-80">
+        <Card className="w-[90%] xl:w-[1182px] rounded-3xl xl:h-[479px] flex justify-center flex-col bg-opacity-80 mb-[6rem]">
             <CardContent className="flex flex-col gap-4 mx-3 justify-evenly my-6 w-full items-center">
                 <form className="w-[100%]">
                     <div className="flex flex-col xl:flex-row justify-center items-center gap-[48px] space-y-1.5">
