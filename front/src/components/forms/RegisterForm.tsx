@@ -3,11 +3,15 @@ import { useForm } from 'react-hook-form';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormLabel, FormMessage } from '@/components/ui/form';
 import { RegisterSchemaType, registerSchema } from '@/interfaces/auth';
+import { useMutation } from '@tanstack/react-query';
+import { register, useRegister } from '@/hooks/auth';
+import { useToast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/router';
 
 const avatarSelection = [
     'https://cdn.discordapp.com/attachments/1156577116889034857/1255167012599238768/Avatar.png?ex=667c24df&is=667ad35f&hm=2e9daf70a4d320625ac2025dee634372461551b82c7bd15066175560246dcb5c&',
@@ -19,6 +23,10 @@ const avatarSelection = [
 ];
 
 export const RegisterForm = () => {
+    const { mutate, isError } = useRegister();
+    const { toast } = useToast();
+    const router = useRouter();
+
     const form = useForm<RegisterSchemaType>({
         resolver: zodResolver(registerSchema),
         defaultValues: {
@@ -28,8 +36,15 @@ export const RegisterForm = () => {
         }
     });
 
-    const onSubmit = (data: RegisterSchemaType) => {
-        console.log(data);
+    const onSubmit = async (data: RegisterSchemaType) => {
+        await mutate(data);
+        //TODO: handle error request
+        // if (isSuccess) {
+        toast({ description: 'Inscription réussie' });
+        router.push('/login');
+        // } else {
+        // toast({ description: "Erreur lors de l'inscription" });
+        // }
     };
 
     return (

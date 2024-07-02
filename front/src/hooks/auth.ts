@@ -1,5 +1,4 @@
-import { LoginType } from '@/interfaces/auth';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 export const login = async () => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`);
@@ -13,4 +12,28 @@ export const useLogin = () => {
     //     queryKey: ['login'],
     //     queryFn: login
     // });
+};
+
+export const register = async (registrationData: { mail: string; login: string; password: string }) => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(registrationData)
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to register');
+    }
+
+    const data = await response.json();
+    return data;
+};
+
+export const useRegister = () => {
+    return useMutation({
+        mutationKey: ['register'],
+        mutationFn: register
+    });
 };
