@@ -7,6 +7,8 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
             fontSize: 'var(--title-large-mobile-font-size)',
             lineHeight: 'var(--title-large-mobile-line-height)',
             fontWeight: 'bold',
+            fontFamily: 'var(--font-primary)',
+            letterSpacing: '0.04em',
 
             '@screen sm': {
                 fontSize: 'var(--title-large-tablet-font-size)',
@@ -27,6 +29,7 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
         '.title-medium': {
             fontSize: 'var(--title-medium-mobile-font-size)',
             lineHeight: 'var(--title-medium-mobile-line-height)',
+            fontFamily: 'var(--font-secondary)',
 
             '@screen sm': {
                 fontSize: 'var(--title-medium-tablet-and-laptop-font-size)',
@@ -42,6 +45,7 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
         '.title-small': {
             fontSize: 'var(--title-small-mobile-font-size)',
             lineHeight: 'var(--title-small-mobile-line-height)',
+            fontFamily: 'var(--font-secondary)',
 
             '@screen sm': {
                 fontSize: 'var(--title-small-tablet-and-laptop-font-size)',
@@ -57,6 +61,7 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
         '.paragraph': {
             fontSize: 'var(--paragraph-font-size)',
             lineHeight: 'var(--paragraph-line-height)',
+            fontFamily: 'var(--font-secondary)',
 
             '@screen sm': {
                 fontSize: 'var(--paragraph-tablet-and-laptop-font-size)',
@@ -72,6 +77,7 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
         '.paragraph-large': {
             fontSize: 'var(--paragraph-large-font-size)',
             lineHeight: 'var(--paragraph-large-line-height)',
+            fontFamily: 'var(--font-secondary)',
 
             '@screen md': {
                 fontSize: 'var(--paragraph-large-tablet-and-laptop-font-size)',
@@ -89,7 +95,6 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
             lineHeight: 'var(--link-line-height)',
             color: 'white',
             cursor: 'pointer',
-            textDecoration: 'underline',
 
             '&:hover': {
                 opacity: '0.7',
@@ -107,20 +112,13 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
             }
         },
 
-        '.caption': {
-            fontSize: 'var(--caption-font-size)',
-            lineHeight: 'var(--caption-line-height)',
-
-            '@screen sm': {
-                fontSize: 'var(--caption-tablet-and-laptop-font-size)',
-                lineHeight: 'var(--caption-tablet-and-laptop-line-height)'
-            },
-
-            '@screen 4xl': {
-                fontSize: 'var(--caption-desktop-font-size)',
-                lineHeight: 'var(--caption-desktop-line-height)'
-            }
-        },
+        '.bg-global-gradient': {
+            backgroundImage: 'linear-gradient(to bottom, #c44fed, #8c28c1, #6f1eae)',
+            backgroundSize: 'cover',
+            backgroundAttachment: 'fixed',
+            height: '100vh',
+            overflowX: 'hidden'
+        }
     };
 
     addUtilities(utilities);

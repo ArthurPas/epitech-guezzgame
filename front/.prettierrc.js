@@ -4,6 +4,6 @@ module.exports = {
     printWidth: 140,
     trailingComma: 'none',
     endOfLine: 'lf',
-    plugins: ['prettier-plugin-tailwindcss'],
+    // plugins: ['prettier-plugin-tailwindcss'],
     tailwindFunctions: ['clsx']
 };

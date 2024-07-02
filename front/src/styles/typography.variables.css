@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+    --font-primary: 'Bangers', sans-serif;
+    --font-secondary: 'Poppins', sans-serif;
+
+    --title-large-mobile-font-size: 24px;
+    --title-large-mobile-line-height: 32px;
+    --title-large-tablet-font-size: 40px;
+    --title-large-tablet-line-height: 48px;
+    --title-large-tablet-and-laptop-font-size: 56px;
+    --title-large-tablet-and-laptop-line-height: 64px;
+    --title-large-desktop-font-size: 84px;
+    --title-large-desktop-line-height: 96px;
+
+    --title-medium-mobile-font-size: 24px;
+    --title-medium-mobile-line-height: 32px;
+    --title-medium-tablet-and-laptop-font-size: 40px;
+    --title-medium-tablet-and-laptop-line-height: 48px;
+    --title-medium-desktop-font-size: 60px;
+    --title-medium-desktop-line-height: 72px;
+
+    --title-small-mobile-font-size: 18px;
+    --title-small-mobile-line-height: 24px;
+    --title-small-tablet-and-laptop-font-size: 24px;
+    --title-small-tablet-and-laptop-line-height: 32px;
+    --title-small-desktop-font-size: 36px;
+    --title-small-desktop-line-height: 48px;
+
+    --paragraph-font-size: 16px;
+    --paragraph-line-height: 24px;
+    --paragraph-tablet-and-laptop-font-size: 16px;
+    --paragraph-tablet-and-laptop-line-height: 24px;
+    --paragraph-desktop-font-size: 24px;
+    --paragraph-desktop-line-height: 36px;
+
+    --paragraph-large-font-size: 16px;
+    --paragraph-large-line-height: 24px;
+    --paragraph-large-tablet-and-laptop-font-size: 20px;
+    --paragraph-large-tablet-and-laptop-line-height: 32px;
+    --paragraph-large-desktop-font-size: 30px;
+    --paragraph-large-desktop-line-height: 40px;
+
+    --link-font-size: 16px;
+    --link-line-height: 24px;
+    --link-tablet-and-laptop-font-size: 16px;
+    --link-tablet-and-laptop-line-height: 24px;
+    --link-desktop-font-size: 24px;
+    --link-desktop-line-height: 36px;
+}
