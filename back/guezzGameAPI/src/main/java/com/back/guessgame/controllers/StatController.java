@@ -5,17 +5,16 @@ import com.back.guessgame.repository.dto.StatDto;
 import com.back.guessgame.services.StatService;
 import io.swagger.v3.core.util.Json;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 @RestController
 @RequestMapping("/stat")
+@CrossOrigin(origins = "http://localhost:3000")
 public class StatController {
 	private final UserRepository userRepository;
 	private final StatService statService;

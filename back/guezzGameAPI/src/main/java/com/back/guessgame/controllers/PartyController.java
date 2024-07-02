@@ -23,6 +23,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/party")
+@CrossOrigin(origins = "http://localhost:3000")
 public class PartyController {
 
 	Logger logger = LoggerFactory.getLogger(PartyController.class);
