@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Button } from '../../components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar';
+import { Avatar, AvatarImage } from '../../components/ui/avatar';
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card } from '../../components/ui/card';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { Dialog, DialogTrigger, DialogPortal, DialogOverlay, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogClose } from '../../components/ui/dialog';
+import { X } from 'lucide-react';
 
 const currentUser = {
   name: "Player",
@@ -36,40 +38,6 @@ const assets = [
   { url: "https://64.media.tumblr.com/a96e8cc5989c3b98a8da70aa622aebb7/7d74716f24c11adb-bd/s100x200/d4cfb2f566708f06e30c80911a2ae8f0a4f87e8b.pnj" },
 ];
 
-const changePP = (asset, setTempSelectedAsset) => {
-  console.log(`Change PP ${asset.url}`);
-  setTempSelectedAsset(asset);
-};
-
-const Modal: React.FC<{ onClose: () => void, setTempSelectedAsset: (asset: any) => void, onSave: () => void, tempSelectedAsset: any }> = ({ onClose, setTempSelectedAsset, onSave, tempSelectedAsset }) => {
-  return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-white p-5 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-xl mb-4">Edit Photo</h2>
-        <div className="flex justify-center flex-wrap">
-          {assets.map((asset, index) => (
-            <div
-              key={index}
-              onClick={() => changePP(asset, setTempSelectedAsset)}
-              className={`flex items-center bg-purple-100 m-3 rounded-full w-20 h-20 cursor-pointer ${tempSelectedAsset?.url === asset.url ? 'ring-4 ring-[#eec17e]' : ''}`}
-            >
-              <div className="text-[#37034e] w-full">{asset.url ? <img src={asset.url} alt={`Asset ${index}`} className="w-full h-full rounded-full object-cover" /> : `Asset ${index}`}</div>
-            </div>
-          ))}
-        </div>
-        <div className="flex justify-end">
-          <Button onClick={onClose} className="mr-2 bg-[#eec17e]">
-            Cancel
-          </Button>
-          <Button onClick={onSave} className="bg-[#eec17e]">
-            Save
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const UserProfile: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState(null);
@@ -77,7 +45,7 @@ const UserProfile: React.FC = () => {
 
   const handleModalOpen = () => {
     setIsModalOpen(true);
-    setTempSelectedAsset(selectedAsset); // Initialize tempSelectedAsset with the current avatar
+    setTempSelectedAsset(selectedAsset);
   };
 
   const handleModalClose = () => {
@@ -85,8 +53,13 @@ const UserProfile: React.FC = () => {
   };
 
   const handleSave = () => {
-    setSelectedAsset(tempSelectedAsset); // Apply the tempSelectedAsset as the selected asset
+    setSelectedAsset(tempSelectedAsset);
     setIsModalOpen(false);
+  };
+
+  const changePP = (asset) => {
+    console.log(`Change PP ${asset.url}`);
+    setTempSelectedAsset(asset);
   };
 
   return (
@@ -97,21 +70,49 @@ const UserProfile: React.FC = () => {
       </div>
       <div className="flex justify-center">
         <div className="text-center relative">
-          <Avatar className="w-32 h-32 md:w-48 md:h-48 mx-auto">
-            {selectedAsset ? <AvatarImage src={selectedAsset.url} /> : <AvatarImage src="https://thispersondoesnotexist.com/" />}
-          </Avatar>
-          <button
-            onClick={handleModalOpen}
-            className="absolute top-0 right-0 bg-white p-2 rounded-full shadow-lg"
-          >
-            <FontAwesomeIcon icon={faPencil} />
-          </button>
+          <Dialog onClose={handleModalClose} setTempSelectedAsset={setTempSelectedAsset} onSave={handleSave} tempSelectedAsset={tempSelectedAsset} >
+            <DialogTrigger asChild>
+              <Avatar className="w-32 h-32 md:w-48 md:h-48 mx-auto cursor-pointer hover:ring-4 ring-[#eec17e] ring-opacity-50 transition duration-300">
+                <AvatarImage src={selectedAsset?.url ?? "https://thispersondoesnotexist.com/"} />
+              </Avatar>
+            </DialogTrigger>
+            <DialogPortal>
+              <DialogContent className='p-7'>
+                <DialogHeader>
+                  <DialogTitle>Edit Photo</DialogTitle>
+                </DialogHeader>
+                <div className="flex justify-center flex-wrap">
+                  {assets.map((asset, index) => (
+                    <div
+                      key={index}
+                      onClick={() => changePP(asset)}
+                      className={`flex items-center bg-purple-100 m-3 rounded-full w-20 h-20 cursor-pointer ${tempSelectedAsset?.url === asset.url ? 'ring-4 ring-[#eec17e]' : ''}`}
+                    >
+                      <div className="text-[#37034e] w-full">{asset.url ? <img src={asset.url} alt={`Asset ${index}`} className="w-full h-full rounded-full object-cover" /> : `Asset ${index}`}</div>
+                    </div>
+                  ))}
+                </div>
+                <DialogFooter>
+                  <DialogClose onClick={handleModalClose}>
+                    <Button className='bg-[#eec17e]'>
+                      Cancel
+                    </Button>
+                  </DialogClose>
+                  <DialogClose onClick={handleSave}>
+                    <Button className='bg-[#eec17e]'>
+                      Save
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </DialogPortal>
+          </Dialog>
           <h1 className="mt-4 text-[#eec17e]">{currentUser.name}</h1>
           <h3 className="text-[#eec17e] text-md md:text-lg">Rank: {currentUser.rank} - XP: {currentUser.xp}</h3>
         </div>
       </div>
       <div className="flex flex-col md:flex-row p-5 pb-0 md:m-40 md:mt-0">
-        <div className="bg-purple-300 rounded-lg p-5 w-full md:w-1/2 mx-auto text-white mb-5 md:mr-5 md:mb-0">
+        <Card className="bg-purple-300 rounded-lg p-5 w-full md:w-1/2 mx-auto text-white mb-5 md:mr-5 md:mb-0">
           <div className="flex justify-around">
             <div className="mb-5 w-48">
               <div className="text-2xl md:text-3xl text-center text-[#37034e]">Games</div>
@@ -125,8 +126,8 @@ const UserProfile: React.FC = () => {
           <div className="text-lg flex justify-center">
             <h3 className='text-[#37034e]'><strong>Vip depuis : <span className="text-pink-400 font-bold">{currentUser.vipTime}</span> jours !</strong></h3>
           </div>
-        </div>
-        <div className="bg-purple-300 rounded-lg p-5 w-full md:w-1/2 mx-auto md:ml-5">
+        </Card>
+        <Card className="bg-purple-300 rounded-lg p-5 w-full md:w-1/2 mx-auto md:ml-5">
           <div className="text-2xl md:text-3xl text-center mb-2 text-[#37034e]">Mes amis</div>
           <ScrollArea className="h-72 w-full rounded-md">
             <div className="flex flex-col gap-4">
@@ -140,9 +141,8 @@ const UserProfile: React.FC = () => {
               ))}
             </div>
           </ScrollArea>
-        </div>
+        </Card>
       </div>
-      {isModalOpen && <Modal onClose={handleModalClose} setTempSelectedAsset={setTempSelectedAsset} onSave={handleSave} tempSelectedAsset={tempSelectedAsset} />}
     </>
   );
 }
