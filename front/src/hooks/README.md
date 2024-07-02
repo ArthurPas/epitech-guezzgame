@@ -1,25 +1,40 @@
+# Hooks
+
 All the hooks relative to data fetching. **EVERY** call to useQuery, useMutation, etc. should have its own hook
 
 Examples:
 
 ```tsx
-// src/hooks/footer.ts
+// src/hooks/user.ts
 import { useQuery } from '@tanstack/react-query';
-import { FooterType } from '~/interfaces/footer';
+import { UserType } from '~/interfaces/User';
 
-export const fetchFooter = async () => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/edito/footer`);
+export const fetchUser = async () => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`);
     const data = await response.json();
 
     return data;
 };
 
-export const useGetFooterLinks = () => {
-    return useQuery<FooterType>({
-        queryKey: ['footer'],
-        queryFn: fetchFooter
+export const useGetUser = () => {
+    return useQuery<UserType>({
+        queryKey: ['user'],
+        queryFn: fetchUser
     });
 };
+
+//src/components/Footer.tsx
+const { data, isError, isPending } = useGetFooterLinks(); 
+
+    if (isPending) {
+        return <span>Chargement</span>;
+    }
+
+    if (isError) {
+        return <span>Erreur</span>;
+    }
+
+    console.log(data);
 
 ```
 
