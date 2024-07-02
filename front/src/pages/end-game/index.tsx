@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import React, { useState, useEffect } from 'react';
 
 interface FriendsData {
@@ -7,6 +8,7 @@ interface FriendsData {
   pseudo: string;
   score: number;
 }
+
 
 // Renvoyer l'id de la room
 
@@ -25,7 +27,8 @@ const idCurrentPlayer: number = 3;
 const Index = () => {
   const [position, setPosition] = useState<number | null>(null);
   const [positionPlayer, setPositionPlayer] = useState<FriendsData | null>(null);
-
+  
+  
   useEffect(() => {
     const getPosition = () => {
       let currentPlayer: FriendsData | null = null;
@@ -52,11 +55,9 @@ const Index = () => {
     return null;
   }
 
-
-
   return (
 
-    <div className='grid gap bg-fuchsia-700 min-h-screen w-full'>
+    <div className='grid gap min-h-screen w-full'>
         
       <div className='grid place-items-center'>
         <h1 className='title-medium mt-9'>Fin de partie</h1>
@@ -73,8 +74,11 @@ const Index = () => {
         </CardContent>
       </Card>
         
-      <Card className='w-1/2 mx-auto bg-white bg-opacity-70 rounded mb-5'>
-        <CardContent className='p-3 max-h-52 overflow-y-auto' >
+    
+      <Card className='w-1/2 mx-auto bg-white bg-opacity-70 rounded-lg mb-5 flex flex-col justify-center '>
+        <CardContent className='p-2 max-h-52 overflow-y-auto flex flex-col justify-center items-center'>      
+
+        <ScrollArea className="h-72 px-4 w-full rounded-md ">
           {playerData.map(player => (
             <div
               key={player.id}
@@ -84,13 +88,14 @@ const Index = () => {
               <h1 className="text-right text-blue-900 text-xl font-bold">{player.score}</h1>
             </div>
           ))}
+           </ScrollArea>
         </CardContent>
       </Card>
+     
 
       <div className='grid place-items-center'>
         <Button className='w-1/3 bg-orange-300 mb-10'>Terminer la partie</Button>
       </div>
-
   </div>
   );
 };
