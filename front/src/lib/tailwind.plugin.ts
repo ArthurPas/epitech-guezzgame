@@ -9,6 +9,7 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
             fontWeight: 'bold',
             fontFamily: 'var(--font-primary)',
             letterSpacing: '0.04em',
+            textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000',
 
             '@screen sm': {
                 fontSize: 'var(--title-large-tablet-font-size)',
