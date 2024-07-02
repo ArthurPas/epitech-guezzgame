@@ -6,6 +6,9 @@ import { Card } from '../../components/ui/card';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog, DialogTrigger, DialogPortal, DialogOverlay, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogClose } from '../../components/ui/dialog';
 import { X } from 'lucide-react';
+import { useGetUserStat } from '@/hooks/userStats';
+import { useGetUser } from '@/hooks/user';
+import { useGetFriends } from '@/hooks/friends';
 
 const currentUser = {
   name: "Player",
@@ -62,6 +65,15 @@ const UserProfile: React.FC = () => {
     setTempSelectedAsset(asset);
   };
 
+  const { data, isError, isLoading} = useGetUserStat(1);
+  console.log('user stats: ', data);
+
+  const { data: userData, isError: userIsError, isLoading: userIsLoading } = useGetUser(1);
+  console.log('user infos:', userData);
+
+  const { data: friendData, isError: friendIsError, isLoading: friendIsLoading } = useGetFriends(1);
+  console.log('user friends:', friendData);
+
   return (
     <>
       <div className="flex justify-between p-5">
@@ -73,7 +85,7 @@ const UserProfile: React.FC = () => {
           <Dialog onClose={handleModalClose} setTempSelectedAsset={setTempSelectedAsset} onSave={handleSave} tempSelectedAsset={tempSelectedAsset} >
             <DialogTrigger asChild>
               <Avatar className="w-32 h-32 md:w-48 md:h-48 mx-auto cursor-pointer hover:ring-4 ring-[#eec17e] ring-opacity-50 transition duration-300">
-                <AvatarImage src={selectedAsset?.url ?? "https://thispersondoesnotexist.com/"} />
+                <AvatarImage src={selectedAsset?.url ?? `${userData?.picture}`} />
               </Avatar>
             </DialogTrigger>
             <DialogPortal>
@@ -107,8 +119,8 @@ const UserProfile: React.FC = () => {
               </DialogContent>
             </DialogPortal>
           </Dialog>
-          <h1 className="mt-4 text-[#eec17e]">{currentUser.name}</h1>
-          <h3 className="text-[#eec17e] text-md md:text-lg">Rank: {currentUser.rank} - XP: {currentUser.xp}</h3>
+          <h1 className="mt-4 text-[#eec17e]">{data?.user.login}</h1>
+          <h3 className="text-[#eec17e] text-md md:text-lg">Rank: {currentUser.rank} - XP: {userData?.xpPoint}</h3>
         </div>
       </div>
       <div className="flex flex-col md:flex-row p-5 pb-0 md:m-40 md:mt-0">
@@ -116,11 +128,11 @@ const UserProfile: React.FC = () => {
           <div className="flex justify-around">
             <div className="mb-5 w-48">
               <div className="text-2xl md:text-3xl text-center text-[#37034e]">Games</div>
-              <div className="bg-purple-200 text-[#37034e] p-2 rounded text-3xl md:text-4xl mt-2 text-center">{currentUser.nbGame}</div>
+              <div className="bg-purple-200 text-[#37034e] p-2 rounded text-3xl md:text-4xl mt-2 text-center">{data?.nbParties}</div>
             </div>
             <div className="mb-5 w-48">
               <div className="text-2xl md:text-3xl text-center text-[#37034e]">Wins</div>
-              <div className="bg-purple-200 text-[#37034e] p-2 rounded text-3xl md:text-4xl mt-2 text-center">{currentUser.nbWin}</div>
+              <div className="bg-purple-200 text-[#37034e] p-2 rounded text-3xl md:text-4xl mt-2 text-center">{data?.nbWin}</div>
             </div>
           </div>
           <div className="text-lg flex justify-center">
@@ -131,12 +143,12 @@ const UserProfile: React.FC = () => {
           <div className="text-2xl md:text-3xl text-center mb-2 text-[#37034e]">Mes amis</div>
           <ScrollArea className="h-72 w-full rounded-md">
             <div className="flex flex-col gap-4">
-              {friends.map((friend, index) => (
+              {friendData?.map((friend, index) => (
                 <div key={index} className="flex items-center bg-purple-100 p-3 rounded-lg">
                   <Avatar className="mr-4">
                     <AvatarImage src={friend.url} />
                   </Avatar>
-                  <div className='text-[#37034e]'>{friend.name}</div>
+                  <div className='text-[#37034e]'>{friend.login}</div>
                 </div>
               ))}
             </div>
