@@ -37,14 +37,15 @@ export const RegisterForm = () => {
     });
 
     const onSubmit = async (data: RegisterSchemaType) => {
-        await mutate(data);
-        //TODO: handle error request
-        // if (isSuccess) {
-        toast({ description: 'Inscription réussie' });
-        router.push('/login');
-        // } else {
-        // toast({ description: "Erreur lors de l'inscription" });
-        // }
+        await mutate(data, {
+            onSuccess: () => {
+                toast({ description: 'Inscription réussie' });
+                router.push('/login');
+            },
+            onError: (error) => {
+                toast({ description: error.message });
+            }
+        });
     };
 
     return (
