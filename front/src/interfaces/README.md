@@ -1,30 +1,23 @@
+# Interfaces
+
 All zod types. **DO NOT copy the DTO from the backend entirely. Instead, define only the attributes that are necessary to the code**
 
-Examples : 
+Examples :
 
 ```ts
 // src/interfaces/footer.ts
 import { z } from 'zod';
 
-export const itemTypes = ['TYPE_NAME_1', 'TYPE_NAME_2', 'TYPE_NAME_3'] as const;
+export const roleTypes = ['admin', 'moderator', 'user'] as const;
 
 export type ItemType = (typeof itemTypes)[number];
 
-const itemSchema = z.object({
+const userSchema = z.object({
     uuid: z.string().uuid(),
-    title: z.string(),
-    url: z.string(),
-    type: z.enum(itemTypes),
+    mail: z.string().email(),
+    pseudo: z.string().min(2).max(30),
+    role: z.enum(itemTypes),
 });
 
-const footerSchema = z.object({
-    uuid: z.string().uuid(),
-    title: z.string().nullable(),
-    items: z.array(itemSchema).nullable(),
-});
-
-export type FooterType = z.infer<typeof footerSchema>;
-
-export type FooterItemSchema = z.infer<typeof itemSchema>;
-
+export type UserType = z.infer<typeof userSchema>;
 ```
