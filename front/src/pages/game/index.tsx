@@ -84,7 +84,7 @@ const index = () => {
                     key={index}
                     className="rounded-base border-2 border-border dark:border-darkBorder bg-main px-2 py-1 font-mono text-sm"
                   >
-                    <h4>day{index + 1}</h4>
+                    <p>day{index + 1}</p>
                     <h3>+100</h3>
                   </div>
                 ))}
@@ -103,7 +103,7 @@ const index = () => {
     <TabsTrigger value="join">rejoindre une room</TabsTrigger>
   </TabsList>
   <TabsContent value="create">
-    <Card>      
+    <Card className='p-5'>      
       <CardContent className="flex space-y-5 space-x-10">
         <div className="flex-auto">
         <div className="space-y-1">
@@ -152,7 +152,7 @@ const index = () => {
     </Card>
   </TabsContent>
   <TabsContent value="join">
-    <Card>
+    <Card className='p-5'>
       <CardContent className="space-y-2">
         <div className="space-y-1">
           <Label htmlFor="current">Room ID</Label>
@@ -173,7 +173,7 @@ const index = () => {
 </div>
 
 <div>
-<Card className="w-[350px]">
+<Card className="w-[350px] p-5">
   <CardHeader>
     <CardTitle>Chat</CardTitle>
   </CardHeader>
