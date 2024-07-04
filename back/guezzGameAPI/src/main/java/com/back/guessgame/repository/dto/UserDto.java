@@ -27,6 +27,8 @@ public class UserDto {
 	private Boolean isVip;
 	@JsonProperty("xpPoint")
 	private Integer xpPoint;
+	@JsonProperty("level")
+	private ExpDto expDto;
 
 	public UserDto(User user) {
 		this.id = user.getId();
@@ -36,5 +38,6 @@ public class UserDto {
 		this.nbCoin = user.getNbCoin();
 		this.isVip = user.getIsVip();
 		this.xpPoint = user.getXpPoint();
+		this.expDto = new ExpDto(user.getXpPoint());
 	}
 }
