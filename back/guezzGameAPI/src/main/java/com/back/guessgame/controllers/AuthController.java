@@ -61,6 +61,7 @@ public class AuthController {
 		user.setLogin(signUpDto.getLogin());
 		user.setMail(signUpDto.getMail());
 		user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+		user.setPicture(signUpDto.getPicture());
 		userRepository.save(user);
 
 		return new ResponseEntity<>("User registered successfully", HttpStatus.OK);
