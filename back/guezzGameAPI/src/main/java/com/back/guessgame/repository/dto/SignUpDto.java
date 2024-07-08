@@ -7,4 +7,5 @@ public class SignUpDto {
 	private String mail;
 	private String login;
 	private String password;
+	private String picture;
 }
