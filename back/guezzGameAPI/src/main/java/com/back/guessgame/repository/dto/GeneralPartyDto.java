@@ -34,9 +34,8 @@ public class GeneralPartyDto {
 		this.nbPoints = party.getNbPoints();
 		this.userId = party.getUser().getId();
 		for (Game game : party.getGames()) {
-			logger.warn("titi" + game.getId());
 			this.gamesId.add(game.getId());
 		}
-		logger.warn(this.getGamesId().toString() + "toto");
+		logger.warn(this.getGamesId().toString());
 	}
 }

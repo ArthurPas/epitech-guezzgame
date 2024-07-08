@@ -5,8 +5,7 @@ const friendSchema = z.object({
     login: z.string(),
 });
 
-const friendsArray = z.object({
-    friendData: z.array(friendSchema),
-});
+//fix: z.object to z.array
+const friendsArray = z.array(friendSchema);
 
 export type FriendType = z.infer<typeof friendsArray>;
