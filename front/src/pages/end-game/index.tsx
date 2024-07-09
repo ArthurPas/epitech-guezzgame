@@ -3,24 +3,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import React, { useState, useEffect } from 'react';
+import { playerData } from '@/lib/mocks/player';
 
-interface FriendsData {
+export interface FriendsData {
     id: number;
     pseudo: string;
     score: number;
 }
 
 // Renvoyer l'id de la room
-
-const playerData: FriendsData[] = [
-    { id: 1, pseudo: 'player1', score: 300 },
-    { id: 2, pseudo: 'player2', score: 250 },
-    { id: 3, pseudo: 'player3', score: 200 },
-    { id: 4, pseudo: 'player4', score: 150 },
-    { id: 5, pseudo: 'player5', score: 100 },
-    { id: 6, pseudo: 'player6', score: 50 },
-    { id: 7, pseudo: 'player7', score: 10 }
-];
 
 const idCurrentPlayer: number = 3;
 

@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 const LoginPage = () => {
-    console.log(`${process.env.NEXT_PUBLIC_API_URL}/login`);
 
     return (
         <>
