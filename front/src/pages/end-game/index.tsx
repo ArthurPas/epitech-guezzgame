@@ -1,103 +1,104 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import React, { useState, useEffect } from 'react';
 
 interface FriendsData {
-  id: number;
-  pseudo: string;
-  score: number;
+    id: number;
+    pseudo: string;
+    score: number;
 }
-
 
 // Renvoyer l'id de la room
 
 const playerData: FriendsData[] = [
-  { id: 1, pseudo: 'player1', score: 300 },
-  { id: 2, pseudo: 'player2', score: 250 },
-  { id: 3, pseudo: 'player3', score: 200 },
-  { id: 4, pseudo: 'player4', score: 150 },
-  { id: 5, pseudo: 'player5', score: 100 },
-  { id: 6, pseudo: 'player6', score: 50 },
-  { id: 7, pseudo: 'player7', score: 10 },
+    { id: 1, pseudo: 'player1', score: 300 },
+    { id: 2, pseudo: 'player2', score: 250 },
+    { id: 3, pseudo: 'player3', score: 200 },
+    { id: 4, pseudo: 'player4', score: 150 },
+    { id: 5, pseudo: 'player5', score: 100 },
+    { id: 6, pseudo: 'player6', score: 50 },
+    { id: 7, pseudo: 'player7', score: 10 }
 ];
 
 const idCurrentPlayer: number = 3;
 
 const Index = () => {
-  const [position, setPosition] = useState<number | null>(null);
-  const [positionPlayer, setPositionPlayer] = useState<FriendsData | null>(null);
-  
-  
-  useEffect(() => {
-    const getPosition = () => {
-      let currentPlayer: FriendsData | null = null;
-      let index = 0;
-      let pos = 0;
+    const [position, setPosition] = useState<number | null>(null);
+    const [positionPlayer, setPositionPlayer] = useState<FriendsData | null>(null);
 
-      playerData.forEach(player => {
-        index++;
-        if (player.id === idCurrentPlayer) {
-          currentPlayer = player;
-          pos = index;
-        }
-      });
+    useEffect(() => {
+        const getPosition = () => {
+            let currentPlayer: FriendsData | null = null;
+            let index = 0;
+            let pos = 0;
 
-      setPosition(pos);
-      setPositionPlayer(currentPlayer);
-    };
+            playerData.forEach((player) => {
+                index++;
+                if (player.id === idCurrentPlayer) {
+                    currentPlayer = player;
+                    pos = index;
+                }
+            });
 
-    getPosition();
-  }, []);
+            setPosition(pos);
+            setPositionPlayer(currentPlayer);
+        };
 
-  if (positionPlayer === null) {
-    console.error('Position player is null');
-    return null;
-  }
+        getPosition();
+    }, []);
 
-  return (
+    if (positionPlayer === null) {
+        console.error('Position player is null');
+        return null;
+    }
 
-    <div className='grid gap min-h-screen w-full'>
-        
-      <div className='grid place-items-center'>
-        <h1 className='title-medium mt-9'>Fin de partie</h1>
-      </div>
-
-      <Card className='w-1/3 h-[80px] rounded-full mx-auto bg-white'>
-        <CardContent className='p-2'>
-          <div className='grid place-items-center'>
-            <div className='flex flex-col justify-center items-center rounded-full p-1 space-y-1'>
-              <h2 className='title-small text-center'>Tu es {position}ème</h2>
-              <h2 className='title-small font-bold text-orange-400'>+{positionPlayer.score}pts</h2>
+    return (
+        <div className="grid gap min-h-screen w-full">
+            <div className="grid place-items-center">
+                <h1 className="text-amber-300 text-[64px]">Fin de partie</h1>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-        
-    
-      <Card className='w-1/2 mx-auto bg-white bg-opacity-70 rounded-lg mb-5 flex flex-col justify-center '>
-        <CardContent className='p-2 max-h-52 overflow-y-auto flex flex-col justify-center items-center'>      
 
-        <ScrollArea className="h-72 px-4 w-full rounded-md ">
-          {playerData.map(player => (
-            <div
-              key={player.id}
-              className={`flex w-full h-8 justify-between items-center p-4 shadow rounded-full mb-2 ${player.id === idCurrentPlayer ? 'bg-orange-300' : 'bg-white'}`}
-            >
-              <h1 className="text-left text-blue-900 text-sm font-bold">{player.pseudo}</h1>
-              <h1 className="text-right text-blue-900 text-xl font-bold">{player.score}</h1>
+            <div className="mt-[2.5rem]">
+                <Card className="border-[1.5px] w-[25%] h-[90px] rounded-3xl mx-auto mb-8 bg-purple-300 bg-opacity-75">
+                    <CardContent className="p-2 flex flex-col justify-center items-center rounded-3xl space-y-1">
+                        <h2 className="title-small text-center font-semibold">Tu es {position}ème !</h2>
+                        <h2 className="title-small font-bold text-amber-400 text-shadow mb-2">+{positionPlayer.score}pts</h2>
+                    </CardContent>
+                </Card>
+                <Card className="w-[50%] h-[60%] mx-auto rounded-[4rem] mb-5 flex flex-col justify-center bg-purple-300 bg-opacity-75">
+                    <CardContent className="p-2 max-h-52 overflow-y-auto flex flex-col justify-center items-center mx-4">
+                        <ScrollArea className="h-72 px-4 w-full rounded-md">
+                            {playerData.map((player) => (
+                                <div className="flex items-start">
+                                    <Avatar className="border-[1.5px] h-[33px] w-[33px] mr-2">
+                                        <AvatarImage
+                                            src={'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720513515/shrek_4_vnuik2.webp'}
+                                        />
+                                        <AvatarFallback>SB</AvatarFallback>
+                                    </Avatar>
+                                    <div
+                                        key={player.id}
+                                        className={`flex w-full h-8 justify-between items-center p-4 shadow rounded-full mb-2 ${
+                                            player.id === idCurrentPlayer ? 'bg-orange-300' : 'bg-white'
+                                        }`}
+                                    >
+                                        <p className="text-left text-sm font-bold">{player.pseudo}</p>
+                                        <p className="text-right text-[#37034E] text-xl font-bold">{player.score}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </ScrollArea>
+                    </CardContent>
+                </Card>
             </div>
-          ))}
-           </ScrollArea>
-        </CardContent>
-      </Card>
-     
 
-      <div className='grid place-items-center'>
-        <Button className='w-1/3 bg-orange-300 mb-10'>Terminer la partie</Button>
-      </div>
-  </div>
-  );
+            <div className="grid place-items-center">
+                <Button className=" bg-orange-300 mb-10">Terminer la partie</Button>
+            </div>
+        </div>
+    );
 };
 
 export default Index;
