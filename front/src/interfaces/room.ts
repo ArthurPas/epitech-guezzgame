@@ -15,8 +15,10 @@ const playerSchema = z.object({
 
 export type Player = z.infer<typeof playerSchema>;
 
-const playlistSchema = z.object({
+export const partySchema = z.object({
+  partyId:z.number(),
   games: z.array(gameSchema),
+  player:z.array(playerSchema)
 });
 
-export type Playlist = z.infer<typeof playlistSchema>;
+export type Playlist = z.infer<typeof partySchema>;

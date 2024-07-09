@@ -1,6 +1,6 @@
 
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { Game, gameSchema } from '@/interfaces/room';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Game,  partySchema } from '@/interfaces/room';
 
 export const fetchGame = async () => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/game/list`);
@@ -17,26 +17,19 @@ export const useGetGames = () => {
 };
 
 
-const submitPlaylist = async (playlist: { games: { name: string; }[] }): Promise<any> => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/party`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(playlist),
-  });
+export const Party = async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/party`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(partySchema)
+      });};
 
-  if (!response.ok) {
-    throw new Error('Failed to submit playlist');
-  }
-
-  return response.json();
-};
-
-
-
-export const useSubmitPlaylist = () => {
-  return useMutation<any, Error, { games: { name: string; picture?: string }[] }, unknown>({
-    mutationFn: submitPlaylist,
+export const useParty = () => {
+  return useMutation({
+      mutationKey: ['party'],
+      mutationFn: Party
   });
 };
+

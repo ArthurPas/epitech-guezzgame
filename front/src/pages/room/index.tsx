@@ -1,16 +1,20 @@
 import { ScrollArea , ScrollBar} from '@/components/ui/scroll-area'
   const player = [
     {
+      id: 1,
       player: 'player 1',
       host:"host"
     },
     {
+      id: 2,
       player: 'player 2',
     },
     {
+      id:3,
       player: 'player 2',
     },
     {
+      id:4,
       player: 'player 2',
     },
    
@@ -27,19 +31,15 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/RoomTab'
 import React from 'react'
-import { useSubmitPlaylist } from "@/hooks/room"
-import { useGetGames } from '@/hooks/room'
-
+import { useParty, useGetGames, Party } from "@/hooks/room"
 import {  Game } from '@/interfaces/room';
-
-
 import { useState } from 'react';
 
 
 
 const Index: React.FC = () => {
   const [playlistGames, setPlaylistGames] = useState<Game[]>([]);
-  const { mutate: submitPlaylist } = useSubmitPlaylist();
+  useParty();
   const {data,isError,isLoading}= useGetGames();
   const addGame = (Game: Game) => {
     if (!playlistGames.some(g => g.name === Game.name)) {
@@ -48,7 +48,7 @@ const Index: React.FC = () => {
   };
 
   const handlePlayClick = () => {
-    submitPlaylist({ games: playlistGames });
+    
   };
 
   if (isLoading) {
@@ -104,7 +104,7 @@ const Index: React.FC = () => {
         </div>
         <div className="space-y-1">
           <Label htmlFor="idroom">ID de la room:</Label>
-          <div className="rounded-base border-2 border-border dark:border-darkBorder bg-white px-2 py-1 font-mono text-m">HRFTUZ</div>
+          <Input id="idParty" defaultValue="0000" />
         </div>
         <Label htmlFor="player">Player:</Label>
         <ScrollArea className=' h-[100px] w-[350px]'>
