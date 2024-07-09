@@ -58,9 +58,9 @@ public class PartyService {
 	public PartyResultDto getResultScores(long partyCode) {
 		List<GeneralPartyDto> parties = getPartyByPartyCode(partyCode);
 		List<Score> scores = new ArrayList<>();
-
 		for (GeneralPartyDto party : parties) {
-			Score score = new Score(party.getUserId(), "", party.getNbPoints());
+			User user = userRepository.findById(party.getUserId()).orElse(null);
+			Score score = new Score(party.getUserId(), "", party.getNbPoints(), user != null ? user.getPicture() : "");
 			scores.add(score);
 		}
 		return new PartyResultDto(scores, parties.get(0).getPartyCode());
