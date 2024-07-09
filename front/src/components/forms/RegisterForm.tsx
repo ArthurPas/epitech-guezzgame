@@ -57,7 +57,7 @@ export const RegisterForm = () => {
     };
 
     return (
-        <Card className="w-[90%] xl:w-[1182px] rounded-3xl xl:h-[479px] flex justify-center flex-col bg-opacity-80 mb-[6rem]">
+        <Card className="w-[90%] xl:w-[1182px] rounded-3xl xl:h-[479px] flex justify-center flex-col bg-purple-300 bg-opacity-75 mb-[6rem]">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="w-[100%]">
                     <CardContent className="flex flex-col gap-4 mx-3 justify-evenly my-6 w-full items-center">
