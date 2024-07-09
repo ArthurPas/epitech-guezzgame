@@ -1,9 +1,11 @@
 package com.back.guessgame.services;
 
 import com.back.guessgame.controllers.PartyController;
+import com.back.guessgame.repository.GameRepository;
 import com.back.guessgame.repository.PartyRepository;
 import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.GeneralPartyDto;
+import com.back.guessgame.repository.dto.NewPartyDto;
 import com.back.guessgame.repository.dto.PartyResultDto;
 import com.back.guessgame.repository.dto.Score;
 import com.back.guessgame.repository.entities.Game;
@@ -11,7 +13,6 @@ import com.back.guessgame.repository.entities.Party;
 import com.back.guessgame.repository.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -23,11 +24,13 @@ import java.util.stream.Collectors;
 public class PartyService {
 	private final PartyRepository partyRepository;
 	Logger logger = LoggerFactory.getLogger(PartyController.class);
-	@Autowired
 	private UserRepository userRepository;
+	private GameRepository gameRepository;
 
-	public PartyService(PartyRepository partyRepository) {
+	public PartyService(PartyRepository partyRepository, UserRepository userRepository, GameRepository gameRepository) {
 		this.partyRepository = partyRepository;
+		this.userRepository = userRepository;
+		this.gameRepository = gameRepository;
 	}
 
 	public Set<GeneralPartyDto> findAll() {
@@ -63,18 +66,27 @@ public class PartyService {
 		return new PartyResultDto(scores, parties.get(0).getPartyCode());
 	}
 
-	public long newParty(GeneralPartyDto partyDto, User user, List<Game> games) {
-		Party party = new Party();
-		party.setPartyCode(partyDto.getPartyCode());
-		party.setUser(user);
-		party.setLeaderRank(partyDto.getLeaderRank());
-		for (Game game : games) {
-			party.getGames().add(game);
+	public List<Long> newParty(NewPartyDto partyDto) {
+		List<User> users = new ArrayList<>(userRepository.findAllById(partyDto.getUsers()));
+		List<Game> games = new ArrayList<>(gameRepository.findAllById(partyDto.getGamesId()));
+		if(users.isEmpty()) {
+			throw HttpClientErrorException.create(HttpStatus.NOT_FOUND, "Users not found", null, null, null);
 		}
-		logger.warn(games.get(0).getId().toString() + " " + games.get(1).getId().toString());
-		party.setNbPoints(partyDto.getNbPoints());
-		partyRepository.save(party);
-		return party.getId();
+		if(games.isEmpty()) {
+			throw HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "A party cannot have 0 game", null, null, null);
+		}
+		List<Long> ids = new ArrayList<>();
+		for (User u : users) {
+			Party party = new Party();
+			party.setPartyCode(partyDto.getPartyCode());
+			party.setUser(u);
+			for (Game g : games) {
+				party.getGames().add(g);
+			}
+			partyRepository.save(party);
+			ids.add(party.getId());
+		}
+		return ids;
 	}
 
 	public long updateParty(Party party, GeneralPartyDto partyDetails) {

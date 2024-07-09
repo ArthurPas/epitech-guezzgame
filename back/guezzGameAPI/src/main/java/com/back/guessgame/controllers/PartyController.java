@@ -4,20 +4,17 @@ import com.back.guessgame.repository.GameRepository;
 import com.back.guessgame.repository.PartyRepository;
 import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.GeneralPartyDto;
+import com.back.guessgame.repository.dto.NewPartyDto;
 import com.back.guessgame.repository.dto.PartyResultDto;
-import com.back.guessgame.repository.entities.Game;
 import com.back.guessgame.repository.entities.Party;
 import com.back.guessgame.repository.entities.User;
 import com.back.guessgame.services.PartyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -30,15 +27,16 @@ public class PartyController {
 	private PartyRepository partyRepository;
 
 	private PartyService partyService;
-	@Autowired
-	private GameRepository gameRepository;
+	private final GameRepository gameRepository;
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
-	public PartyController(PartyRepository partyRepository) {
+	public PartyController(PartyRepository partyRepository, GameRepository gameRepository, UserRepository userRepository) {
 		this.partyRepository = partyRepository;
-		this.partyService = new PartyService(partyRepository);
+		this.gameRepository = gameRepository;
+		this.userRepository = userRepository;
+		this.partyService = new PartyService(partyRepository, userRepository, gameRepository);
+
 	}
 
 	@GetMapping("/list")
@@ -53,17 +51,8 @@ public class PartyController {
 	}
 
 	@PostMapping
-	public long createParty(@RequestBody GeneralPartyDto party) {
-		User user = userRepository.findById(party.getUserId()).orElse(null);
-		List<Game> games = new ArrayList<>(gameRepository.findAllById(party.getGamesId()));
-		logger.warn(games.toString());
-		if(user == null) {
-			throw HttpClientErrorException.create(HttpStatus.NOT_FOUND, "User not found", null, null, null);
-		}
-		if(games.isEmpty()) {
-			throw HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "A party cannot have 0 game", null, null, null);
-		}
-		return partyService.newParty(party, user, games);
+	public List<Long> createParty(@RequestBody NewPartyDto party) {
+		return partyService.newParty(party);
 	}
 
 	@PutMapping("/{id}")
