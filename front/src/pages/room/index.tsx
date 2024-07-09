@@ -15,33 +15,6 @@ import { ScrollArea , ScrollBar} from '@/components/ui/scroll-area'
     },
    
   ]
-
-  const game = [
-    {
-      name:'game1',
-      picture:""
-    },
-    {
-      name:'game2',
-      picture:""
-    },
-    {
-      name:'game3',
-      picture:""
-    },
-    {
-      name:'game4',
-      picture:""
-    },
-    {
-      name:'game5',
-      picture:""
-    },
-    {
-      name:'game6',
-      picture:""
-    }
-  ]
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -54,19 +27,38 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/RoomTab'
 import React from 'react'
+import { useSubmitPlaylist } from "@/hooks/room"
+import { useGetGames } from '@/hooks/room'
+
+import {  Game } from '@/interfaces/room';
+
 
 import { useState } from 'react';
 
 
 
-const index = () => {
-  const [playlistGames, setPlaylistGames] = useState([]);
-
-  const handleAddGame = (game: { name: string; picture: string }) => {
-    if (!playlistGames.includes(game)) {
-      setPlaylistGames([...playlistGames, game]);
+const Index: React.FC = () => {
+  const [playlistGames, setPlaylistGames] = useState<Game[]>([]);
+  const { mutate: submitPlaylist } = useSubmitPlaylist();
+  const {data,isError,isLoading}= useGetGames();
+  const addGame = (Game: Game) => {
+    if (!playlistGames.some(g => g.name === Game.name)) {
+      setPlaylistGames([...playlistGames, Game]);
     }
   };
+
+  const handlePlayClick = () => {
+    submitPlaylist({ games: playlistGames });
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError || !data) {
+    return <div>Error loading game list.</div>;
+  }
+
   return ( 
     
     <div>
@@ -126,8 +118,8 @@ const index = () => {
                     <div className='flex flex-col'>
                       <Label htmlFor="Game">Game:</Label>
                       <div className="grid grid-cols-2 gap-4">
-                        {game.map((game) => (
-                          <Button key={game.name} className='default' onClick={() => handleAddGame(game)}>{game.name}</Button>
+                      {data.map((game: Game) => (
+                          <Button key={game.id} className='default' onClick={() => addGame(game)}>{game.name}</Button>
                         ))}
                       </div>
                     </div>
@@ -145,11 +137,13 @@ const index = () => {
         <Button
           variant="default"
           className="w-full bg-amber-500 text-text dark:bg-darkBg dark:text-darkText"
-        >
-          play !
+          onClick={handlePlayClick}
+
+        >play !
         </Button>
       </CardFooter>
     </Card>
+    {isError && <div>Erreur lors de l'envoi de la playlist.</div>}
   </TabsContent>
   <TabsContent value="join">
     <Card className='p-5'>
@@ -190,4 +184,4 @@ const index = () => {
 
 }
 
-export default index
+export default Index
