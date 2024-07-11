@@ -30,11 +30,10 @@ const Index = () => {
       id: score.userId,
       pseudo: score.login,
       score: score.nbPoints
-    }));
-      // Créer une copie du tableau
-      const sortedScores = [...mappedScores];
+    }));      
 
-      // Tri des scores par score décroissant
+      //Tri par ordre décroissant
+      const sortedScores = [...mappedScores];      
       sortedScores.sort((a, b) => b.score - a.score);  
     
       setPlayerData(sortedScores);

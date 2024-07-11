@@ -14,5 +14,5 @@ public class Score {
 	@JsonProperty(value = "nbPoints")
 	private int nbPoint;
 
-
+	
 }
