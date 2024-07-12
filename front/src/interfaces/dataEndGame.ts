@@ -4,6 +4,7 @@ const scoreSchema = z.object({
     userId: z.number(),
     login: z.string(),
     nbPoints: z.number(),
+    profilePicture: z.string(),
 });
 
 export const dataEndGameSchema = z.object({

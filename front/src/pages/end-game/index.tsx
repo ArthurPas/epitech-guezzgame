@@ -10,6 +10,7 @@ interface FriendsData {
   id: number;
   pseudo: string;
   score: number;
+  picture: string;
 }
 
 //------------------------------------------------------------
@@ -30,7 +31,8 @@ const Index = () => {
     const mappedScores = data.scores.map((score) => ({
       id: score.userId,
       pseudo: score.login,
-      score: score.nbPoints
+      score: score.nbPoints,
+      picture: score.profilePicture,
     }));      
 
       //Tri par ordre décroissant
@@ -105,7 +107,7 @@ const Index = () => {
             {playerData.map((player) => (
               <div key={player.id} className="flex items-start mb-2">
                 <Avatar className="border-[1.5px] h-[33px] w-[33px] mr-2">
-                  <AvatarImage src={'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720513515/shrek_4_vnuik2.webp'} />
+                  <AvatarImage src={player.picture} />
                   <AvatarFallback>SB</AvatarFallback>
                 </Avatar>
                 <div className={`flex w-full h-8 justify-between items-center p-4 shadow rounded-full ${player.id === currentPlayer?.id ? 'bg-orange-300' : 'bg-white'}`}>

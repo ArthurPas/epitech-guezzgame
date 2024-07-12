@@ -6,6 +6,7 @@ target/
 docker-compose.yml
 Dockerfile
 .env
+pom.xml
 
 ### STS ###
 .apt_generated
