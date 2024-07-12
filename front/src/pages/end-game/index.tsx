@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import React, { useState, useEffect } from 'react';
 
-import { useGetDataEndGame } from '@/hooks/dataEndGame';
+import { useGetDataEndGame } from '../../hooks/dataEndGame';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface FriendsData {
@@ -23,6 +23,7 @@ const Index = () => {
   const [playerData, setPlayerData] = useState<FriendsData[]>([]);
   const { data, isError, isPending } = useGetDataEndGame();
 
+ 
   useEffect(() => {
   console.log("data : ", data);
   if (data && data.scores && Array.isArray(data.scores)) {

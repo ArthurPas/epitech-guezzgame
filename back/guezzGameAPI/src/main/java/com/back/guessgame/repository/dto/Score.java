@@ -13,6 +13,8 @@ public class Score {
 	private String login = "";
 	@JsonProperty(value = "nbPoints")
 	private int nbPoint;
+	@JsonProperty(value = "profilePicture")
+	private String profilePicture = "";
 
 	
 }

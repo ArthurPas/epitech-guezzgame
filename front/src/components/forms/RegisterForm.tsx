@@ -14,11 +14,12 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 const avatarSelection = [
-    'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720445553/shrek_3_q2izv4.webp',
-    'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720445553/shrek_2_fymx2h.webp',
-    'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720445553/shrek_1_u40oib.webp',
-    'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720446276/shrek_4_wwnlas.avif',
-    'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720446476/shrek_5_uhatud.jpg'
+    'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720513516/shrek_3_ys5had.webp',
+    'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720513515/shrek_2_qhzd28.webp',
+    'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720513518/shrek_1_kfksjx.webp',
+    'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720513515/shrek_4_vnuik2.webp',
+    'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720513515/shrek_6_ulmi7r.webp',
+    'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720513515/shrek_5_efoxwz.webp'
 ];
 
 export const RegisterForm = () => {
@@ -56,7 +57,7 @@ export const RegisterForm = () => {
     };
 
     return (
-        <Card className="w-[90%] xl:w-[1182px] rounded-3xl xl:h-[479px] flex justify-center flex-col bg-opacity-80 mb-[6rem]">
+        <Card className="w-[90%] xl:w-[1182px] rounded-3xl xl:h-[479px] flex justify-center flex-col bg-purple-300 bg-opacity-75 mb-[6rem]">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="w-[100%]">
                     <CardContent className="flex flex-col gap-4 mx-3 justify-evenly my-6 w-full items-center">
@@ -73,13 +74,6 @@ export const RegisterForm = () => {
                                             <AvatarFallback>SB</AvatarFallback>
                                         </Avatar>
                                     ))}
-                                    <Avatar
-                                        key={Math.random()}
-                                        className="w-[50px] h-[50px] border-[1.7px] hover:cursor-pointer inline-flex items-center text-text justify-center whitespace-nowrap rounded-base text-sm font-base ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-main border-border dark:border-darkBorder shadow-light dark:shadow-dark hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none dark:hover:shadow-none"
-                                    >
-                                        <AvatarImage />
-                                        <AvatarFallback className="text-lg pb-1">+</AvatarFallback>
-                                    </Avatar>
                                 </div>
                                 <div className="flex flex-col items-center">
                                     <Label htmlFor="pseudo">Avatar</Label>

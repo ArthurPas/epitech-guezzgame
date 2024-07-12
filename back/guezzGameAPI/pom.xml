@@ -64,7 +64,7 @@
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>3.2.0</version>
-        </dependency>
+        </dependency>        
     </dependencies>
 
     <build>
@@ -81,6 +81,7 @@
                     </excludes>
                 </configuration>
             </plugin>
+            
         </plugins>
     </build>
 
