@@ -14,7 +14,7 @@ interface FriendsData {
 }
 
 //------------------------------------------------------------
-  //Ajouter la logique pour récupérer l'utilisateur en cours
+  //TODO : Ajouter la logique pour récupérer l'utilisateur en cours
 //------------------------------------------------------------
 const idCurrentPlayer: number = 9;
 
