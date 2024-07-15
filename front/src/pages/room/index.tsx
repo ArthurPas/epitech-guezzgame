@@ -4,20 +4,7 @@ import { ScrollArea , ScrollBar} from '@/components/ui/scroll-area'
       id: 1,
       player: 'player 1',
       host:"host"
-    },
-    {
-      id: 2,
-      player: 'player 2',
-    },
-    {
-      id:3,
-      player: 'player 2',
-    },
-    {
-      id:4,
-      player: 'player 2',
-    },
-   
+    },   
   ]
 import { Button } from '@/components/ui/button'
 import {
@@ -31,15 +18,17 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/RoomTab'
 import React from 'react'
+
 import { useParty, useGetGames, Party } from "@/hooks/room"
-import {  Game } from '@/interfaces/room';
+import {  Game, PlaylistToSend } from '@/interfaces/room';
 import { useState } from 'react';
 
 
 
 const Index: React.FC = () => {
+  const [partyId, setPartyId] = useState<string>('0000');
   const [playlistGames, setPlaylistGames] = useState<Game[]>([]);
-  useParty();
+  const { mutate: createParty, isLoading: isCreatingParty, error: createPartyError, data: createPartyData } = useParty();
   const {data,isError,isLoading}= useGetGames();
   const addGame = (Game: Game) => {
     if (!playlistGames.some(g => g.name === Game.name)) {
@@ -48,7 +37,13 @@ const Index: React.FC = () => {
   };
 
   const handlePlayClick = () => {
-    
+      const newParty: PlaylistToSend = {
+          partyCode: Number(partyId),
+          gamesId: playlistGames.map((game)=> game.id),
+          usersId: player.map((player)=> player.id)
+      };
+      createParty(newParty);
+      console.log(newParty)
   };
 
   if (isLoading) {
@@ -104,7 +99,11 @@ const Index: React.FC = () => {
         </div>
         <div className="space-y-1">
           <Label htmlFor="idroom">ID de la room:</Label>
-          <Input id="idParty" defaultValue="0000" />
+          <Input
+          id="idParty"
+          value={partyId}
+          onChange={(e) => setPartyId(e.target.value)}
+        />
         </div>
         <Label htmlFor="player">Player:</Label>
         <ScrollArea className=' h-[100px] w-[350px]'>
@@ -137,9 +136,12 @@ const Index: React.FC = () => {
         <Button
           variant="default"
           className="w-full bg-amber-500 text-text dark:bg-darkBg dark:text-darkText"
-          onClick={handlePlayClick}
+          onClick={handlePlayClick} disabled={isCreatingParty}>
+        play !
+      
+      {createPartyError && <p>Error: {createPartyError.message}</p>}
+      {createPartyData && <p>Party created successfully!</p>}
 
-        >play !
         </Button>
       </CardFooter>
     </Card>
@@ -185,3 +187,7 @@ const Index: React.FC = () => {
 }
 
 export default Index
+function createParty(newParty: PlaylistToSend) {
+  throw new Error('Function not implemented.')
+}
+
