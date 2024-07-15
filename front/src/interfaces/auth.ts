@@ -8,7 +8,8 @@ export const loginSchema = z.object({
 export const registerSchema = z.object({
     mail: z.string().email({ message: 'Votre email doit être valide' }),
     login: z.string().min(2, { message: 'Votre pseudo doit contenir au moins 2 caractères' }),
-    password: z.string().min(2, { message: 'Votre mot de passe doit contenir au moins 2 caractères' })
+    password: z.string().min(2, { message: 'Votre mot de passe doit contenir au moins 2 caractères' }),
+    picture: z.string().optional()
 });
 
 export type LoginSchemaType = z.infer<typeof loginSchema>;

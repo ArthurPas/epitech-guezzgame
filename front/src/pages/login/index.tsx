@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 const LoginPage = () => {
-    console.log(`${process.env.NEXT_PUBLIC_API_URL}/login`);
 
     return (
         <>
@@ -14,7 +13,7 @@ const LoginPage = () => {
                     </Button>
                 </Link>
             </div>
-            <div className="w-full flex justify-center flex-col items-center gap-11 my-[50px]">
+            <div className="w-full flex justify-center flex-col items-center gap-11 mt-[10px] mb-[50px]">
                 <h1 className="text-amber-300 text-[64px] font-Bangers">SE CONNECTER</h1>
                 <LoginForm />
             </div>
