@@ -1,4 +1,4 @@
-import { UserType } from "@/interfaces/userStats";
+import { UserStatType } from "@/interfaces/userStats";
 import { useQuery } from "@tanstack/react-query";
 
 export const fetchUser = async (id: number) => {
@@ -9,7 +9,7 @@ export const fetchUser = async (id: number) => {
 };
 
 export const useGetUserStat = (id: number) => {
-    return useQuery<UserType>({
+    return useQuery<UserStatType>({
         queryKey: [`/stat/userStat/${id}`],
         queryFn: () => fetchUser(id),
     });

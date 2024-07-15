@@ -3,6 +3,7 @@ import { z } from "zod";
 const friendSchema = z.object({
     id: z.number(),
     login: z.string(),
+    picture: z.string(),
 });
 
 //fix: z.object to z.array
