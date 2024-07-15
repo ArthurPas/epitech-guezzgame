@@ -45,7 +45,7 @@ const Index = () => {
                 <Button className = "bg-orange-300">Retour</Button>
             </div>
             <div className='grid place-items-center mb-8'>
-                <h1 className='text-orange-300 text-[64px]'>FAQ</h1>
+                <h1 className='text-orange-300 text-[64px]'>Helpcenter</h1>
             </div>
 
             <div className='mt-[2.5rem] mb-[5rem]'> 
