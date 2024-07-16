@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 
 export const Chat = () => {
     return (
-        <Card className="h-[100%] bg-purple-300 rounded-[1.2rem] relative">
+        <Card className="h-[100%] bg-purple-300 rounded-[1rem] relative">
             <CardTitle className="px-3 py-3 font-medium">Chat</CardTitle>
             <div className="absolute bottom-1 flex">
                 <Input className="w-[90%] ml-1 mr-[0.125rem] rounded-[5rem]" placeholder="Ecrivez votre message" />
