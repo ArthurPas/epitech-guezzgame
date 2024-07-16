@@ -9,7 +9,7 @@ export const Players = (props: PlayersProps) => {
     const idCurrentPlayer: number = 3;
 
     return (
-        <Card className="bg-purple-300 h-[70%] rounded-[1.5rem] overflow-hidden">
+        <Card className="bg-purple-300 h-[70%] rounded-[1.2rem] overflow-hidden">
             <CardTitle className="px-3 py-3 font-medium text-xl">Players</CardTitle>
             <ScrollArea className="h-72 px-4 w-full rounded-md ">
                 {playerData.map((player) => (
