@@ -15,11 +15,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
 	Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -59,6 +61,7 @@ public class AuthController {
 		user.setLogin(signUpDto.getLogin());
 		user.setMail(signUpDto.getMail());
 		user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+		user.setPicture(signUpDto.getPicture());
 		userRepository.save(user);
 
 		return new ResponseEntity<>("User registered successfully", HttpStatus.OK);

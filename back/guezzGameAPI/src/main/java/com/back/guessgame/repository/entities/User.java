@@ -38,7 +38,7 @@ public class User {
 	@JsonProperty("isVip")
 	private Boolean isVip;
 	@JsonProperty("xpPoint")
-	private Integer xpPoint;
+	private Integer xpPoint = 0;
 
 
 	@OneToMany()

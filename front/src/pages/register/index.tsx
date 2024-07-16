@@ -1,5 +1,6 @@
 import { RegisterForm } from '@/components/forms/RegisterForm';
 import { Button } from '@/components/ui/button';
+import { useRegister } from '@/hooks/auth';
 import Link from 'next/link';
 
 const RegisterPage = () => {
@@ -12,7 +13,7 @@ const RegisterPage = () => {
                     </Button>
                 </Link>
             </div>
-            <div className="w-full flex justify-center flex-col items-center gap-11 my-[50px]">
+            <div className="w-full flex justify-center flex-col items-center gap-11 mt-[10px] mb-[50px]">
                 <h1 className="text-amber-300 text-[64px] font-Bangers">S'INSCRIRE</h1>
                 <RegisterForm />
             </div>

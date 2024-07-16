@@ -25,7 +25,7 @@ public class Party {
 	@Column(name = "party_code")
 	private long partyCode = -1;
 
-	@ManyToOne
+	@ManyToOne(targetEntity = User.class)
 	private User user;
 
 	@ManyToMany(targetEntity = Game.class)

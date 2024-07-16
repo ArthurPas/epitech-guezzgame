@@ -11,9 +11,11 @@ import lombok.NoArgsConstructor;
 public class FriendDto {
 	private Long id;
 	private String login;
+	private String picture;
 
 	public FriendDto(User user) {
 		this.id = user.getId();
 		this.login = user.getLogin();
+		this.picture = user.getPicture();
 	}
 }

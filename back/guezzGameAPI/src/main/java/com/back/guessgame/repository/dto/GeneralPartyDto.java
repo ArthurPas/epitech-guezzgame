@@ -29,14 +29,13 @@ public class GeneralPartyDto {
 		this.gamesId = new HashSet<>();
 		Logger logger = LoggerFactory.getLogger(GeneralPartyDto.class);
 		this.id = party.getId();
+		this.userId = party.getUser().getId();
 		this.partyCode = party.getPartyCode();
 		this.leaderRank = party.getLeaderRank();
 		this.nbPoints = party.getNbPoints();
-		this.userId = party.getUser().getId();
 		for (Game game : party.getGames()) {
-			logger.warn("titi" + game.getId());
 			this.gamesId.add(game.getId());
 		}
-		logger.warn(this.getGamesId().toString() + "toto");
+		logger.warn(this.getGamesId().toString());
 	}
 }
