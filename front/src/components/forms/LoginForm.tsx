@@ -46,7 +46,7 @@ export const LoginForm = () => {
                             <Label htmlFor="email">Anonymous</Label>
                             <Input id="email" placeholder="Identifiant" />
                         </div>
-                        <Button className="bg-amber-300 mt-3" variant={'default'}>
+                        <Button className="bg-amber-300 mt-3 bg-gradient-to-b from-amber-300 to-yellow-600" variant={'default'}>
                             Jouer
                         </Button>
                     </div>
@@ -87,7 +87,7 @@ export const LoginForm = () => {
                                         )}
                                     />
                                 </div>
-                                <Button type="submit" className="bg-amber-300 mt-3">
+                                <Button type="submit" className="bg-amber-300 mt-3 bg-gradient-to-b from-amber-300 to-yellow-600">
                                     Connexion
                                 </Button>
                             </div>
