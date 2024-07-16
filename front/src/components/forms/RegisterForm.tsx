@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormLabel, FormMessage } from '@/components/ui/form';
 import { RegisterSchemaType, registerSchema } from '@/interfaces/auth';
-import { register, useRegister } from '@/hooks/auth';
+import { useRegister } from '@/hooks/auth';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -64,13 +64,13 @@ export const RegisterForm = () => {
                         <div className="flex flex-col xl:flex-row justify-center items-center gap-[48px] space-y-1.5">
                             <div className="flex justify-end items-end gap-[16px]">
                                 <div className="grid grid-cols-2 gap-2 mb-2">
-                                    {avatarSelection.map((avatar, index) => (
+                                    {avatarSelection.map((avatar) => (
                                         <Avatar
-                                            onClick={() => setSelectedProfilePic(avatarSelection[index])}
+                                            onClick={() => setSelectedProfilePic(avatar)}
                                             key={Math.random()}
                                             className="w-[50px] h-[50px] border-[1.7px] hover:cursor-pointer inline-flex items-center text-text justify-center whitespace-nowrap rounded-base text-sm font-base ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-main border-border dark:border-darkBorder shadow-light dark:shadow-dark hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none dark:hover:shadow-none"
                                         >
-                                            <AvatarImage src={avatarSelection[index]} />
+                                            <AvatarImage src={avatar} />
                                             <AvatarFallback>SB</AvatarFallback>
                                         </Avatar>
                                     ))}

@@ -2,9 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 
-export type ChatProps = {};
-
-export const Chat = (props: ChatProps) => {
+export const Chat = () => {
     return (
         <Card className="h-[100%] bg-purple-300 rounded-[1.2rem] relative">
             <CardTitle className="px-3 py-3 font-medium">Chat</CardTitle>

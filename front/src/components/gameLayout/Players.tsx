@@ -3,9 +3,7 @@ import { Card, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { playerData } from '@/lib/mocks/player';
 
-export type PlayersProps = {};
-
-export const Players = (props: PlayersProps) => {
+export const Players = () => {
     const idCurrentPlayer: number = 3;
 
     return (

@@ -1,5 +1,5 @@
 // src/interfaces/index.ts
-import {  number, z } from 'zod';
+import { z } from 'zod';
 
 export const gameSchema = z.object({
   id: z.number(),
