@@ -1,21 +1,18 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { LoginSchemaType, RegisterSchemaType, loginSchema, registerSchema } from '@/interfaces/auth';
+import { Form, FormControl, FormField, FormLabel, FormMessage } from '@/components/ui/form';
+import { LoginSchemaType, loginSchema } from '@/interfaces/auth';
 import { useLogin } from '@/hooks/auth';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/router';
 
-export type LoginFormProps = {};
-
-export const LoginForm = (props: LoginFormProps) => {
+export const LoginForm = () => {
     const { mutate } = useLogin();
     const { toast } = useToast();
     const router = useRouter();

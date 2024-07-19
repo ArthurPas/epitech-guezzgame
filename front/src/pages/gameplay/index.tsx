@@ -6,8 +6,8 @@ import { CarouselDApiDemo } from '@/components/ui/CarouselDApiDemo';
 const Gameplay = () => {
     return (
         <>
-            <div className="flex p-12 gap-2 h-[100vh]">
-                <div className="flex flex-col w-[20%] gap-4">
+            <div className="flex flex-col-reverse lg:flex-row p-4 lg:p-6 gap-2 lg:gap-4 h-[100vh]">
+                <div className="flex flex-row  lg:flex-col justify-between w-full lg:w-[20%] gap-2 lg:gap-3 h-[20%] lg:h-[100%] ">
                     <Players />
                     <Chat />
                 </div>
