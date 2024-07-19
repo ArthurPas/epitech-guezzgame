@@ -10,7 +10,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useGetTracks } from "@/hooks/spotifyApi";
 import { TrackType } from "@/interfaces/spotifyApi";
-import AudioMotionAnalyzer from "audiomotion-analyzer"; // Import AudioMotionAnalyzer
+import AudioMotionAnalyzer from "audiomotion-analyzer";
 
 export function CarouselDApiDemo() {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -27,7 +27,7 @@ export function CarouselDApiDemo() {
   const [audioTimer, setAudioTimer] = React.useState<number | null>(null);
   const [countdown, setCountdown] = React.useState<number | null>(null);
   const audioRefs = React.useRef<Array<HTMLAudioElement | null>>([]);
-  const visualizerRefs = React.useRef<Array<AudioMotionAnalyzer | null>>([]); // Refs for AudioMotionAnalyzer instances
+  const visualizerRefs = React.useRef<Array<AudioMotionAnalyzer | null>>([]);
 
   const { data, error, isLoading } = useGetTracks();
 
@@ -76,7 +76,6 @@ export function CarouselDApiDemo() {
           console.error("Failed to play audio:", error);
         });
 
-        // Start visualizer for the current audio
         startVisualizer(index);
       }
     }, 500);
@@ -88,18 +87,15 @@ export function CarouselDApiDemo() {
       const containerId = `visualizer-${index}`;
       const container = document.getElementById(containerId);
       if (container) {
-        // Destroy the previous AudioMotionAnalyzer instance if it exists
         if (visualizerRefs.current[index]) {
           visualizerRefs.current[index].destroy();
           console.log(`Destroyed visualizer for slide ${index}`);
         }
-  
-        // Create a new AudioMotionAnalyzer instance
         try {
           visualizerRefs.current[index] = new AudioMotionAnalyzer(container, {
             source: audio,
-            mode: 7, // Waves mode
-            gradient: "steelblue", // Custom color
+            mode: 7,
+            gradient: "steelblue",
             ansiBands: true,
             frequencyScale: "log",
             maxFPS: 60,
@@ -168,7 +164,6 @@ export function CarouselDApiDemo() {
       audioRefs.current[currentSlide].pause();
     }
 
-    // Disconnect visualizer for the current audio
     if (visualizerRefs.current[currentSlide]) {
       visualizerRefs.current[currentSlide].destroy();
       visualizerRefs.current[currentSlide] = null;
