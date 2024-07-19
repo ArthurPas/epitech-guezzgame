@@ -14,7 +14,7 @@ import AudioMotionAnalyzer from "audiomotion-analyzer";
 
 export function CarouselDApiDemo() {
   const [api, setApi] = React.useState<CarouselApi>();
-  const [tracks, setTracks] = React.useState<TrackType[]>([]);
+  const [tracks, setTracks] = React.useState<TrackType>([]);
   const [currentSlide, setCurrentSlide] = React.useState(0);
   const [count, setCount] = React.useState(0);
   const [guess, setGuess] = React.useState({ title: "", artist: "" });
