@@ -10,15 +10,14 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useGetTracks } from "@/hooks/spotifyApi";
 import { TrackType } from "@/interfaces/spotifyApi";
+import AudioMotionAnalyzer from "audiomotion-analyzer"; // Import AudioMotionAnalyzer
 
 export function CarouselDApiDemo() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [tracks, setTracks] = React.useState<TrackType[]>([]);
   const [currentSlide, setCurrentSlide] = React.useState(0);
   const [count, setCount] = React.useState(0);
-  const [guesses, setGuesses] = React.useState<Array<{ title: string; artist: string }>>(
-    []
-  );
+  const [guess, setGuess] = React.useState({ title: "", artist: "" });
   const [scores, setScores] = React.useState<Array<number | null>>([]);
   const [submittedIndices, setSubmittedIndices] = React.useState<Set<number>>(
     new Set()
@@ -28,19 +27,17 @@ export function CarouselDApiDemo() {
   const [audioTimer, setAudioTimer] = React.useState<number | null>(null);
   const [countdown, setCountdown] = React.useState<number | null>(null);
   const audioRefs = React.useRef<Array<HTMLAudioElement | null>>([]);
+  const visualizerRefs = React.useRef<Array<AudioMotionAnalyzer | null>>([]); // Refs for AudioMotionAnalyzer instances
 
   const { data, error, isLoading } = useGetTracks();
 
   React.useEffect(() => {
     if (data) {
-      const initialGuesses = data.map(() => ({ title: "", artist: "" }));
       setTracks(data);
       setCount(data.length);
-      setGuesses(initialGuesses);
       setScores(new Array(data.length).fill(null));
     }
   }, [data]);
-  
 
   React.useEffect(() => {
     if (!api) {
@@ -78,25 +75,63 @@ export function CarouselDApiDemo() {
         audioRefs.current[index].play().catch((error) => {
           console.error("Failed to play audio:", error);
         });
+
+        // Start visualizer for the current audio
+        startVisualizer(index);
       }
     }, 500);
   };
 
-  const handleGuessChange = (
-    index: number,
-    field: "title" | "artist",
-    value: string
-  ) => {
-    const newGuesses = [...guesses];
-    newGuesses[index][field] = value;
-    setGuesses(newGuesses);
+  const startVisualizer = (index: number) => {
+    const audio = audioRefs.current[index];
+    if (audio) {
+      const containerId = `visualizer-${index}`;
+      const container = document.getElementById(containerId);
+      if (container) {
+        // Destroy the previous AudioMotionAnalyzer instance if it exists
+        if (visualizerRefs.current[index]) {
+          visualizerRefs.current[index].destroy();
+          console.log(`Destroyed visualizer for slide ${index}`);
+        }
+  
+        // Create a new AudioMotionAnalyzer instance
+        try {
+          visualizerRefs.current[index] = new AudioMotionAnalyzer(container, {
+            source: audio,
+            mode: 7, // Waves mode
+            gradient: "steelblue", // Custom color
+            ansiBands: true,
+            frequencyScale: "log",
+            maxFPS: 60,
+            splitGradient: true,
+            overlay: true,
+            showBgColor: true,
+            bgAlpha: 0,
+          });
+        } catch (error) {
+          console.error("Non fatal error: Failed to create AudioMotionAnalyzer instance:", error);
+        }
+      }
+    }
+  };
+  
+
+  const setAudioRef = (el: HTMLAudioElement | null, index: number) => {
+    audioRefs.current[index] = el;
   };
 
-  const handleSubmit = (index: number) => () => {
-    const correctTitle = tracks[index]?.name?.toLowerCase().trim();
-    const correctArtist = tracks[index]?.artist?.toLowerCase().trim();    
-    const userTitle = guesses[index].title.toLowerCase().trim();
-    const userArtist = guesses[index].artist.toLowerCase().trim();
+  const handleGuessChange = (field: "title" | "artist", value: string) => {
+    setGuess((prevGuess) => ({
+      ...prevGuess,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = () => {
+    const correctTitle = tracks[currentSlide]?.name?.toLowerCase().trim();
+    const correctArtist = tracks[currentSlide]?.artist?.toLowerCase().trim();
+    const userTitle = guess.title.toLowerCase().trim();
+    const userArtist = guess.artist.toLowerCase().trim();
 
     let score = 0;
 
@@ -109,28 +144,35 @@ export function CarouselDApiDemo() {
     }
 
     const newScores = [...scores];
-    newScores[index] = score;
+    newScores[currentSlide] = score;
     setScores(newScores);
 
     const newSubmittedIndices = new Set(submittedIndices);
-    newSubmittedIndices.add(index);
+    newSubmittedIndices.add(currentSlide);
     setSubmittedIndices(newSubmittedIndices);
 
     console.log(
-      `Slide ${index + 1} - Titre correct: ${correctTitle}, Artiste correct: ${correctArtist}`
+      `Slide ${currentSlide + 1} - Titre correct: ${correctTitle}, Artiste correct: ${correctArtist}`
     );
     console.log(
-      `Slide ${index + 1} - Titre soumis: ${userTitle}, Artiste soumis: ${userArtist}`
+      `Slide ${currentSlide + 1} - Titre soumis: ${userTitle}, Artiste soumis: ${userArtist}`
     );
-    console.log(`Slide ${index + 1} - Score : ${score}`);
+    console.log(`Slide ${currentSlide + 1} - Score : ${score}`);
 
     if (audioTimer === null) {
       const startTime = Date.now();
       setAudioTimer(startTime);
     }
 
-    if (audioRefs.current[index]) {
-      audioRefs.current[index].pause();
+    if (audioRefs.current[currentSlide]) {
+      audioRefs.current[currentSlide].pause();
+    }
+
+    // Disconnect visualizer for the current audio
+    if (visualizerRefs.current[currentSlide]) {
+      visualizerRefs.current[currentSlide].destroy();
+      visualizerRefs.current[currentSlide] = null;
+      console.log(`Disconnected visualizer for slide ${currentSlide}`);
     }
 
     let counter = 5;
@@ -141,7 +183,7 @@ export function CarouselDApiDemo() {
       if (counter === 0) {
         clearInterval(countdownInterval);
         setCountdown(null);
-        let nextSlide = index + 1;
+        let nextSlide = currentSlide + 1;
         if (nextSlide < tracks.length) {
           setCurrentSlide(nextSlide);
           if (api) {
@@ -180,8 +222,11 @@ export function CarouselDApiDemo() {
     }
   }, [audioTimer]);
 
-  const handleCarouselDragStart = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleCarouselDragStart = (
+    event: React.DragEvent<HTMLDivElement>
+  ) => {
     event.preventDefault();
+    console.log("Carousel drag start event prevented");
   };
 
   if (isLoading) {
@@ -194,8 +239,8 @@ export function CarouselDApiDemo() {
   }
 
   return (
-    <div className="relative">
-      <div className="absolute inset-0 z-10 bg-transparent pointer-events-none">
+    <div className="relative carousel-container">
+      <div className="absolute inset-0 z-10 bg-transparent pointer-events-none h-[50vh]">
         <div className="absolute inset-0 pointer-events-auto"></div>
       </div>
 
@@ -224,88 +269,86 @@ export function CarouselDApiDemo() {
             </div>
           </DialogContent>
         </Dialog>
-        <div className="relative" onDragStart={handleCarouselDragStart}>
-          <Carousel
-            setApi={setApi}
-            className="w-full"
-            draggable={false}
-            opts={{
-              loop: false,
-              speed: 10,
-            }}
-          >
-            <CarouselContent>
-              {tracks.map((track, index) => (
-                <CarouselItem key={index} draggable={false}>
-                  <Card>
-                    <CardContent className="flex flex-col items-center justify-center p-6">
-                      <audio ref={(el) => (audioRefs.current[index] = el)}>
-                        <source src={track.preview_url} type="audio/mpeg" />
-                        Your browser does not support the audio element.
-                      </audio>
-                      <form className="flex flex-col space-y-4 mt-4 relative z-20">
-                        <div className="flex flex-col">
-                          <label className="mb-1 font-semibold">Titre:</label>
-                          <input
-                            type="text"
-                            value={guesses[index].title}
-                            onChange={(e) =>
-                              handleGuessChange(index, "title", e.target.value)
-                            }
-                            className="p-2 border rounded-md"
-                          />
-                        </div>
-                        <div className="flex flex-col">
-                          <label className="mb-1 font-semibold">Artiste:</label>
-                          <input
-                            type="text"
-                            value={guesses[index].artist}
-                            onChange={(e) =>
-                              handleGuessChange(index, "artist", e.target.value)
-                            }
-                            className="p-2 border rounded-md"
-                          />
-                        </div>
-                      </form>
-                      {!submittedIndices.has(index) && (
-                        <div className="text-center mt-4 relative z-20">
-                          <Button
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                            onClick={handleSubmit(index)}
-                          >
-                            Soumettre
-                          </Button>
-                        </div>
-                      )}
-                      {submittedIndices.has(index) && (
-                        <div className="text-center mt-4 relative z-20">
-                          <p>Votre score : {scores[index]} points</p>
-                          {countdown !== null && (
-                            <p className="text-center">
-                              Prochaine manche dans {countdown} seconde
-                              {countdown !== 1 ? "s" : ""}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
+        <div className="flex flex-col">
+          <div className="relative" onDragStart={handleCarouselDragStart}>
+            <Carousel
+              setApi={setApi}
+              className="w-full"
+              draggable={false}
+              opts={{
+                loop: false,
+              }}
+            >
+              <CarouselContent>
+                {tracks.map((track, index) => (
+                  <CarouselItem key={index} draggable={false}>
+                    <Card className="rounded-[1.2rem]">
+                      <CardContent className="flex flex-col items-center justify-center p-6 h-[50vh]">
+                        <audio
+                          ref={(el) => setAudioRef(el, index)}
+                          crossOrigin="anonymous"
+                        >
+                          <source src={track.preview_url} type="audio/mpeg" />
+                          Your browser does not support the audio element.
+                        </audio>
+                        <div
+                          id={`visualizer-${index}`}
+                          className="w-full h-[100px] bg-none"
+                        ></div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+          </div>
+        </div>
+        <div className="flex justify-center mt-4">
+          <form className="flex flex-col space-y-4 w-1/2">
+            <div className="flex flex-col">
+              <label className="mb-1 font-semibold">Titre:</label>
+              <input
+                type="text"
+                value={guess.title}
+                onChange={(e) => handleGuessChange("title", e.target.value)}
+                className="p-2 border rounded-md"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="mb-1 font-semibold">Artiste:</label>
+              <input
+                type="text"
+                value={guess.artist}
+                onChange={(e) => handleGuessChange("artist", e.target.value)}
+                className="p-2 border rounded-md"
+              />
+            </div>
+            {!submittedIndices.has(currentSlide) && (
+              <div className="text-center mt-4">
+                <Button
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={handleSubmit}
+                >
+                  Soumettre
+                </Button>
+              </div>
+            )}
+            {submittedIndices.has(currentSlide) && (
+              <div className="text-center mt-4">
+                <p>Votre score : {scores[currentSlide]} points</p>
+                {countdown !== null && (
+                  <p className="text-center">
+                    Prochaine manche dans {countdown} seconde
+                    {countdown !== 1 ? "s" : ""}
+                  </p>
+                )}
+              </div>
+            )}
+          </form>
         </div>
       </div>
-      {started && (
-        <div className="py-2 text-center text-sm text-muted-foreground">
-          Slide {currentSlide + 1} of {count}
-          Score:{" "}
-          {scores
-            .filter((score) => score !== null)
-            .reduce((acc, score) => acc + score, 0)}{" "}
-          points
-        </div>
-      )}
     </div>
   );
 }
+
+export default CarouselDApiDemo;
