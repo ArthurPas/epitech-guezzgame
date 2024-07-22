@@ -1,9 +1,44 @@
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 const player = [
     {
-        id: 1,
         player: 'player 1',
         host: 'host'
+    },
+    {
+        player: 'player 2'
+    },
+    {
+        player: 'player 2'
+    },
+    {
+        player: 'player 2'
+    }
+];
+
+const game = [
+    {
+        name: 'game1',
+        picture: ''
+    },
+    {
+        name: 'game2',
+        picture: ''
+    },
+    {
+        name: 'game3',
+        picture: ''
+    },
+    {
+        name: 'game4',
+        picture: ''
+    },
+    {
+        name: 'game5',
+        picture: ''
+    },
+    {
+        name: 'game6',
+        picture: ''
     }
 ];
 import { Button } from '@/components/ui/button';
@@ -13,39 +48,18 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/RoomTab';
 import React from 'react';
 
-import { useParty, useGetGames } from '@/hooks/room';
-import { Game, PlaylistToSend } from '@/interfaces/room';
 import { useState } from 'react';
 
-const Index: React.FC = () => {
-    const [partyId, setPartyId] = useState<string>('0000');
+type Game = { name: string; picture: string };
+
+const index = () => {
     const [playlistGames, setPlaylistGames] = useState<Game[]>([]);
-    const { mutate: createParty, isLoading: isCreatingParty, error: createPartyError, data: createPartyData } = useParty();
-    const { data, isError, isLoading } = useGetGames();
-    const addGame = (Game: Game) => {
-        if (!playlistGames.some((g) => g.name === Game.name)) {
-            setPlaylistGames([...playlistGames, Game]);
+
+    const handleAddGame = (game: { name: string; picture: string }) => {
+        if (!playlistGames.includes(game)) {
+            setPlaylistGames([...playlistGames, game]);
         }
     };
-
-    const handlePlayClick = () => {
-        const newParty: PlaylistToSend = {
-            partyCode: Number(partyId),
-            gamesId: playlistGames.map((game) => game.id),
-            usersId: player.map((player) => player.id)
-        };
-        createParty(newParty);
-        console.log(newParty);
-    };
-
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    if (isError || !data) {
-        return <div>Error loading game list.</div>;
-    }
-
     return (
         <div>
             <div className="flex justify-around py-10">
@@ -99,7 +113,9 @@ const Index: React.FC = () => {
                                         </div>
                                         <div className="space-y-1">
                                             <Label htmlFor="idroom">ID de la room:</Label>
-                                            <Input id="idParty" value={partyId} onChange={(e) => setPartyId(e.target.value)} />
+                                            <div className="rounded-base border-2 border-border dark:border-darkBorder bg-white px-2 py-1 font-mono text-m">
+                                                HRFTUZ
+                                            </div>
                                         </div>
                                         <Label htmlFor="player">Player:</Label>
                                         <ScrollArea className=" h-[100px] w-[350px]">
@@ -117,8 +133,8 @@ const Index: React.FC = () => {
                                         <div className="flex flex-col">
                                             <Label htmlFor="Game">Game:</Label>
                                             <div className="grid grid-cols-2 gap-4">
-                                                {data.map((game: Game) => (
-                                                    <Button key={game.id} className="default" onClick={() => addGame(game)}>
+                                                {game.map((game) => (
+                                                    <Button key={game.name} className="default" onClick={() => handleAddGame(game)}>
                                                         {game.name}
                                                     </Button>
                                                 ))}
@@ -137,18 +153,11 @@ const Index: React.FC = () => {
                                     </div>
                                 </CardContent>
                                 <CardFooter>
-                                    <Button
-                                        variant="default"
-                                        className="w-full bg-amber-500 text-text dark:bg-darkBg dark:text-darkText"
-                                        onClick={handlePlayClick}
-                                        disabled={isCreatingParty}
-                                    >
-                                        play !{createPartyError && <p>Error: {createPartyError.message}</p>}
-                                        {createPartyData && <p>Party created successfully!</p>}
+                                    <Button variant="default" className="w-full bg-amber-500 text-text dark:bg-darkBg dark:text-darkText">
+                                        play !
                                     </Button>
                                 </CardFooter>
                             </Card>
-                            {isError && <div>Erreur lors de l'envoi de la playlist.</div>}
                         </TabsContent>
                         <TabsContent value="join">
                             <Card className="p-5">
@@ -188,7 +197,4 @@ const Index: React.FC = () => {
     );
 };
 
-export default Index;
-function createParty(newParty: PlaylistToSend) {
-    throw new Error('Function not implemented.');
-}
+export default index;

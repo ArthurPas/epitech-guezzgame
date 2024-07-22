@@ -1,6 +1,5 @@
 import { RegisterForm } from '@/components/forms/RegisterForm';
 import { Button } from '@/components/ui/button';
-import { useRegister } from '@/hooks/auth';
 import Link from 'next/link';
 
 const RegisterPage = () => {

@@ -1,6 +1,6 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { gameSchema, playerSchema, partySchema, Game, Player, Playlist, PlaylistToSend } from '@/interfaces/room';
+import { Game, PlaylistToSend } from '@/interfaces/room';
 
 export const fetchGame = async () => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/game/list`);
@@ -38,7 +38,6 @@ export const Party = async (party: PlaylistToSend): Promise<any> => {
   }
 };
 
-// Define the custom hook using useMutation from react-query
 export const useParty = () => {
   return useMutation({
       mutationKey: ['party'],
