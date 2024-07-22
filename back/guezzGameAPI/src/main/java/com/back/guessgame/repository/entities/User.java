@@ -1,5 +1,6 @@
 package com.back.guessgame.repository.entities;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Table(name = "user")
+@JsonFilter("userFilter")
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,4 +55,5 @@ public class User {
 	@HashCodeExclude
 	@OneToMany(targetEntity = Party.class)
 	private List<Party> parties;
+
 }

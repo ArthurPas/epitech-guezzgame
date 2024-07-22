@@ -2,8 +2,9 @@ package com.back.guessgame.services;
 
 import com.back.guessgame.repository.BetOptionRepository;
 import com.back.guessgame.repository.BetRepository;
+import com.back.guessgame.repository.UserBetRepository;
 import com.back.guessgame.repository.UserRepository;
-import com.back.guessgame.repository.dto.BetDto;
+import com.back.guessgame.repository.dto.BetPojo;
 import com.back.guessgame.repository.dto.UserDto;
 import com.back.guessgame.repository.entities.User;
 import org.modelmapper.ModelMapper;
@@ -24,13 +25,16 @@ public class UserService implements UserDetailsService {
 	private final UserRepository userRepository;
 	private final BetRepository gamblingRepository;
 	private final BetOptionRepository betOptionRepository;
+
+	private final UserBetRepository userBetRepository;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	public UserService(UserRepository userRepository, BetRepository gamblingRepository, BetOptionRepository betOptionRepository) {
+	public UserService(UserRepository userRepository, BetRepository gamblingRepository, BetOptionRepository betOptionRepository, UserBetRepository userBetRepository) {
 		this.userRepository = userRepository;
 		this.gamblingRepository = gamblingRepository;
 		this.betOptionRepository = betOptionRepository;
+		this.userBetRepository = userBetRepository;
 	}
 
 
@@ -71,9 +75,15 @@ public class UserService implements UserDetailsService {
 		return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), authorities);
 	}
 
-	public long createBet(BetDto bet, User user) {
-		GamblingService gamblingService = new GamblingService(gamblingRepository, betOptionRepository);
-		return gamblingService.addGamblerToBetOption(bet.getBetOptionId(), user.getId());
+	public long createBet(BetPojo bet, User user) {
+		GamblingService gamblingService = new GamblingService(gamblingRepository, betOptionRepository, userBetRepository);
+		if(user.getNbCoin() < bet.getBetAmount()) {
+			throw new RuntimeException("User does not have enough coins to bet");
+		}
+		gamblingService.addGamblerToBetOption(bet.getBetOptionId(), user, bet.getBetAmount());
+		user.setNbCoin(user.getNbCoin() - bet.getBetAmount());
+		userRepository.save(user);
+		return bet.getBetOptionId();
 	}
 
 }

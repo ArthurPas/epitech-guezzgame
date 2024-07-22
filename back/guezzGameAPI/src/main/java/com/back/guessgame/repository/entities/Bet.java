@@ -20,7 +20,6 @@ public class Bet {
 	@Column(nullable = false)
 	@OneToMany(targetEntity = BetOption.class)
 	private List<BetOption> betOptions;
-	private long winnerId;
 	@Column(name = "created_at", nullable = false)
 	private Date createdAt;
 	@Column(name = "end_time", nullable = false)

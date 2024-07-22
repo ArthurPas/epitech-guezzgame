@@ -2,8 +2,9 @@ package com.back.guessgame.controllers;
 
 import com.back.guessgame.repository.BetOptionRepository;
 import com.back.guessgame.repository.BetRepository;
+import com.back.guessgame.repository.UserBetRepository;
 import com.back.guessgame.repository.UserRepository;
-import com.back.guessgame.repository.dto.BetDto;
+import com.back.guessgame.repository.dto.BetPojo;
 import com.back.guessgame.repository.dto.FriendDto;
 import com.back.guessgame.repository.dto.StatDto;
 import com.back.guessgame.repository.dto.UserDto;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @RestController
@@ -31,6 +33,8 @@ public class UserController {
 	private final UserRepository userRepository;
 	private final BetRepository betRepository;
 	private final BetOptionRepository betOptionRepository;
+
+	private final UserBetRepository userBetRepository;
 	private final StatService statService;
 	Logger logger = LoggerFactory.getLogger(UserController.class);
 	@Autowired
@@ -40,11 +44,12 @@ public class UserController {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
-	public UserController(UserRepository userRepository, BetRepository betRepository, BetOptionRepository betOptionRepository, BetRepository gamblingRepository) {
+	public UserController(UserRepository userRepository, BetRepository betRepository, BetOptionRepository betOptionRepository, UserBetRepository userBetRepository, BetRepository gamblingRepository) {
 		this.userRepository = userRepository;
 		this.betRepository = betRepository;
 		this.betOptionRepository = betOptionRepository;
-		this.userService = new UserService(userRepository, gamblingRepository, betOptionRepository);
+		this.userBetRepository = userBetRepository;
+		this.userService = new UserService(userRepository, gamblingRepository, betOptionRepository, this.userBetRepository);
 		this.statService = new StatService(userRepository);
 	}
 
@@ -105,14 +110,16 @@ public class UserController {
 	}
 
 	@PostMapping("/placeBet")
-	public void placeBet(@RequestBody BetDto betDto) {
+	public void placeBet(@RequestBody BetPojo betPojo) {
 		SecurityContext sc = SecurityContextHolder.getContext();
 		Authentication auth = sc.getAuthentication();
 		String login = auth.getPrincipal().toString();
 		User user = userRepository.findByLoginOrMail(login, "").orElse(null);
-		if(user != null) {
-			userService.createBet(betDto, user);
-		}
+//		if(user != null) {
+//		userService.createBet(betDto, user);
+//		}
+		userService.createBet(betPojo, Objects.requireNonNull(userRepository.findById(betPojo.getUserId()).orElse(null)));
+
 	}
 
 

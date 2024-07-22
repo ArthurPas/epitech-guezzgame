@@ -2,11 +2,11 @@ package com.back.guessgame.repository.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class BetDto {
-	Long userId;
-	Long betId;
-	Long betOptionId;
-	Integer betAmount;
+	private String title;
+	private Date endTime;
 
 }
