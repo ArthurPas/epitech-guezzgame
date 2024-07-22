@@ -1,6 +1,9 @@
 package com.back.guessgame.services;
 
+import com.back.guessgame.repository.BetOptionRepository;
+import com.back.guessgame.repository.BetRepository;
 import com.back.guessgame.repository.UserRepository;
+import com.back.guessgame.repository.dto.BetDto;
 import com.back.guessgame.repository.dto.UserDto;
 import com.back.guessgame.repository.entities.User;
 import org.modelmapper.ModelMapper;
@@ -19,11 +22,15 @@ import java.util.*;
 //NOT USED (YET?)
 public class UserService implements UserDetailsService {
 	private final UserRepository userRepository;
+	private final BetRepository gamblingRepository;
+	private final BetOptionRepository betOptionRepository;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	public UserService(UserRepository userRepository) {
+	public UserService(UserRepository userRepository, BetRepository gamblingRepository, BetOptionRepository betOptionRepository) {
 		this.userRepository = userRepository;
+		this.gamblingRepository = gamblingRepository;
+		this.betOptionRepository = betOptionRepository;
 	}
 
 
@@ -64,5 +71,9 @@ public class UserService implements UserDetailsService {
 		return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), authorities);
 	}
 
+	public long createBet(BetDto bet, User user) {
+		GamblingService gamblingService = new GamblingService(gamblingRepository, betOptionRepository);
+		return gamblingService.addGamblerToBetOption(bet.getBetOptionId(), user.getId());
+	}
 
 }
