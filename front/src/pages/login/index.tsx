@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 const LoginPage = () => {
-
     return (
         <>
             <div className="flex justify-end items-end h-full py-[39px] px-[47px]">
