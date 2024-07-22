@@ -36,6 +36,7 @@ const Gameplay = () => {
                 <div className="relative w-full flex flex-col items-center gap-2 h-[100%]">
                     <Card className="h-[100%] rounded-[0.9rem] priority-rounded w-full lg:min-w-[98%] bg-purple-700 ">
                         {currentGame === 'BlindTest' && <CarouselDApiDemo />}
+                        {currentGame === 'GuessGame' && <GuessGame />}
                     </Card>
                 </div>
             </div>
