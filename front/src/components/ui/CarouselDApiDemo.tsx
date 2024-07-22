@@ -43,9 +43,9 @@ export function CarouselDApiDemo() {
     if (!api) {
       return;
     }
-
+  
     setCurrentSlide(api.selectedScrollSnap());
-
+  
     api.on("select", () => {
       setCurrentSlide(api.selectedScrollSnap());
       audioRefs.current.forEach((audio) => {
@@ -58,6 +58,7 @@ export function CarouselDApiDemo() {
       }
     });
   }, [api, started, currentSlide]);
+  
 
   const startAudio = (index: number) => {
     audioRefs.current.forEach((audio, i) => {
@@ -110,7 +111,6 @@ export function CarouselDApiDemo() {
       }
     }
   };
-  
 
   const setAudioRef = (el: HTMLAudioElement | null, index: number) => {
     audioRefs.current[index] = el;
@@ -123,53 +123,81 @@ export function CarouselDApiDemo() {
     }));
   };
 
+  const extractFeaturedArtists = (title: string): string[] => {
+    const featuredArtists = [];
+    const featPattern = /(?:feat|ft|featuring|with)\s+([^()]+)(?:\s*\([^)]*\))?/i;
+    const matches = title.match(featPattern);
+    
+    if (matches) {
+      const artistsString = matches[1];
+      const artists = artistsString.split(/,\s*/).map(artist => artist.trim());
+      return artists;
+    }
+  
+    return [];
+  };  
+
+  const cleanTitle = (title: string): string => {
+    let cleanedTitle = title.replace(/\s*\(.*?\)\s*/g, '').trim();
+    cleanedTitle = cleanedTitle.replace(/\s*-\s*.*$/, '').trim();
+    cleanedTitle = cleanedTitle.replace(/\s*from\s*.*$/i, '').trim();
+    return cleanedTitle;
+  };
+
   const handleSubmit = () => {
-    const correctTitle = tracks[currentSlide]?.name?.toLowerCase().trim();
+    const originalTitle = tracks[currentSlide]?.name ?? "";
+    const correctTitle = cleanTitle(originalTitle.toLowerCase().trim());
     const correctArtist = tracks[currentSlide]?.artist?.toLowerCase().trim();
-    const userTitle = guess.title.toLowerCase().trim();
+    const featuredArtists = extractFeaturedArtists(originalTitle);
+    
+    const allPossibleArtists = [correctArtist, ...featuredArtists].map(artist => artist.toLowerCase().trim());
+  
+    const userTitle = cleanTitle(guess.title.toLowerCase().trim());
     const userArtist = guess.artist.toLowerCase().trim();
-
+  
     let score = 0;
-
+  
     if (userTitle === correctTitle) {
       score += 1;
     }
-
-    if (userArtist === correctArtist) {
+  
+    if (allPossibleArtists.includes(userArtist)) {
       score += 1;
     }
-
+  
     const newScores = [...scores];
     newScores[currentSlide] = score;
     setScores(newScores);
-
+  
     const newSubmittedIndices = new Set(submittedIndices);
     newSubmittedIndices.add(currentSlide);
     setSubmittedIndices(newSubmittedIndices);
-
+  
     console.log(
-      `Slide ${currentSlide + 1} - Titre correct: ${correctTitle}, Artiste correct: ${correctArtist}`
+      `Slide ${currentSlide + 1} - Titre correct: ${correctTitle}, Artistes corrects: ${allPossibleArtists.join(", ")}`
     );
     console.log(
       `Slide ${currentSlide + 1} - Titre soumis: ${userTitle}, Artiste soumis: ${userArtist}`
     );
     console.log(`Slide ${currentSlide + 1} - Score : ${score}`);
 
+    setGuess({ title: "", artist: "" });
+  
     if (audioTimer === null) {
       const startTime = Date.now();
       setAudioTimer(startTime);
     }
-
+  
     if (audioRefs.current[currentSlide]) {
       audioRefs.current[currentSlide].pause();
     }
-
+  
     if (visualizerRefs.current[currentSlide]) {
       visualizerRefs.current[currentSlide].destroy();
       visualizerRefs.current[currentSlide] = null;
       console.log(`Disconnected visualizer for slide ${currentSlide}`);
     }
-
+  
     let counter = 5;
     setCountdown(counter);
     const countdownInterval = setInterval(() => {
@@ -190,7 +218,7 @@ export function CarouselDApiDemo() {
         }
       }
     }, 1000);
-  };
+  };  
 
   const startBlindTest = () => {
     setStarted(true);
@@ -209,6 +237,13 @@ export function CarouselDApiDemo() {
       }, 500);
     }
   };
+
+  React.useEffect(() => {
+    if (!modalOpen && !started) {
+      startBlindTest();
+    }
+  }, [modalOpen, started]);
+
 
   React.useEffect(() => {
     if (audioTimer !== null) {
@@ -240,30 +275,31 @@ export function CarouselDApiDemo() {
       </div>
 
       <div className="absolute inset-0 pointer-events-auto">
-        <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-          <DialogContent>
-            <div className="flex flex-col items-center justify-center p-6">
-              <h2 className="text-xl font-bold mb-4">Blind Test</h2>
-              <p>
-                Les règles du blind test sont simples: Un extrait de 30 secondes
-                se lance. Il vous faudra trouver l'artiste ou le titre pour
-                gagner la manche.
-              </p>
-              <br />
-              <h2 className="text-xl font-bold">Système de points:</h2>
-              <ul className="p-4">
-                <li> Trouver l'artiste ou le titre vaut 1 point</li>
-                <li> Trouver les deux vaut 2 points</li>
-              </ul>
-              <Button
-                onClick={startBlindTest}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Commencer le blind test
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent>
+          <div className="flex flex-col items-center justify-center p-6">
+            <h2 className="text-xl font-bold mb-4">Blind Test</h2>
+            <p>
+              Les règles du blind test sont simples: Un extrait de 30 secondes
+              se lance. Il vous faudra trouver l'artiste ou le titre pour
+              gagner la manche.
+            </p>
+            <br />
+            <h2 className="text-xl font-bold">Système de points:</h2>
+            <ul className="p-4">
+              <li> Trouver l'artiste ou le titre vaut 1 point</li>
+              <li> Trouver les deux vaut 2 points</li>
+            </ul>
+            <Button
+              onClick={startBlindTest}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Commencer le blind test
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
         <div className="flex flex-col">
           <div className="relative" onDragStart={handleCarouselDragStart}>
             <Carousel
@@ -290,9 +326,11 @@ export function CarouselDApiDemo() {
                           id={`visualizer-${index}`}
                           className="w-full h-[100px] bg-none"
                         ></div>
+                        {/* <p className="mt-4 text-center">{cleanTitle(track.name)}</p> */} {/* A supprimer quand le jeu est terminé !!! */}
                       </CardContent>
                     </Card>
                   </CarouselItem>
+
                 ))}
               </CarouselContent>
             </Carousel>

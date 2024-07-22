@@ -1,4 +1,5 @@
 import * as React from "react";
+import Playlist from "../playlist/index"; // Assurez-vous que le chemin d'importation est correct
 import { CarouselDApiDemo } from "@/components/ui/CarouselDApiDemo";
 
 
