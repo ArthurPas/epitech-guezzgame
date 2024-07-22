@@ -3,7 +3,7 @@ import { Button } from '../../components/ui/button';
 import { Avatar, AvatarImage } from '../../components/ui/avatar';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from '../../components/ui/card';
-import { Dialog, DialogTrigger, DialogPortal, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogClose } from '../../components/ui/dialog';
+import { Dialog, DialogTrigger, DialogPortal, DialogOverlay, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogClose } from '../../components/ui/dialog';
 import { useGetUserStat } from '@/hooks/userStats';
 import { useGetUser } from '@/hooks/user';
 import { useGetFriends } from '@/hooks/friends';
@@ -71,7 +71,7 @@ const UserProfile: React.FC = () => {
   };
   
 
-  const { data: userStats } = useGetUserStat(1);
+  const { data: userStats, isError, isLoading} = useGetUserStat(1);
   console.log('user stats: ', userStats);
 
   const { data: userData, isError: userIsError, isLoading: userIsLoading } = useGetUser(1);
