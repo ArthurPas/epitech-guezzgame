@@ -15,7 +15,7 @@ export const Chat = (className: ChatProps) => {
             <CardTitle className="px-3 py-3 font-medium">Chat</CardTitle>
             <div className="absolute bottom-1 flex">
                 <Input className="w-[90%] ml-1 mr-[0.125rem] rounded-[5rem]" placeholder="Ecrivez votre message" />
-                <Button className="rounded-[1.1rem] mr-1 w-[1rem]" variant={'noShadow'}>
+                <Button className="rounded-[1.1rem] text-black font-bold mr-1 w-[1rem]" variant={'noShadow'}>
                     ✓
                 </Button>
             </div>

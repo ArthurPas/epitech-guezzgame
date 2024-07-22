@@ -8,7 +8,7 @@ export default function Document() {
             <body>
                 <Main />
                 <NextScript />
-                <DiamondWall />
+                {/* <DiamondWall /> */}
             </body>
         </Html>
     );
