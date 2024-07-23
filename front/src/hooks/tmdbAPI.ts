@@ -1,29 +1,27 @@
 import { TMDBMoviesType } from '@/interfaces/tmdbAPI';
 import { useQuery } from '@tanstack/react-query';
 
-export const fetchPopularMovies = async () => {
+export const fetchPopularMovies = async (page = 1) => {
     const response = await fetch(
-        'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc',
+        `https://api.themoviedb.org/4/list/8307732-guessgame?language=fr-FR&api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&page=${page}`,
         {
             method: 'GET',
             headers: {
-                accept: 'application/json',
-                Authorization:
-                    'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiOGFjN2Q2YThkYzdkZDY3YTcxOGQ5ZmM4MzkxMjBjZCIsIm5iZiI6MTcyMTE2NjY4OS4yMzUwNzMsInN1YiI6IjY2OTZlODc2NTNhYjMyMDQ0MmMwZmRjNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.cEKnFvvUylQFlCjnPZkpK6nyOnhvFRrA6LRQPAUnnmE'
+                accept: 'application/json'
             }
         }
     );
     const data = await response.json();
-    console.log('data', data);
-
-    return data;
+    return data?.results;
 };
 
 export const useGetPopularMovies = () => {
+    const page = Math.floor(Math.random() * 5) + 1;
+    console.log('page', page);
+
     return useQuery<TMDBMoviesType>({
         queryKey: [`/popularMovies`],
-        queryFn: () => fetchPopularMovies()
+        queryFn: () => fetchPopularMovies(page)
     });
 };
-
 // https://image.tmdb.org/t/p/w500/2zmTngn1tYC1AvfnrFLhxeD82hz.jpg.jpg

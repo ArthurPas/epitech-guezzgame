@@ -1,12 +1,48 @@
-import { useGetPopularMovies } from "@/hooks/tmdbAPI";
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { useGetPopularMovies } from '@/hooks/tmdbAPI';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 export type GuessGameProps = {};
 
+//TODO: SSR for network call (this way it's safer AND users can't check the answers, for now I keep it like this as I it's practical for dev)
 export const GuessGame = (props: GuessGameProps) => {
-    // Le jeu consiste en une image fortement zoomée, qui va progressivement dézoomer. Il peut s'agit d'une affiche de film ou du portrait d'un acteur ou actrice.
-    // Les joueurs doivent être les premiers à deviner à quel film ou acteur correspond l'image.
-  
-    const { data, isError, isPending } = useGetPopularMovies();
+    const { data, isError, isPending, refetch } = useGetPopularMovies();
+
+    const [round, setRound] = useState(1);
+    const [score, setScore] = useState(0);
+    const [gameActive, setGameActive] = useState(false);
+    const [countdown, setCountdown] = useState(3);
+    const [posterIndexToDisplay, setPosterIndexToDisplay] = useState<number>(1);
+    const [initialX, setInitialX] = useState<number>(Math.floor(Math.random() * 500));
+    const [initialY, setInitialY] = useState<number>(Math.floor(Math.random() * 750));
+    const [key, setKey] = useState(0);
+    const [gameEnded, setGameEnded] = useState(false);
+
+    const maxRounds = 5;
+
+    //Game starter
+    useEffect(() => {
+        if (countdown > 0) {
+            const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+            return () => clearTimeout(timer);
+        } else {
+            setPosterIndexToDisplay(Math.floor(Math.random() * 20));
+            setGameActive(true);
+            return;
+        }
+    }, [countdown]);
+
+    //Reset initial position of the image when round changes
+    useEffect(() => {
+        if (gameActive && round > 1) {
+            setInitialX(Math.floor(Math.random() * 500));
+            setInitialY(Math.floor(Math.random() * 750));
+            setKey((prevKey) => prevKey + 1);
+        }
+    }, [gameActive, round]);
 
     if (isPending) {
         return <span>Chargement</span>;
@@ -16,7 +52,110 @@ export const GuessGame = (props: GuessGameProps) => {
         return <span>Erreur</span>;
     }
 
-    console.log(data);
-  
-    return <div>guessGame</div>;
+    const handleRoundEnd = async () => {
+        console.log('Round ended');
+        if (round < maxRounds) {
+            await refetch();
+            setRound(round + 1);
+            setPosterIndexToDisplay(Math.floor(Math.random() * 20));
+        } else {
+            setGameActive(false);
+            setGameEnded(true);
+        }
+    };
+
+    if (!gameActive && gameEnded) {
+        return (
+            <div className="relative w-full h-full rounded-xl bg-black">
+                <div
+                    className="absolute bottom-0 w-full h-full rounded-xl bg-cover bg-center z-10"
+                    style={{
+                        backgroundImage: "url('https://res.cloudinary.com/dxaqv2hww/image/upload/v1721661360/cine_scene_saease.png')"
+                    }}
+                />
+                <h2 className="flex justify-center text-white pt-6">Jeu terminé !</h2>
+            </div>
+            //    </div>
+        );
+    }
+
+    return (
+        <div className="relative w-full h-full rounded-xl bg-black">
+            {countdown > 0 && (
+                <div>
+                    <div className="flex items-center justify-center w-full h-full text-white text-4xl">{countdown}</div>
+                    {/* sièges only */}
+                    <motion.div
+                        key={`seats-${key}`}
+                        className="absolute bottom-0 w-full h-full rounded-xl bg-cover bg-center z-10"
+                        style={{
+                            backgroundImage: "url('https://res.cloudinary.com/dxaqv2hww/image/upload/v1721660379/guess_sieges_dod0vy.png')"
+                        }}
+                        initial={{ y: '-100vh' }}
+                        animate={{ y: 0 }}
+                        transition={{ type: 'spring', stiffness: 100 }}
+                    />
+                    {/* rideaux only */}
+                    <motion.div
+                        key={`curtains-${key}`}
+                        className="absolute top-0 w-full rounded-xl h-full bg-cover bg-center z-10"
+                        style={{
+                            backgroundImage: "url('https://res.cloudinary.com/dxaqv2hww/image/upload/v1721660378/guess_rideaux_agmxvc.png')"
+                        }}
+                        initial={{ y: '100vh' }}
+                        animate={{ y: 0 }}
+                        transition={{ type: 'spring', stiffness: 100 }}
+                    />
+                </div>
+            )}
+
+            {countdown === 0 && gameActive && (
+                <div>
+                    {/* scène complète */}
+                    <div
+                        className="absolute bottom-0 w-full h-full rounded-xl bg-cover bg-center z-10"
+                        style={{
+                            backgroundImage: "url('https://res.cloudinary.com/dxaqv2hww/image/upload/v1721661360/cine_scene_saease.png')"
+                        }}
+                    />
+
+                    <div className="absolute left-[48.7%] xl:left-[50%] -mt-[1px] -translate-x-[49%] rounded-xl text-white border-2 w-full xl:w-[70%] 3xl:w-[65.3%] h-[68%] flex justify-center items-center overflow-hidden">
+                        <motion.img
+                            key={`poster-${key}`}
+                            className="pt-6"
+                            src={`https://image.tmdb.org/t/p/w500/${data[posterIndexToDisplay].poster_path}`}
+                            alt="guess game image"
+                            // initial={{ scale: 15, x: initialX, y: initialY }}
+                            // animate={{ scale: 0 }}
+                            initial={{ scale: 15 }}
+                            animate={{ scale: 2 }}
+                            transition={{ duration: 12, ease: 'easeOut' }}
+                            onAnimationComplete={handleRoundEnd}
+                        />
+                    </div>
+
+                    <div className="absolute left-[48.7%] xl:left-[50%] top-4 -mt-[1px] -translate-x-[49%] rounded-xl text-white w-full xl:w-[70%] 3xl:w-[65.3%] flex justify-center overflow-hidden">
+                        <p>
+                            Round {round}/{maxRounds} | Nom du film : {data[posterIndexToDisplay].title}
+                        </p>
+                    </div>
+
+                    {/* Form */}
+                    <div className="absolute left-[15%] -translate-x-[15%] lg:left-[50%] lg:-translate-x-[50%] w-[20%] h-[61%] z-20">
+                        <div className="absolute bottom-0 -left-4 flex justify-center w-[30%] mx-auto rounded-lg mt-4 p-4 z-[-1]">
+                            <form className="flex w-1/2">
+                                <input placeholder="Nom du film" type="text" className="p-2 border rounded-md z-30" />
+                                <Button
+                                    variant={'noShadow'}
+                                    className="p-2 ml-4 h-[45px] w-[140px] rounded-lg  font-bold bg-gradient-to-b from-amber-300 to-yellow-600 hover:to-yellow-500 transition-colors"
+                                >
+                                    Confirmer
+                                </Button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 };
