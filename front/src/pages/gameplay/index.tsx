@@ -1,6 +1,6 @@
 import { Chat } from '@/components/gameLayout/Chat';
 import { Players } from '@/components/gameLayout/Players';
-import { GuessGame } from '@/components/games/guessGame/guessGame';
+import { GuessGame } from '@/components/games/GuessGame/GuessGame';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { CarouselDApiDemo } from '@/components/ui/CarouselDApiDemo';
@@ -21,7 +21,8 @@ const Gameplay = () => {
                         {games.map((game) => {
                             return (
                                 <Button
-                                    className={` m-1 ${currentGame === game ? 'bg-white' : ''}`}
+                                    key={game}
+                                    className={`m-1 ${currentGame === game ? 'bg-white' : ''}`}
                                     variant={'reverse'}
                                     onClick={() => {
                                         setCurrentGame(game);

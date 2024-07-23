@@ -1,6 +1,6 @@
 # Hooks
 
-All the hooks relative to data fetching. **EVERY** call to useQuery, useMutation, etc. should have its own hook
+All the hooks relative to data fetching. Every call to useQuery, useMutation, etc. should have its own hook
 
 Examples:
 

@@ -9,9 +9,9 @@ export const Players = () => {
     return (
         <Card className="bg-purple-300 w-[100%] md:w-[30%] lg:w-auto lg:h-[60%] rounded-[0.9rem] priority-rounded overflow-hidden">
             <CardTitle className="px-3 py-3 font-medium text-xl">Players</CardTitle>
-            <ScrollArea className="h-72 px-4 w-full rounded-md ">
+            <ScrollArea className="h-[9rem] 3xl:h-[15rem] px-4 w-full rounded-md">
                 {playerData.map((player) => (
-                    <div className="flex items-start">
+                    <div className="flex items-start" key={player.id}>
                         <Avatar className="border-[1.5px] h-[33px] w-[33px] mr-2">
                             <AvatarImage src={'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720513515/shrek_4_vnuik2.webp'} />
                             <AvatarFallback>SB</AvatarFallback>

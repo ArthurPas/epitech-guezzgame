@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 
 export type GuessGameProps = {};
 
+//TODO: SSR for network call (this way it's safer AND users can't check the answers, for now I keep it like this as I it's practical for dev)
 export const GuessGame = (props: GuessGameProps) => {
     // Le jeu consiste en une image fortement zoomée, qui va progressivement dézoomer. Il peut s'agit d'une affiche de film ou du portrait d'un acteur ou actrice.
     // Les joueurs doivent être les premiers à deviner à quel film ou acteur correspond l'image.
@@ -21,6 +22,13 @@ export const GuessGame = (props: GuessGameProps) => {
     }
 
     console.log(data);
+
+    const posterIndexToDisplay = Math.floor(Math.random() * 20);
+    console.log('posterIndexToDisplay', posterIndexToDisplay);
+    console.log('answer', data[posterIndexToDisplay]?.title);
+
+    const initialX = Math.floor(Math.random() * 500);
+    const initialY = Math.floor(Math.random() * 750);
 
     return (
         <div className="relative w-full h-full rounded-xl bg-black">
@@ -41,24 +49,16 @@ export const GuessGame = (props: GuessGameProps) => {
             /> */}
 
             {/* Zone pour les images */}
-            <div className="absolute left-[50%] -mt-[1px] -translate-x-[49%]  text-white border-2 w-[65.3%] h-[68%] flex justify-center items-center overflow-hidden">
-                {/* TODO: faire l'interface zod */}
+            <div className="absolute left-[48.7%] xl:left-[50%] -mt-[1px] -translate-x-[49%] rounded-xl text-white border-2 w-full xl:w-[70%] 3xl:w-[65.3%] h-[68%] flex justify-center items-center overflow-hidden">
                 <motion.img
-                    className="scale-[5]"
-                    src={`https://image.tmdb.org/t/p/w500/${data.results[2].poster_path}`}
+                    className="pt-6"
+                    src={`https://image.tmdb.org/t/p/w500/${data[posterIndexToDisplay].poster_path}`}
                     alt="guess game image"
-                    initial={{ scale: 15 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 10 }}
+                    initial={{ scale: 15, x: initialX, y: initialY }}
+                    animate={{ scale: 0 }}
+                    transition={{ duration: 12, ease: 'easeOut' }}
+                    // animate={{ scale: 2 }}
                 />
-                {/* <motion.img
-                    className=""
-                    src={`https://image.tmdb.org/t/p/w500/${data.results[2].poster_path}`}
-                    alt="guess game image"
-                    initial={{ filter: 'blur(10px)' }}
-                    animate={{ filter: 'blur(10px)' }}
-                    transition={{ duration: 10 }}
-                /> */}
                 {/* <Card className="absolute bottom-0 -left-4 flex justify-center w-[30%] mx-auto rounded-lg mt-4 p-4">
                     <form className="flex flex-col space-y-4 w-1/2">
                         <div className="flex flex-col">
@@ -73,7 +73,7 @@ export const GuessGame = (props: GuessGameProps) => {
             </div>
 
             {/* Form */}
-            <div className="absolute left-[50%] -translate-x-[50%] w-[20%] h-[61%] z-20">
+            <div className="absolute left-[15%] lg:left-[50%] -translate-x-[50%] w-[20%] h-[61%] z-20">
                 <div className="absolute bottom-0 -left-4 flex justify-center w-[30%] mx-auto rounded-lg mt-4 p-4 z-[-1]">
                     <form className="flex w-1/2">
                         <input placeholder="Nom du film" type="text" className="p-2 border rounded-md z-30" />
