@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/gambling")
+@CrossOrigin(origins = "http://localhost:3000")
 public class GamblingController {
 
 	SimpleBeanPropertyFilter simpleBeanPropertyFilter = SimpleBeanPropertyFilter.serializeAllExcept("password", "mail", "nbCoin", "friendships", "items", "parties", "betOption", "bet", "xpPoint", "isVip");
