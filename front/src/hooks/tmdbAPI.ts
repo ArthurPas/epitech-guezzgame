@@ -17,8 +17,6 @@ export const fetchPopularMovies = async (page = 1) => {
 
 export const useGetPopularMovies = () => {
     const page = Math.floor(Math.random() * 5) + 1;
-    console.log('page', page);
-
     return useQuery<TMDBMoviesType>({
         queryKey: [`/popularMovies`],
         queryFn: () => fetchPopularMovies(page)

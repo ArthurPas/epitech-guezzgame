@@ -1,12 +1,12 @@
 import { Chat } from '@/components/gameLayout/Chat';
 import { Players } from '@/components/gameLayout/Players';
-import { GuessGame } from '@/components/games/GuessGame/GuessGame';
+import { MovieGuesser } from '@/components/games/MovieGuesser/MovieGuesser';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { CarouselDApiDemo } from '@/components/ui/CarouselDApiDemo';
 import { useState } from 'react';
 
-const games = ['BlindTest', 'GuessGame', 'TapTaupes', 'Titre', 'GeoGuessr', 'JungleSpeed'];
+const games = ['BlindTest', 'MovieGuesser', 'TapTaupes', 'Titre', 'GeoGuessr', 'JungleSpeed'];
 
 const Gameplay = () => {
     const [currentGame, setCurrentGame] = useState('');
@@ -37,7 +37,7 @@ const Gameplay = () => {
                 <div className="relative w-full flex flex-col items-center gap-2 h-[100%]">
                     <Card className="h-[100%] rounded-[0.9rem] priority-rounded w-full lg:min-w-[98%] bg-purple-700 ">
                         {currentGame === 'BlindTest' && <CarouselDApiDemo />}
-                        {currentGame === 'GuessGame' && <GuessGame />}
+                        {currentGame === 'MovieGuesser' && <MovieGuesser />}
                     </Card>
                 </div>
             </div>
