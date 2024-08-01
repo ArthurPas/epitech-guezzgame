@@ -1,29 +1,38 @@
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { useGetPopularMovies } from '@/hooks/tmdbAPI';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
-export type GuessGameProps = {};
+export type MovieGuesserProps = {};
 
-//TODO: SSR for network call (this way it's safer AND users can't check the answers, for now I keep it like this as I it's practical for dev)
-export const GuessGame = (props: GuessGameProps) => {
+export const MovieGuesser = (props: MovieGuesserProps) => {
+    // TMDB API
     const { data, isError, isPending, refetch } = useGetPopularMovies();
+    console.log('data', data);
 
-    const [round, setRound] = useState(1);
-    const [score, setScore] = useState(0);
-    const [gameActive, setGameActive] = useState(false);
+    // GAME STATE
     const [countdown, setCountdown] = useState(3);
+    const [gameActive, setGameActive] = useState(false);
+    const [gameEnded, setGameEnded] = useState(false);
+
+    // ROUND STATE
+    const maxRounds = 5;
+    const roundDuration = 12;
+    const [currentRound, setCurrentRound] = useState(1);
     const [posterIndexToDisplay, setPosterIndexToDisplay] = useState<number>(1);
     const [initialX, setInitialX] = useState<number>(Math.floor(Math.random() * 500));
     const [initialY, setInitialY] = useState<number>(Math.floor(Math.random() * 750));
     const [key, setKey] = useState(0);
-    const [gameEnded, setGameEnded] = useState(false);
+    const [roundTimer, setRoundTimer] = useState<number>(0);
 
-    const maxRounds = 5;
+    // PLAYER STATE
+    const [playerScore, setPlayerScore] = useState(0);
+    const [hasPlayerGuessed, setHasPlayerGuessed] = useState(false);
+    const [playerGuess, setPlayerGuess] = useState<string>('');
 
-    //Game starter
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    // Game starter
     useEffect(() => {
         if (countdown > 0) {
             const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -31,18 +40,24 @@ export const GuessGame = (props: GuessGameProps) => {
         } else {
             setPosterIndexToDisplay(Math.floor(Math.random() * 20));
             setGameActive(true);
+            setRoundTimer(Date.now());
             return;
         }
     }, [countdown]);
 
     //Reset initial position of the image when round changes
     useEffect(() => {
-        if (gameActive && round > 1) {
+        if (gameActive && currentRound > 1) {
             setInitialX(Math.floor(Math.random() * 500));
             setInitialY(Math.floor(Math.random() * 750));
             setKey((prevKey) => prevKey + 1);
+            setRoundTimer(Date.now());
+            if (inputRef.current) {
+                inputRef.current.value = '';
+                setPlayerGuess('');
+            }
         }
-    }, [gameActive, round]);
+    }, [gameActive, currentRound]);
 
     if (isPending) {
         return <span>Chargement</span>;
@@ -54,30 +69,51 @@ export const GuessGame = (props: GuessGameProps) => {
 
     const handleRoundEnd = async () => {
         console.log('Round ended');
-        if (round < maxRounds) {
+        if (currentRound < maxRounds) {
             await refetch();
-            setRound(round + 1);
+            setCurrentRound(currentRound + 1);
             setPosterIndexToDisplay(Math.floor(Math.random() * 20));
+            setHasPlayerGuessed(false);
+            setRoundTimer(Date.now());
         } else {
             setGameActive(false);
             setGameEnded(true);
         }
     };
 
-    if (!gameActive && gameEnded) {
-        return (
-            <div className="relative w-full h-full rounded-xl bg-black">
-                <div
-                    className="absolute bottom-0 w-full h-full rounded-xl bg-cover bg-center z-10"
-                    style={{
-                        backgroundImage: "url('https://res.cloudinary.com/dxaqv2hww/image/upload/v1721661360/cine_scene_saease.png')"
-                    }}
-                />
-                <h2 className="flex justify-center text-white pt-6">Jeu terminé !</h2>
-            </div>
-            //    </div>
-        );
-    }
+    const handleSubmit = (event: React.FormEvent) => {
+        event.preventDefault();
+        if (hasPlayerGuessed) return;
+
+        const guessTime = (Date.now() - roundTimer) / 1000;
+        const correctTitle = data[posterIndexToDisplay].title;
+
+        // Removing special characters
+        const cleanTitle = correctTitle.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '');
+        const cleanGuess = playerGuess.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '');
+
+        // Keeping only words longer than 3 characters
+        const titleWords = cleanTitle.split(' ').filter((word) => word.length >= 4);
+        const guessWords = cleanGuess.split(' ').filter((word) => word.length >= 4);
+
+        // Checking if the answer contains at least one of the mains words from the title
+        const isCorrect = titleWords.some((word) => guessWords.includes(word));
+
+        if (isCorrect) {
+            let points = 0;
+            if (guessTime <= roundDuration / 3) {
+                points = 50;
+            } else if (guessTime <= roundDuration / 2) {
+                points = 35;
+            } else if (guessTime <= roundDuration / 1.5) {
+                points = 25;
+            } else if (guessTime <= roundDuration) {
+                points = 10;
+            }
+            setPlayerScore(playerScore + points);
+            setHasPlayerGuessed(true);
+        }
+    };
 
     return (
         <div className="relative w-full h-full rounded-xl bg-black">
@@ -129,23 +165,30 @@ export const GuessGame = (props: GuessGameProps) => {
                             // animate={{ scale: 0 }}
                             initial={{ scale: 15 }}
                             animate={{ scale: 2 }}
-                            transition={{ duration: 12, ease: 'easeOut' }}
+                            transition={{ duration: roundDuration, ease: 'easeOut' }}
                             onAnimationComplete={handleRoundEnd}
                         />
                     </div>
 
                     <div className="absolute left-[48.7%] xl:left-[50%] top-4 -mt-[1px] -translate-x-[49%] rounded-xl text-white w-full xl:w-[70%] 3xl:w-[65.3%] flex justify-center overflow-hidden">
                         <p>
-                            Round {round}/{maxRounds} | Nom du film : {data[posterIndexToDisplay].title}
+                            Round {currentRound}/{maxRounds} | Score : {playerScore} | Nom du film : {data[posterIndexToDisplay].title}
                         </p>
                     </div>
 
                     {/* Form */}
                     <div className="absolute left-[15%] -translate-x-[15%] lg:left-[50%] lg:-translate-x-[50%] w-[20%] h-[61%] z-20">
                         <div className="absolute bottom-0 -left-4 flex justify-center w-[30%] mx-auto rounded-lg mt-4 p-4 z-[-1]">
-                            <form className="flex w-1/2">
-                                <input placeholder="Nom du film" type="text" className="p-2 border rounded-md z-30" />
+                            <form className="flex w-1/2" onSubmit={handleSubmit}>
+                                <input
+                                    placeholder="Nom du film"
+                                    type="text"
+                                    className="p-2 border rounded-md z-30"
+                                    ref={inputRef}
+                                    onChange={(e) => setPlayerGuess(e.target.value)}
+                                />
                                 <Button
+                                    type="submit"
                                     variant={'noShadow'}
                                     className="p-2 ml-4 h-[45px] w-[140px] rounded-lg  font-bold bg-gradient-to-b from-amber-300 to-yellow-600 hover:to-yellow-500 transition-colors"
                                 >
@@ -154,6 +197,19 @@ export const GuessGame = (props: GuessGameProps) => {
                             </form>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {!gameActive && gameEnded && (
+                <div className="relative w-full h-full rounded-xl bg-black">
+                    <div
+                        className="absolute bottom-0 w-full h-full rounded-xl bg-cover bg-center z-10"
+                        style={{
+                            backgroundImage: "url('https://res.cloudinary.com/dxaqv2hww/image/upload/v1721661360/cine_scene_saease.png')"
+                        }}
+                    />
+                    <h2 className="flex justify-center text-white pt-6">Jeu terminé !</h2>
+                    <p className="flex justify-center text-white pt-6">Score final : {playerScore}</p>
                 </div>
             )}
         </div>
