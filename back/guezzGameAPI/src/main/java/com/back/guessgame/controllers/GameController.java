@@ -1,6 +1,7 @@
 package com.back.guessgame.controllers;
 
 import com.back.guessgame.repository.GameRepository;
+import com.back.guessgame.repository.GameScoreRepository;
 import com.back.guessgame.repository.dto.GameDto;
 import com.back.guessgame.repository.entities.Game;
 import com.back.guessgame.services.GameService;
@@ -15,9 +16,12 @@ public class GameController {
 	private final GameService gameService;
 	private GameRepository gameRepository;
 
-	public GameController(GameRepository gameRepository) {
+	private final GameScoreRepository gameScoreRepository;
+
+	public GameController(GameRepository gameRepository, GameScoreRepository gameScoreRepository) {
 		this.gameRepository = gameRepository;
-		this.gameService = new GameService(gameRepository);
+		this.gameService = new GameService(gameRepository, gameScoreRepository);
+		this.gameScoreRepository = gameScoreRepository;
 	}
 
 	@GetMapping("/list")
@@ -48,6 +52,11 @@ public class GameController {
 			return new GameDto(game);
 		}
 		return null;
+	}
+
+	@GetMapping("/score")
+	public int getScore(@RequestParam Long gameId, @RequestParam Long userId, @RequestParam Long partyId) {
+		return gameService.calculatePointsByUserByGame(gameId, userId, partyId);
 	}
 
 	@DeleteMapping("/{id}")
