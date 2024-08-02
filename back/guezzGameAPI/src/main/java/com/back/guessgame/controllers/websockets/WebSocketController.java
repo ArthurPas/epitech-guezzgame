@@ -1,5 +1,4 @@
 package com.back.guessgame.controllers.websockets;
-
 import com.back.guessgame.repository.dto.WebSocketPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,17 +12,30 @@ import org.springframework.stereotype.Controller;
 public class WebSocketController {
         @Autowired
         SimpMessagingTemplate messagingTemplate;
+
         @MessageMapping("/broadcast")
         @SendTo("/topic/reply")
         public String broadcastMessage(@Payload String message) {
                 return "You have received a message: " + message;
         }
 
+// Can also be written like this
+//        @MessageMapping("/broadcast")
+//        public void broadcastMessage(@Payload String message) {
+//                messagingTemplate.convertAndSend("/topic/reply", "You have received a message: " + message);
+//        }
+
         @MessageMapping("/user-message")
         @SendToUser("/queue/reply")
         public String sendBackToUser(@Payload String message, @Header("simpSessionId") String sessionId) {
                 return "Only you have received this message: " + message;
         }
+
+// Can also be written like this
+//      @MessageMapping("/user-message")
+//      public void sendBackToUser(@Payload String message, @Header("simpSessionId") String sessionId) {
+//                messagingTemplate.convertAndSendToUser(userName, "/queue/reply", "Only you have received this message: " + message;
+//      }
 
         @MessageMapping("/user-message-{userName}")
         public void sendToOtherUser(@Payload String message, @DestinationVariable String userName, @Header("simpSessionId") String sessionId) {
@@ -38,6 +50,5 @@ public class WebSocketController {
                         message.getDate().getTime() + "ms ("+ message.getDate()+") \n with payload : " + message
                         + "from socketId : " + sessionId);
         }
-
 
 }

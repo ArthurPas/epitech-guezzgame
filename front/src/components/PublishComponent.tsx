@@ -8,7 +8,7 @@ export const PublishToAllUsersComponent = () => {
     const publishMessage = () => {
         if (stompClient) {
             console.log('publishing message');
-            stompClient.publish({ destination: '/app/listen', body: JSON.stringify({ actionType: 'ADD_POINTS' , from: "Arthur", date: new Date(), nbPoint:100, gameName:"toto" }) });
+            stompClient.publish({ destination: '/app/broadcast', body: 'Hello from React' });
         }
     };
 
