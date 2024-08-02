@@ -12,11 +12,11 @@ const bonuses = [
   { type: 'Malus', points: -10 }
 ];
 
-const getRandomItem = (array) => {
+const getRandomItem = (array: string | any[]) => {
   return array[Math.floor(Math.random() * array.length)];
 };
 
-const shuffleArray = (array) => {
+const shuffleArray = (array: (string | any)[]) => {
   let currentIndex = array.length, randomIndex;
   while (currentIndex !== 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
@@ -26,21 +26,21 @@ const shuffleArray = (array) => {
   return array;
 };
 
-const getRandomPosition = (maxWidth, maxHeight) => {
+const getRandomPosition = (maxWidth: number, maxHeight: number) => {
   const x = Math.floor(Math.random() * maxWidth);
   const y = Math.floor(Math.random() * maxHeight);
   return { x, y };
 };
 
-const isOverlapping = (pos1, pos2, size = 50) => {
+const isOverlapping = (pos1: { x: number; y: number; }, pos2: { x: number; y: number; }, size = 50) => {
   const distance = Math.sqrt(Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2));
   return distance < size;
 };
 
 const Game = () => {
   const [targetItem, setTargetItem] = useState('');
-  const [shuffledItems, setShuffledItems] = useState([]);
-  const [log, setLog] = useState([]);
+  const [shuffledItems, setShuffledItems] = useState<string[]>([]);
+  const [log, setLog] = useState<{ login: string; timestamp: number; }[]>([]);
   const [countdown, setCountdown] = useState(5);
   const [isWaiting, setIsWaiting] = useState(false);
   const [score, setScore] = useState(0);
@@ -70,7 +70,7 @@ const Game = () => {
     setCountdown(5);
   };
 
-  const handleClick = (item) => {
+  const handleClick = (item: string) => {
     const timestamp = Date.now();
     const playerInfo = { login: 'andy', timestamp };
 
@@ -82,7 +82,7 @@ const Game = () => {
         points += bonusOrMalus.points;
         console.log(`${bonusOrMalus.type} applied: ${bonusOrMalus.points} points!`, playerInfo);
       }
-      setLog((prevLog) => [...prevLog, playerInfo]);
+      setLog((prevLog) => [...prevLog, playerInfo] as { login: string; timestamp: number; }[]);
       setScore((prevScore) => prevScore + points);
       setIsWaiting(true);
     } else {
@@ -90,8 +90,8 @@ const Game = () => {
     }
   };
 
-  const getNonOverlappingPosition = (existingPositions, maxWidth, maxHeight) => {
-    let position;
+  const getNonOverlappingPosition = (existingPositions: any[], maxWidth: number, maxHeight: number) => {
+    let position: { x: number; y: number; };
     let isOverlappingAny;
     do {
       position = getRandomPosition(maxWidth, maxHeight);
