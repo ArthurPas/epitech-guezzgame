@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useStompClient } from 'react-stomp-hooks';
+import { useStompClient,useSubscription } from 'react-stomp-hooks';
 
 
 
@@ -56,6 +56,10 @@ const Game = () => {
     setNewRound();
   }, []);
 
+  useSubscription('/topic/reply/endRound', (message) => {
+    setIsWaiting(message.body === 'NEXT_ROUND');
+    console.log("toto tata" + message.body)
+  });
   useEffect(() => {
     if (isWaiting) {
       if (countdown > 0) {
@@ -110,7 +114,7 @@ const Game = () => {
       setScore((prevScore) => prevScore + points);
       sendSocketAfterClick(points, playerInfo, round);
       sendSocketEndRound(points, playerInfo, round);
-      setIsWaiting(true);
+      // setIsWaiting(true);
     } else {
       console.log('Wrong item clicked!', playerInfo);
     }

@@ -67,10 +67,11 @@ public class WebSocketController {
                         + "from socketId : " + sessionId);
                 GameScore gameScore = webSocketService.saveSocket(message);
                 if (gameScore.getActionType().equals(ActionType.END_ROUND)) {
-                        messagingTemplate.convertAndSend("/topic/reply", "NEXT_ROUND");
+                        logger.info("END ROUND TOTO");
+                        messagingTemplate.convertAndSend("/topic/reply/endRound", "NEXT_ROUND");
                 }
                 if(gameScore.getActionType().equals(ActionType.END_GAME)){
-                        messagingTemplate.convertAndSend("/topic/reply", "END_GAME");
+                        messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
                         Map<User, Integer> userPoints = new HashMap<>();
                         for (User user : partyService.getAllUserByPartyId(gameScore.getParty().getId())) {
                                 userPoints.put(user,gameService.calculatePointsByUserByGame(gameScore.getGame(),  user, gameScore.getParty()));
