@@ -18,7 +18,7 @@ export interface FriendsData {
 //------------------------------------------------------------
 const idCurrentPlayer: number = 9;
 
-const Index = () => {
+const EndGame = () => {
     const [position, setPosition] = useState<number | null>(null);
     const [currentPlayer, setCurrentPlayer] = useState<FriendsData | null>(null);
     const [playerData, setPlayerData] = useState<FriendsData[]>([]);
@@ -130,4 +130,4 @@ const Index = () => {
     );
 };
 
-export default Index;
+export default EndGame;
