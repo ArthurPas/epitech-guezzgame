@@ -2,6 +2,8 @@ package com.back.guessgame.services;
 
 import com.back.guessgame.repository.GameRepository;
 import com.back.guessgame.repository.GameScoreRepository;
+import com.back.guessgame.repository.PartyRepository;
+import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.GameDto;
 import com.back.guessgame.repository.entities.Game;
 import com.back.guessgame.repository.entities.GameScore;
@@ -17,9 +19,16 @@ public class GameService {
 
 	private final GameScoreRepository gameScoreRepository;
 
-	public GameService(GameRepository gameRepository, GameScoreRepository gameScoreRepository) {
+	private final UserRepository userRepository;
+
+
+	private final PartyRepository partyRepository;
+
+	public GameService(GameRepository gameRepository, GameScoreRepository gameScoreRepository, UserRepository userRepository, PartyRepository partyRepository) {
 		this.gameRepository = gameRepository;
 		this.gameScoreRepository = gameScoreRepository;
+		this.userRepository = userRepository;
+		this.partyRepository = partyRepository;
 	}
 
 	public long newGame(GameDto gameDto) {
@@ -43,8 +52,8 @@ public class GameService {
 
 	// exemple : if i was the user who click the faster I will get nb points / 1 (by my rank)
 	// The 5th will have nb points  / 5
-	public int nbPointsByDate(Long gameId, Long userId, long partyId) {
-		List<GameScore> gameScore = gameScoreRepository.findAllByPartyIdAndGameId(partyId, gameId);
+	public int nbPointsByDate(Long gameId, Long userId, Long partyId) {
+		List<GameScore> gameScore = gameScoreRepository.findAllByPartyIdAndGameId(partyRepository.findById(partyId).orElse(null), gameRepository.findById(gameId).orElse(null));
 		int points = 0;
 		List<GameScore> orderedByTime = gameScore.stream().sorted((gs1, gs2) -> gs1.getDate().compareTo(gs2.getDate())).toList();
 		for (int i = 0; i < orderedByTime.size(); i++) {
@@ -57,7 +66,8 @@ public class GameService {
 
 	public int calculatePointsByUserByGame(Long gameId, Long userId, long partyId) {
 		int points = 0;
-		List<GameScore> gameScore = gameScoreRepository.findAllByUserIdAndGameIdAndPartyId(userId, gameId, partyId);
+		List<GameScore> gameScore = gameScoreRepository.findAllByUserIdAndGameIdAndPartyId(
+				userRepository.findById(userId).orElse(null), gameRepository.findById(gameId).orElse(null), partyRepository.findById(partyId).orElse(null));
 		for (GameScore gs : gameScore) {
 			switch (gs.getActionType()) {
 				case ADD_POINTS:

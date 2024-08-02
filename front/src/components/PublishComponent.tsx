@@ -8,8 +8,7 @@ export const PublishToAllUsersComponent = () => {
     const publishMessage = () => {
         if (stompClient) {
             console.log('publishing message');
-
-            stompClient.publish({ destination: '/app/broadcast', body: 'Hello from React' });
+            stompClient.publish({ destination: '/app/listen', body: JSON.stringify({ actionType: 'ADD_POINTS' , from: "Arthur", date: new Date(), nbPoint:100, gameName:"toto" }) });
         }
     };
 
@@ -22,7 +21,10 @@ export const PublishToMeComponent = () => {
 
     const publishMessage = () => {
         if (stompClient) {
-            stompClient.publish({ destination: '/app/user-message', body: 'Hello to myself' });
+            stompClient.publish({ destination: '/app/sendToHost',
+                body: JSON.stringify({
+                    actionType: 'ADD_POINTS' , from: "Arthur", date: new Date(),
+                    nbPoints:100, gameName:"toto" }) });
         }
     };
     return <button onClick={publishMessage}> Expect reply for my action </button>;

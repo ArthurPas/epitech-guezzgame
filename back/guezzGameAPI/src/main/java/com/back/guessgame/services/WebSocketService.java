@@ -27,7 +27,7 @@ public class WebSocketService {
 		this.userService = new UserService(userRepository);
 		this.gameRepository = gameRepository;
 		this.partyRepository = partyRepository;
-		this.gameService = new GameService(gameRepository, gameScoreRepository);
+		this.gameService = new GameService(gameRepository, gameScoreRepository, userRepository, partyRepository);
 		this.gameScoreRepository = gameScoreRepository;
 		this.partyService = new PartyService(partyRepository, userRepository, gameRepository);
 	}
@@ -38,8 +38,8 @@ public class WebSocketService {
 
 	public void saveSocket(WebSocketPayload socketContent) {
 		GameScore gameScore = new GameScore();
-		gameScore.setUserId(userRepository.findById(Long.parseLong(socketContent.getFrom())).orElse(null));
-		gameScore.setGameId(gameRepository.findOneByName(socketContent.getGameName()));
+		gameScore.setUserId(userRepository.findById(Long.parseLong(socketContent.getFrom())).get().getId());
+		gameScore.setGameId(gameRepository.findOneByName(socketContent.getGameName()).getId());
 		gameScore.setActionType(socketContent.getActionType());
 		gameScore.setPoints(socketContent.getNbPoints());
 		gameScore.setDate(socketContent.getDate());

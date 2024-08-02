@@ -2,6 +2,8 @@ package com.back.guessgame.controllers;
 
 import com.back.guessgame.repository.GameRepository;
 import com.back.guessgame.repository.GameScoreRepository;
+import com.back.guessgame.repository.PartyRepository;
+import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.GameDto;
 import com.back.guessgame.repository.entities.Game;
 import com.back.guessgame.services.GameService;
@@ -18,9 +20,9 @@ public class GameController {
 
 	private final GameScoreRepository gameScoreRepository;
 
-	public GameController(GameRepository gameRepository, GameScoreRepository gameScoreRepository) {
+	public GameController(GameRepository gameRepository, GameScoreRepository gameScoreRepository, UserRepository userRepository, PartyRepository partyRepository) {
 		this.gameRepository = gameRepository;
-		this.gameService = new GameService(gameRepository, gameScoreRepository);
+		this.gameService = new GameService(gameRepository, gameScoreRepository, userRepository, partyRepository);
 		this.gameScoreRepository = gameScoreRepository;
 	}
 

@@ -30,11 +30,13 @@ public class WebSocketController {
                 messagingTemplate.convertAndSend("/queue/reply-" + userName, "You have a message from someone: " + message);
         }
 
-        @MessageMapping("/listen")
-        public void listenToSocket(WebSocketPayload message) {
+        @MessageMapping("/sendToHost")
+        public void listenToSocket(WebSocketPayload message, @Header("simpSessionId") String sessionId) {
                 Logger logger = LoggerFactory.getLogger(WebSocketController.class);
-                logger.info("Received message: " + message);
-
+                logger.info("\nReceived message type : " +
+                        message.getActionType() + "\n at " +
+                        message.getDate().getTime() + "ms ("+ message.getDate()+") \n with payload : " + message
+                        + "from socketId : " + sessionId);
         }
 
 

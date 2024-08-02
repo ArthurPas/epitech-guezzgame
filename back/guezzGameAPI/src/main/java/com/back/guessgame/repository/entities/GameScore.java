@@ -21,11 +21,11 @@ public class GameScore {
 	@Id
 	private Long id;
 	@ManyToOne(targetEntity = User.class)
-	private User userId;
+	private Long userId;
 	@ManyToOne(targetEntity = Game.class)
-	private Game gameId;
+	private Long gameId;
 	@ManyToOne(targetEntity = Party.class)
-	private Party PartyId;
+	private Long partyId;
 	private ActionType actionType;
 	private int points;
 	private Date date;
