@@ -99,4 +99,8 @@ public class PartyService {
 		}
 		throw HttpClientErrorException.create(HttpStatus.NOT_FOUND, "Party not found", null, null, null);
 	}
+
+	public List<User> getAllUserByPartyId(Long partyId) {
+		return userRepository.findAllByParties(partyRepository.findById(partyId).orElse(null));
+	}
 }

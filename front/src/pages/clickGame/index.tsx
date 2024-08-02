@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useStompClient } from 'react-stomp-hooks';
+
+
 
 const items = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
 const bonuses = [
@@ -38,6 +41,7 @@ const isOverlapping = (pos1: { x: number; y: number; }, pos2: { x: number; y: nu
 };
 
 const Game = () => {
+
   const [targetItem, setTargetItem] = useState('');
   const [shuffledItems, setShuffledItems] = useState<string[]>([]);
   const [log, setLog] = useState<{ login: string; timestamp: number; }[]>([]);
@@ -47,6 +51,7 @@ const Game = () => {
   const [round, setRound] = useState(1);
   const [modalOpen, setModalOpen] = useState(true);
 
+  const stompClient = useStompClient();
   useEffect(() => {
     setNewRound();
   }, []);
@@ -70,12 +75,31 @@ const Game = () => {
     setCountdown(5);
   };
 
+  function sendSocketAfterClick(points: number, playerInfo: { login: string; timestamp: number }, roundNumber: number) {
+    if (stompClient) {
+      stompClient.publish({ destination: '/app/sendToHost',
+        body: JSON.stringify({
+          actionType: 'FASTER_WIN' , from: playerInfo.login, date: playerInfo.timestamp,
+          nbPoints:points, gameName:"clickGame", roundNumber: roundNumber,partyId: "123"}) });
+    }
+  }
+  function sendSocketEndRound(points: number, playerInfo: { login: string; timestamp: number }, roundNumber: number) {
+    if (stompClient) {
+      stompClient.publish({ destination: '/app/sendToHost',
+        body: JSON.stringify({
+          actionType: 'END_ROUND' ,from: playerInfo.login, date: playerInfo.timestamp,
+          nbPoints:points, gameName:"clickGame", roundNumber: roundNumber, partyId: "123"}) });
+    }
+  }
+
+
   const handleClick = (item: string) => {
     const timestamp = Date.now();
     const playerInfo = { login: 'andy', timestamp };
 
     if (item === targetItem) {
       console.log('Correct item clicked!', playerInfo);
+
       let points = 10;
       if (round % 2 === 0 || round % 3 === 0) {
         const bonusOrMalus = getRandomItem(bonuses);
@@ -84,6 +108,8 @@ const Game = () => {
       }
       setLog((prevLog) => [...prevLog, playerInfo] as { login: string; timestamp: number; }[]);
       setScore((prevScore) => prevScore + points);
+      sendSocketAfterClick(points, playerInfo, round);
+      sendSocketEndRound(points, playerInfo, round);
       setIsWaiting(true);
     } else {
       console.log('Wrong item clicked!', playerInfo);

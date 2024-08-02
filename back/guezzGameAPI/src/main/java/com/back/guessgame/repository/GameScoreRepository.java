@@ -10,7 +10,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface GameScoreRepository extends JpaRepository<GameScore, Long> {
-	public List<GameScore> findAllByUserIdAndGameIdAndPartyId(User userId, Game gameId, Party partyId);
+	public List<GameScore> findAllByUserAndGameAndParty(User user, Game game, Party party);
 
-	public List<GameScore> findAllByPartyIdAndGameId(Party partyId, Game gameId);
+	public List<GameScore> findAllByPartyAndGameAndNbRound(Party party, Game game, int nbRound);
+
+	public List<GameScore> findAllByPartyAndGame(Party party, Game game);
 }

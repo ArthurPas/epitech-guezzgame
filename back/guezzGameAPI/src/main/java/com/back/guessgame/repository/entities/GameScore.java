@@ -1,10 +1,7 @@
 package com.back.guessgame.repository.entities;
 
 import com.back.guessgame.repository.dto.ActionType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
@@ -19,13 +16,15 @@ import java.util.Date;
 @Table(name = "game_score")
 public class GameScore {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@ManyToOne(targetEntity = User.class)
-	private Long userId;
+	private User user;
 	@ManyToOne(targetEntity = Game.class)
-	private Long gameId;
+	private Game game;
 	@ManyToOne(targetEntity = Party.class)
-	private Long partyId;
+	private Party party;
+	private int nbRound;
 	private ActionType actionType;
 	private int points;
 	private Date date;

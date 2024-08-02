@@ -17,4 +17,6 @@ public class WebSocketPayload {
 	private Date date;
 	private int nbPoints;
 	private String gameName;
+	private String roundNumber;
+	private long partyId;
 }

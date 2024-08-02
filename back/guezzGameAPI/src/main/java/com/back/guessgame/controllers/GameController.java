@@ -6,7 +6,10 @@ import com.back.guessgame.repository.PartyRepository;
 import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.GameDto;
 import com.back.guessgame.repository.entities.Game;
+import com.back.guessgame.repository.entities.User;
 import com.back.guessgame.services.GameService;
+import com.back.guessgame.services.PartyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +22,11 @@ public class GameController {
 	private GameRepository gameRepository;
 
 	private final GameScoreRepository gameScoreRepository;
+
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private PartyRepository partyRepository;
 
 	public GameController(GameRepository gameRepository, GameScoreRepository gameScoreRepository, UserRepository userRepository, PartyRepository partyRepository) {
 		this.gameRepository = gameRepository;
@@ -58,7 +66,10 @@ public class GameController {
 
 	@GetMapping("/score")
 	public int getScore(@RequestParam Long gameId, @RequestParam Long userId, @RequestParam Long partyId) {
-		return gameService.calculatePointsByUserByGame(gameId, userId, partyId);
+		return gameService.calculatePointsByUserByGame(
+				gameRepository.findById(gameId).orElse(null),
+				userRepository.findById(userId).orElse(null),
+				partyRepository.findById(partyId).orElse(null));
 	}
 
 	@DeleteMapping("/{id}")

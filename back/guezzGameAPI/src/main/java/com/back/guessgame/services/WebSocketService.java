@@ -36,14 +36,15 @@ public class WebSocketService {
 		// TODO ?
 	}
 
-	public void saveSocket(WebSocketPayload socketContent) {
+	public GameScore saveSocket(WebSocketPayload socketContent) {
 		GameScore gameScore = new GameScore();
-		gameScore.setUserId(userRepository.findById(Long.parseLong(socketContent.getFrom())).get().getId());
-		gameScore.setGameId(gameRepository.findOneByName(socketContent.getGameName()).getId());
+		gameScore.setUser(userRepository.findByLoginOrMail(socketContent.getFrom(), "").orElse(null));
+		gameScore.setGame(gameRepository.findOneByName(socketContent.getGameName()));
 		gameScore.setActionType(socketContent.getActionType());
 		gameScore.setPoints(socketContent.getNbPoints());
 		gameScore.setDate(socketContent.getDate());
 		gameScoreRepository.save(gameScore);
+		return gameScore;
 	}
 
 

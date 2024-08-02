@@ -1,5 +1,11 @@
 package com.back.guessgame.controllers.websockets;
+import com.back.guessgame.repository.dto.ActionType;
 import com.back.guessgame.repository.dto.WebSocketPayload;
+import com.back.guessgame.repository.entities.GameScore;
+import com.back.guessgame.repository.entities.User;
+import com.back.guessgame.services.GameService;
+import com.back.guessgame.services.PartyService;
+import com.back.guessgame.services.WebSocketService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +14,21 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 public class WebSocketController {
         @Autowired
         SimpMessagingTemplate messagingTemplate;
+
+        @Autowired
+        private WebSocketService webSocketService;
+
+        @Autowired
+        GameService gameService;
+        @Autowired
+        private PartyService partyService;
 
         @MessageMapping("/broadcast")
         @SendTo("/topic/reply")
@@ -46,9 +63,21 @@ public class WebSocketController {
         public void listenToSocket(WebSocketPayload message, @Header("simpSessionId") String sessionId) {
                 Logger logger = LoggerFactory.getLogger(WebSocketController.class);
                 logger.info("\nReceived message type : " +
-                        message.getActionType() + "\n at " +
-                        message.getDate().getTime() + "ms ("+ message.getDate()+") \n with payload : " + message
+                        message.getActionType() + "\n \n with payload : " + message
                         + "from socketId : " + sessionId);
+                GameScore gameScore = webSocketService.saveSocket(message);
+                if (gameScore.getActionType().equals(ActionType.END_ROUND)) {
+                        messagingTemplate.convertAndSend("/topic/reply", "NEXT_ROUND");
+                }
+                if(gameScore.getActionType().equals(ActionType.END_GAME)){
+                        messagingTemplate.convertAndSend("/topic/reply", "END_GAME");
+                        Map<User, Integer> userPoints = new HashMap<>();
+                        for (User user : partyService.getAllUserByPartyId(gameScore.getParty().getId())) {
+                                userPoints.put(user,gameService.calculatePointsByUserByGame(gameScore.getGame(),  user, gameScore.getParty()));
+                        }
+                        messagingTemplate.convertAndSend("/topic/reply", userPoints);
+                }
+
         }
 
 }
