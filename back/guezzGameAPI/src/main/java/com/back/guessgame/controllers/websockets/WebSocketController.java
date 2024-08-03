@@ -1,4 +1,6 @@
 package com.back.guessgame.controllers.websockets;
+
+import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.ActionType;
 import com.back.guessgame.repository.dto.WebSocketPayload;
 import com.back.guessgame.repository.entities.GameScore;
@@ -12,12 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Controller
+@CrossOrigin(origins = "http://*.guezzgame.fun*")
 public class WebSocketController {
         @Autowired
         SimpMessagingTemplate messagingTemplate;
@@ -29,6 +36,13 @@ public class WebSocketController {
         GameService gameService;
         @Autowired
         private PartyService partyService;
+
+        @Autowired
+        private UserRepository userRepository;
+
+        @Autowired
+        private AuthenticationManager authenticationManager;
+
 
         @MessageMapping("/broadcast")
         @SendTo("/topic/reply")
@@ -62,19 +76,20 @@ public class WebSocketController {
         @MessageMapping("/sendToHost")
         public void listenToSocket(WebSocketPayload message, @Header("simpSessionId") String sessionId) {
                 Logger logger = LoggerFactory.getLogger(WebSocketController.class);
-                logger.info("\nReceived message type : " +
-                        message.getActionType() + "\n \n with payload : " + message
-                        + "from socketId : " + sessionId);
-                GameScore gameScore = webSocketService.saveSocket(message);
-                if (gameScore.getActionType().equals(ActionType.END_ROUND)) {
+                logger.info("\nReceived message type : " + message.getActionType() + "\n \n with payload : " + message + "from socketId : " + sessionId);
+                logger.info(SecurityContextHolder.getContext().toString());
+                Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+                User currentUser = userRepository.findByLoginOrMail(loggedInUser.getName(), "").orElse(null);
+                GameScore gameScore = webSocketService.saveSocket(message, currentUser);
+                if(gameScore.getActionType().equals(ActionType.END_ROUND)) {
                         logger.info("END ROUND TOTO");
                         messagingTemplate.convertAndSend("/topic/reply/endRound", "NEXT_ROUND");
                 }
-                if(gameScore.getActionType().equals(ActionType.END_GAME)){
+                if(gameScore.getActionType().equals(ActionType.END_GAME)) {
                         messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
                         Map<User, Integer> userPoints = new HashMap<>();
                         for (User user : partyService.getAllUserByPartyId(gameScore.getParty().getId())) {
-                                userPoints.put(user,gameService.calculatePointsByUserByGame(gameScore.getGame(),  user, gameScore.getParty()));
+                                userPoints.put(user, gameService.calculatePointsByUserByGame(gameScore.getGame(), user, gameScore.getParty()));
                         }
                         messagingTemplate.convertAndSend("/topic/reply", userPoints);
                 }

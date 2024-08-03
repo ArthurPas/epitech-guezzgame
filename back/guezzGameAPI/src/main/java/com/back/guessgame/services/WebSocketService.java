@@ -6,6 +6,7 @@ import com.back.guessgame.repository.PartyRepository;
 import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.WebSocketPayload;
 import com.back.guessgame.repository.entities.GameScore;
+import com.back.guessgame.repository.entities.User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,9 +37,9 @@ public class WebSocketService {
 		// TODO ?
 	}
 
-	public GameScore saveSocket(WebSocketPayload socketContent) {
+	public GameScore saveSocket(WebSocketPayload socketContent, User user) {
 		GameScore gameScore = new GameScore();
-		gameScore.setUser(userRepository.findByLoginOrMail(socketContent.getFrom(), "").orElse(null));
+		gameScore.setUser(user);
 		gameScore.setGame(gameRepository.findOneByName(socketContent.getGameName()));
 		gameScore.setActionType(socketContent.getActionType());
 		gameScore.setPoints(socketContent.getNbPoints());
