@@ -26,7 +26,7 @@ const GeoGuezzer = () => {
     const [score, setScore] = useState<number>(0);
 
     // API
-    const token = 'MLY|7972898332774780|a736b008c14ff5587858c9e0cfc23f05';
+    const token = '';
     const keys = ['926837688198923', '550092599700936', '304829904534967'];
 
     // Calcul du nombre de kilomètres entre le clic de la map et celui de l'image
