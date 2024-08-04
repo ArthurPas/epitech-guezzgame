@@ -7,8 +7,13 @@ import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogD
 
 const GeoGuezzer = () => {
 
-    //Gestion de la modale
-    const [showModal, setShowModal] = useState<boolean>(true);
+    //Gestion des modales
+    const [showModalRules, setShowModalRules] = useState<boolean>(true);
+    const [showModalFeedback, setShowModalFeedback] = useState<boolean>(false);
+
+    //Fin du jeu
+    const [showEndGame, setShowEndGame] = useState<boolean>(false);
+
 
     //Logique
     const [latitudeImage, setLatitudeImage] = useState<number | null>(null);
@@ -21,7 +26,7 @@ const GeoGuezzer = () => {
     const [score, setScore] = useState<number>(0);
 
     //API
-    const token = '';    
+    const token = 'MLY|7972898332774780|a736b008c14ff5587858c9e0cfc23f05';    
     const keys = ['926837688198923', '550092599700936', '304829904534967'];
 
     // Calcul du nombre de kilomètres entre le clic de la map et celui de l'image
@@ -82,70 +87,112 @@ const GeoGuezzer = () => {
       // Calculer le nouveau score
       const newScore = distance < 60 ? prevScore + 300 : prevScore;      
       
-      if (distance < 50) {
+      if (distance < 100) {
         console.log("Gagné !");
       } else {
         console.log("Perdu !");
       } 
             
-        // Incrémenter le nombre d'images ou revenir au début de la liste
-        setNbImage(prevNbImage => (prevNbImage === keys.length - 1 ? 0 : prevNbImage + 1));
-        
+      
       console.log("Score :", newScore);
       return newScore;
     });
+
+     // Ouvrir la modale de feedback après la validation
+     setShowModalFeedback(true);
+
   };
 
-  if (nbTours > 3) {
-    // Afficher uniquement le composant EndGame lorsque nbTours > 3
+  //if (nbTours > keys.length) {
+  //  return <EndGame />;
+  //}
+
+  const handleFeedbackClose = () => {
+    if (nbTours > keys.length) {
+      setShowModalFeedback(false);
+      setShowEndGame(true);
+    } else {
+      setShowModalFeedback(false);
+      setNbImage(prevNbImage => (prevNbImage === keys.length - 1 ? 0 : prevNbImage + 1));
+    }
+  };
+
+  if (showEndGame) {
     return <EndGame />;
   }
 
   return (
     <div>
-        {showModal && (
-            <Dialog open={showModal} onOpenChange={() => {}}>
+        {/* Modale des règles */}
+        {showModalRules && (
+            <Dialog open={showModalRules} onOpenChange={() => {}}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle className='text-center'>Règles du jeu</DialogTitle>
-                        
                     </DialogHeader>
                     <DialogDescription className='text-center'>
-                                            
-                        Devinez le lieu exact où vous êtes en vous basant uniquement sur l'environnement de l'image du haut. Plus votre réponse est précise et rapide, plus vous marquez de points !
-                        Attention, une réponse trop éloignée ne rapporte pas de points ! 
-
+                        Devinez le lieu exact où vous êtes en vous basant uniquement sur l'environnement de l'image du haut. Plus votre réponse est précise et rapide, plus vous marquez de points ! Attention, une réponse trop éloignée ne rapporte pas de points !
                     </DialogDescription>
                     <DialogFooter>
-                      <div className="flex justify-center w-full">
-                        <DialogClose asChild>
-                            <Button onClick={() => setShowModal(false)}>Jouer</Button>
-                        </DialogClose>
-                      </div>
+                        <div className="flex justify-center w-full">
+                            <DialogClose asChild>
+                                <Button onClick={() => setShowModalRules(false)}>Jouer</Button>
+                            </DialogClose>
+                        </div>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
         )}
-        {!showModal && (
-          <div>
-            <div className="flex items-center justify-center h-[30vh] m-8">
-                <iframe
-                src={`https://www.mapillary.com/embed?image_key=${keys[nbImage]}&style=photo`}
-                height="100%"
-                width="100%"
-                title="Mapillary Street View"
-                />
+
+        {/* Modale de feedback */}
+        {showModalFeedback && (
+            <Dialog open={showModalFeedback} onOpenChange={() => {}}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className='text-center'>Retour</DialogTitle>
+                    </DialogHeader>
+                    <DialogDescription className='text-center'>
+                        {distance < 100 ? "Gagné" : "Perdu"} <br/>
+                        {"Ton score : "}{score} <br/>
+                        {"Distance : "}{distance} <br/>
+                    </DialogDescription>
+                    <DialogFooter>
+                        <div className="flex justify-center w-full">
+                            <DialogClose asChild>
+                            <Button
+                                onClick={handleFeedbackClose}
+                            >
+                                    Suivant
+                                </Button>
+                            </DialogClose>
+                        </div>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        )}
+
+        {/* Affichage du jeu */}
+        {!showModalRules && !showModalFeedback && (
+            <div>
+                <div className="flex items-center justify-center h-[30vh] m-8">
+                    <iframe
+                        src={`https://www.mapillary.com/embed?image_key=${keys[nbImage]}&style=photo`}
+                        height="100%"
+                        width="100%"
+                        title="Mapillary Street View"
+                    />
+                </div>
+                <div className="flex items-center justify-center m-8 rounded-full">
+                <Map onMarkerPositionChange={handleMapClick} />
+                </div>
+                <div className="flex justify-center m-8">
+                    <Button onClick={ValideClick_1Joueur} className="bg-orange-300 mb-10">Valider la position</Button>
+                </div>
             </div>
-            <div className="flex items-center justify-center m-8 rounded-full">
-            <Map onMarkerPositionChange={handleMapClick} />
-            </div>
-            <div className="flex justify-center m-8">
-                <Button onClick={ValideClick_1Joueur} className=" bg-orange-300 mb-10">Valider la position</Button>
-            </div>
-          </div>
         )}
     </div>
-  );
+);
+
 };
 
 export default GeoGuezzer;
