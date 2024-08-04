@@ -4,9 +4,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useStompClient,useSubscription } from 'react-stomp-hooks';
-
-
-
+import { jwtDecode } from "jwt-decode";
+let userLogin = "anonymous"
+if (typeof window !== "undefined") {
+  const token = localStorage.getItem("authToken") || '';
+  const jwtDecoded = jwtDecode(token);
+  userLogin = jwtDecoded.sub || "anonymous";
+}
 const items = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
 const bonuses = [
   { type: 'Bonus', points: 5 },
@@ -41,7 +45,7 @@ const isOverlapping = (pos1: { x: number; y: number; }, pos2: { x: number; y: nu
 };
 
 const Game = () => {
-
+  const nbRound = 2;
   const [targetItem, setTargetItem] = useState('');
   const [shuffledItems, setShuffledItems] = useState<string[]>([]);
   const [log, setLog] = useState<{ login: string; timestamp: number; }[]>([]);
@@ -50,7 +54,7 @@ const Game = () => {
   const [score, setScore] = useState(0);
   const [round, setRound] = useState(1);
   const [modalOpen, setModalOpen] = useState(true);
-
+  const [isGameOver, setGameOver] = useState(false);
   const stompClient = useStompClient();
   useEffect(() => {
     setNewRound();
@@ -58,7 +62,9 @@ const Game = () => {
 
   useSubscription('/topic/reply/endRound', (message) => {
     setIsWaiting(message.body === 'NEXT_ROUND');
-    console.log("toto tata" + message.body)
+  });
+  useSubscription('/topic/reply/endGame', (message) => {
+    setGameOver(message.body === 'END_GAME');
   });
   useEffect(() => {
     if (isWaiting) {
@@ -77,29 +83,32 @@ const Game = () => {
     setTargetItem(getRandomItem(items));
     setShuffledItems(shuffleArray([...items]));
     setCountdown(5);
+    if (round >= nbRound){
+      setGameOver(true);
+      const playerInfo = { login: userLogin, timestamp: Date.now() };
+      sendToHost('END_GAME', 0, playerInfo, round);
+    }
   };
 
-  function sendSocketAfterClick(points: number, playerInfo: { login: string; timestamp: number }, roundNumber: number) {
+  function sendToHost(actionType: string, points: number, playerInfo: { login: string; timestamp: number }, roundNumber: number) {
     if (stompClient) {
       stompClient.publish({ destination: '/app/sendToHost',
         body: JSON.stringify({
-          actionType: 'FASTER_WIN' , from: playerInfo.login, date: playerInfo.timestamp,
+          actionType: actionType, from: userLogin, date: playerInfo.timestamp,
           nbPoints:points, gameName:"clickGame", roundNumber: roundNumber,partyId: "123"}) });
     }
   }
+  function sendSocketAfterClick(points: number, playerInfo: { login: string; timestamp: number }, roundNumber: number) {
+    sendToHost('FASTER_WIN', points, playerInfo, roundNumber);
+  }
   function sendSocketEndRound(points: number, playerInfo: { login: string; timestamp: number }, roundNumber: number) {
-    if (stompClient) {
-      stompClient.publish({ destination: '/app/sendToHost',
-        body: JSON.stringify({
-          actionType: 'END_ROUND' ,from: playerInfo.login, date: playerInfo.timestamp,
-          nbPoints:points, gameName:"clickGame", roundNumber: roundNumber, partyId: "123"}) });
-    }
+    sendToHost('END_ROUND', points, playerInfo, roundNumber);
   }
 
 
   const handleClick = (item: string) => {
     const timestamp = Date.now();
-    const playerInfo = { login: 'andy', timestamp };
+    const playerInfo = { login: userLogin, timestamp };
 
     if (item === targetItem) {
       console.log('Correct item clicked!', playerInfo);
@@ -111,7 +120,7 @@ const Game = () => {
         console.log(`${bonusOrMalus.type} applied: ${bonusOrMalus.points} points!`, playerInfo);
       }
       setLog((prevLog) => [...prevLog, playerInfo] as { login: string; timestamp: number; }[]);
-      setScore((prevScore) => prevScore + points);
+      // setScore((prevScore) => prevScore + points);
       sendSocketAfterClick(points, playerInfo, round);
       sendSocketEndRound(points, playerInfo, round);
       // setIsWaiting(true);
@@ -134,6 +143,20 @@ const Game = () => {
     setModalOpen(false);
   };
 
+  if(isGameOver){
+    return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent>
+          <div className="flex flex-col items-center justify-center p-6">
+            <h2>FINITO</h2>
+          </div>
+        </DialogContent>
+      </Dialog>
+        </div>
+      )
+  }
+  else {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
@@ -188,6 +211,7 @@ const Game = () => {
       </Card>
     </div>
   );
+  }
 };
 
 export default Game;

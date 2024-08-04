@@ -78,11 +78,9 @@ public class WebSocketController {
                 Logger logger = LoggerFactory.getLogger(WebSocketController.class);
                 logger.info("\nReceived message type : " + message.getActionType() + "\n \n with payload : " + message + "from socketId : " + sessionId);
                 logger.info(SecurityContextHolder.getContext().toString());
-                Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
-                User currentUser = userRepository.findByLoginOrMail(loggedInUser.getName(), "").orElse(null);
+                User currentUser = userRepository.findByLoginOrMail(message.getFrom(), "").orElse(null);
                 GameScore gameScore = webSocketService.saveSocket(message, currentUser);
                 if(gameScore.getActionType().equals(ActionType.END_ROUND)) {
-                        logger.info("END ROUND TOTO");
                         messagingTemplate.convertAndSend("/topic/reply/endRound", "NEXT_ROUND");
                 }
                 if(gameScore.getActionType().equals(ActionType.END_GAME)) {

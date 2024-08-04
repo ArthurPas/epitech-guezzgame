@@ -22,10 +22,10 @@ export const login = async (registrationData: LoginSchemaType) => {
             throw new Error(`Erreur ${response.status}: ${errorData.error || response.statusText}`);
         }
 
-        return response.ok;
-
-        // const data = await response.json(); //For now the back-end responds with a string, not with a token, so we don't need to do a response.json()
-        // return data;
+        const data = await response.json(); //For now the back-end responds with a string, not with a token, so we don't need to do a response.json()
+                                            // et bah maintenant si {"token": "ey.......", "expireIn": 36000}
+                                            // ;)
+        return data;
     } catch (error) {
         if (error instanceof Error && error.message.length < 100) {
             throw new Error(error.message);
@@ -57,7 +57,8 @@ export const register = async (registrationData: RegisterSchemaType) => {
             throw new Error(`Erreur ${response.status}: ${errorText || response.statusText}`);
         }
 
-        const data = await response; //For now the back-end responds with a string, not with a token, so we don't need to do a response.json()
+        const data = await response.json(); //For now the back-end responds with a string, not with a token, so we don't need to do a response.json()
+
         return data;
     } catch (error) {
         if (error instanceof Error && error.message.length < 100) {
