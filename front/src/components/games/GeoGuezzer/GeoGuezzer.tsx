@@ -1,12 +1,16 @@
-
 import React, { useEffect, useState } from 'react';
 import Map from "./Map";
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
 import EndGame from '@/pages/end-game';
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 
 const GeoGuezzer = () => {
 
+    //Gestion de la modale
+    const [showModal, setShowModal] = useState<boolean>(true);
+
+    //Logique
     const [latitudeImage, setLatitudeImage] = useState<number | null>(null);
     const [longitudeImage, setLongitudeImage] = useState<number | null>(null);
     const [distance, setDistance] = useState<number>(100000);
@@ -16,13 +20,11 @@ const GeoGuezzer = () => {
     const [nbTours, setNbTours] = useState<number>(1);
     const [score, setScore] = useState<number>(0);
 
-
     //API
     const token = 'MLY|7972898332774780|a736b008c14ff5587858c9e0cfc23f05';    
     const keys = ['926837688198923', '550092599700936', '304829904534967'];
-  
 
-     // Calcul du nombre de kilomètres entre le clic de la map et celui de l'image
+    // Calcul du nombre de kilomètres entre le clic de la map et celui de l'image
     function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
         const toRadians = (degree: number): number => degree * (Math.PI / 180);
         const R: number = 6371; // Rayon de la Terre en kilomètres
@@ -72,18 +74,14 @@ const GeoGuezzer = () => {
         fetchImageDetails();
       }, [nbImage, keys, token]);
 
-
   const ValideClick_1Joueur = () => {
-    
-    // Afficher la distance actuelle
     console.log("Distance : ", distance);
     setNbTours(nbTours+1);
     
     setScore(prevScore => {
       // Calculer le nouveau score
-      const newScore = distance < 60 ? prevScore + 300 : prevScore;
+      const newScore = distance < 60 ? prevScore + 300 : prevScore;      
       
-      // Afficher un message en console en fonction de la distance
       if (distance < 50) {
         console.log("Gagné !");
       } else {
@@ -95,17 +93,41 @@ const GeoGuezzer = () => {
         
       console.log("Score :", newScore);
       return newScore;
-
     });
   };
 
   if (nbTours > 3) {
     // Afficher uniquement le composant EndGame lorsque nbTours > 3
     return <EndGame />;
-}
+  }
 
-    return (
-        <div>
+  return (
+    <div>
+        {showModal && (
+            <Dialog open={showModal} onOpenChange={() => {}}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className='text-center'>Règles du jeu</DialogTitle>
+                        
+                    </DialogHeader>
+                    <DialogDescription className='text-center'>
+                                            
+                        Devinez le lieu exact où vous êtes en vous basant uniquement sur l'environnement de l'image du haut. Plus votre réponse est précise et rapide, plus vous marquez de points !
+                        Attention, une réponse trop éloignée ne rapporte pas de points ! 
+
+                    </DialogDescription>
+                    <DialogFooter>
+                      <div className="flex justify-center w-full">
+                        <DialogClose asChild>
+                            <Button onClick={() => setShowModal(false)}>Jouer</Button>
+                        </DialogClose>
+                      </div>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        )}
+        {!showModal && (
+          <div>
             <div className="flex items-center justify-center h-[30vh] m-8">
                 <iframe
                 src={`https://www.mapillary.com/embed?image_key=${keys[nbImage]}&style=photo`}
@@ -120,11 +142,10 @@ const GeoGuezzer = () => {
             <div className="flex justify-center m-8">
                 <Button onClick={ValideClick_1Joueur} className=" bg-orange-300 mb-10">Valider la position</Button>
             </div>
-
-            {nbTours > 3 && <EndGame />}
-        </div>
-     
-    );
+          </div>
+        )}
+    </div>
+  );
 };
 
 export default GeoGuezzer;
