@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { CarouselDApiDemo } from '@/components/ui/CarouselDApiDemo';
 import { useState } from 'react';
 
-const games = ['BlindTest', 'MovieGuesser', 'TapTaupes', 'Titre', 'GeoGuessr', 'JungleSpeed'];
+import { games } from '@/lib/constants';
 
 const Gameplay = () => {
     const [currentGame, setCurrentGame] = useState('');
