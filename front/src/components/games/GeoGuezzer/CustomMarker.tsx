@@ -13,7 +13,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({ position, children }) => {
   console.log("le composant CustomMarker est bien rendu");
   const map = useMap();
 
-  const imageLocation = `/location.png`;
+  const imageLocation = `/Marqueur2.svg`;
 
   const customIcon = L.icon({
     iconUrl: imageLocation,

@@ -1,51 +1,100 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
-import axios from 'axios';
 import EndGame from '@/pages/end-game';
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
+import { useGetDataPictureGeo } from '@/hooks/dataPictureGeo';
 
-const Map = dynamic(() => import('./Map'), { ssr: false }); // Dynamically import Map to disable SSR
+const Map = dynamic(() => import('./Map'), { ssr: false });
 
 const GeoGuezzer = () => {
+
+    
     // Gestion des modales
     const [showModalRules, setShowModalRules] = useState<boolean>(true);
     const [showModalFeedback, setShowModalFeedback] = useState<boolean>(false);
-
-    // Fin du jeu
-    const [showEndGame, setShowEndGame] = useState<boolean>(false);
-
-    // Logique
-    const [latitudeImage, setLatitudeImage] = useState<number | null>(null);
-    const [longitudeImage, setLongitudeImage] = useState<number | null>(null);
-    const [distance, setDistance] = useState<number>(100000);
-    const [nbImage, setNbImage] = useState<number>(1);
+    const [showReponse, setShowReponse] = useState<boolean>(false);
+    const [msgButton, setMsgButton] = useState<string>("Valider position");
 
     // Logique de jeu
-    const [nbTours, setNbTours] = useState<number>(1);
+    const [latitudeImage, setLatitudeImage] = useState<number | null>(null);
+    const [longitudeImage, setLongitudeImage] = useState<number | null>(null);        
+
+    //Gestion des tours
+    const [nbTours, setNbTours] = useState<number>(1); // Nombre de tours en cours de jeu
+    const nbTotalTours = 4;  // Nombre total de tours
+
+    // Récupération des images en début de partie
+    const { data, isError, isPending } = useGetDataPictureGeo(nbTotalTours);
+    const [images, setImages] = useState<any[]>([]);
+ 
+
+    //Gestion fin de jeu
+    const [distance, setDistance] = useState<number>(100000);
     const [score, setScore] = useState<number>(0);
+    const [showEndGame, setShowEndGame] = useState<boolean>(false);
 
-    // API
-    const token = 'MLY|7972898332774780|a736b008c14ff5587858c9e0cfc23f05';
-    const keys = ['926837688198923', '550092599700936', '304829904534967'];
+   
+    // Récupération des images à retrouver
+    useEffect(() => {
+        if (isPending) {
+            console.log("Loading data...");
+            return;
+        }
 
-    // Calcul du nombre de kilomètres entre le clic de la map et celui de l'image
+        if (isError) {
+            console.error("Error fetching data");
+            return;
+        }
+
+        if (data) {
+            console.log("Images récupérées : ", data);
+
+            // Ajouter les nouvelles données au tableau d'images, en s'assurant de ne pas dupliquer les données
+            setImages(prevImages => {
+                const updatedImages = [...prevImages, ...data];
+                return updatedImages;
+            });
+        }
+
+    }, [data, isPending, isError]);
+
+    // Evolution de la latitude et la longitude de l'image en cours
+    useEffect(() => {
+        if (images.length > 0 && images[nbTours - 1]) {
+            const [lon, lat] = images[nbTours - 1].geometry.coordinates;
+            setLatitudeImage(lat);
+            setLongitudeImage(lon);
+
+            console.log("Coordonnées de l'image actuelle : ", { lat, lon });
+        } else {
+            console.warn("Aucune image disponible pour ce tour.");
+        }
+    }, [nbTours, images]);
+
+    // Calcul du nombre de kilomètres entre le clic sur la map et l'image
     function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
         const toRadians = (degree: number): number => degree * (Math.PI / 180);
         const R: number = 6371; // Rayon de la Terre en kilomètres
+    
+        // Conversion des degrés en radians
         const dLat: number = toRadians(lat2 - lat1);
         const dLon: number = toRadians(lon2 - lon1);
+    
+        // Calcul de la distance
         const a: number =
             Math.sin(dLat / 2) * Math.sin(dLat / 2) +
             Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
         const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c; // Distance en kilomètres
+        
+        // Retourne la distance en kilomètres
+        return R * c;
     }
 
     // Actions au clic sur la map
     const handleMapClick = (latlng: { lat: number; lng: number }) => {
-        console.log('Position du clic événement EcranDeJeu:', latlng);
+        console.log('Position du clic :', latlng);
 
         if (latitudeImage !== null && longitudeImage !== null) {
             const calculatedDistance = haversineDistance(
@@ -54,62 +103,46 @@ const GeoGuezzer = () => {
                 latlng.lat,
                 latlng.lng
             );
+
             setDistance(calculatedDistance);
-            console.log('Distance fin de méthode de calcul:', calculatedDistance);
+           
+
+            console.log('Distance calculée :', calculatedDistance);
+        } else {
+            console.warn("Coordonnées de l'image non disponibles.");
         }
     };
 
-    // Récupération des images à retrouver
-    useEffect(() => {
-        const fetchImageDetails = async () => {
-            try {
-                const response = await axios.get(`https://graph.mapillary.com/${keys[nbImage]}?access_token=${token}`);
-                const imageData = response.data;
-
-                if (imageData.geometry && imageData.geometry.coordinates) {
-                    const [lon, lat] = imageData.geometry.coordinates;
-                    setLatitudeImage(lat);
-                    setLongitudeImage(lon);
-                }
-            } catch (error) {
-                console.error('Error fetching image details:', error);
-            }
-        };
-
-        if (typeof window !== 'undefined') {
-            fetchImageDetails();
-        }
-    }, [nbImage, keys, token]);
-
     const ValideClick_1Joueur = () => {
-        console.log("Distance : ", distance);
-        setNbTours(nbTours + 1);
 
-        setScore(prevScore => {
-            // Calculer le nouveau score
-            const newScore = distance < 60 ? prevScore + 300 : prevScore;
-
-            if (distance < 100) {
-                console.log("Gagné !");
-            } else {
-                console.log("Perdu !");
-            }
-
-            console.log("Score :", newScore);
-            return newScore;
-        });
-
-        // Ouvrir la modale de feedback après la validation
-        setShowModalFeedback(true);
+        if(showReponse == false)  //Valider position
+        {           
+            console.log("Distance : ", distance);
+           
+            setScore(prevScore => {
+                const newScore = distance < 300 ? prevScore + 300 : prevScore;
+                console.log(distance < 300 ? "Gagné !" : "Perdu !");
+                console.log("Score :", newScore);
+                return newScore;
+            });
+            setShowReponse(true);
+            setMsgButton("Voir score");
+        }
+        else if (showReponse == true) //Voir score
+        {
+            setShowReponse(false);
+            setShowModalFeedback(true);
+            setMsgButton("Valider position");
+        }       
     };
 
     const handleFeedbackClose = () => {
-        if (nbTours > keys.length) {
+        if (nbTours >= nbTotalTours) {
             setShowModalFeedback(false);
             setShowEndGame(true);
         } else {
+            setNbTours(prevNbTours => prevNbTours + 1);
             setShowModalFeedback(false);
-            setNbImage(prevNbImage => (prevNbImage === keys.length - 1 ? 0 : prevNbImage + 1));
         }
     };
 
@@ -127,7 +160,7 @@ const GeoGuezzer = () => {
                             <DialogTitle className='text-center'>Règles du jeu</DialogTitle>
                         </DialogHeader>
                         <DialogDescription className='text-center'>
-                            Devinez le lieu exact où vous êtes en vous basant uniquement sur l'environnement de l'image du haut. Plus votre réponse est précise et rapide, plus vous marquez de points ! <br/>
+                            Devinez le lieu exact où vous êtes en vous basant uniquement sur l'environnement de l'image du haut. Plus votre réponse est précise et rapide, plus vous marquez de points ! <br />
                             Attention, une réponse trop éloignée ne rapporte pas de points !
                         </DialogDescription>
                         <DialogFooter>
@@ -167,23 +200,39 @@ const GeoGuezzer = () => {
             )}
 
             {/* Affichage du jeu */}
-            {!showModalRules && !showModalFeedback && (
-                <div>
-                    <div className="flex items-center justify-center h-[30vh] m-8">
-                        <iframe
-                            src={`https://www.mapillary.com/embed?image_key=${keys[nbImage]}&style=photo`}
-                            height="100%"
-                            width="100%"
-                            title="Mapillary Street View"
-                        />
-                    </div>
-                    <div className="flex items-center justify-center m-8 rounded-full">
-                        <Map onMarkerPositionChange={handleMapClick} />
-                    </div>
-                    <div className="flex justify-center m-8">
-                        <Button onClick={ValideClick_1Joueur} className="bg-orange-300 mb-10">Valider la position</Button>
+            {!showModalRules && !showModalFeedback && images.length > 0 && (
+            <div className='h-[90vh] flex flex-col m-10'>
+            <div className="flex flex-grow">
+
+
+                <div className="flex items-center justify-center flex-1 h-[80vh] m-2">
+                    <iframe
+                        src={`https://www.mapillary.com/embed?image_key=${images[nbTours - 1]?.id}&style=photo`}
+                        height="100%"
+                        width="100%"
+                        title="Mapillary Street View"/>
+
+                    <div className="flex items-center justify-center ml-5 mr-5">
+                        {latitudeImage !== null && longitudeImage !== null ? (
+                            <Map
+                                onMarkerPositionChange={handleMapClick}
+                                showReponse={showReponse}
+                                imageLocalisation={{ lat: latitudeImage, lng: longitudeImage }}
+                            />
+                            ) : (
+                            <p>Loading map...</p>
+                        )}
                     </div>
                 </div>
+                
+            </div>
+            <div className="flex justify-center m-8">
+                <Button onClick={ValideClick_1Joueur} className="bg-orange-300">{msgButton}</Button>
+            </div>
+        </div>
+        
+           
+            
             )}
         </div>
     );
