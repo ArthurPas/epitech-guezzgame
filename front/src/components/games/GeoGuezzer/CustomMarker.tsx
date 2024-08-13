@@ -1,7 +1,7 @@
 import React from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { Marker, useMap } from "react-leaflet";
 
 interface CustomMarkerProps {
   position: L.LatLngExpression;
@@ -11,7 +11,7 @@ interface CustomMarkerProps {
 const CustomMarker: React.FC<CustomMarkerProps> = ({ position, children }) => {
 
   console.log("le composant CustomMarker est bien rendu");
-  const map = useMap();
+  //const map = useMap();
 
   const imageLocation = `/Marqueur2.svg`;
 
@@ -21,7 +21,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({ position, children }) => {
     iconAnchor: [32, 64],
   });
 
-  // En cas de problème avec le chemin de l'image
+
 if (!customIcon.options.iconUrl) {
   console.error("Image du marqueur non chargée. Vérifiez le chemin de l'image.");
 }

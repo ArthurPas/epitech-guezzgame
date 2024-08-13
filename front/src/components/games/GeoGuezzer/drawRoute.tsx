@@ -22,8 +22,7 @@ const DrawRoute: React.FC<RouteProps> = ({ source, destination }) => {
         }
 
         const data = await response.json();
-
-        // Vérification du format de la réponse pour TypeScript
+        
         if (!data || !Array.isArray(data.waypoints)) {
           throw new Error("Invalid data format");
         }

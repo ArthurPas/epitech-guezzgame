@@ -21,13 +21,13 @@ export default function InteractiveMap({ onMarkerPositionChange, showReponse, im
 
   // Composant pour gérer les événements de clic sur la carte
   function ClickableMap() {
-    const map = useMap(); // Obtenez une instance de la carte
-    mapRef.current = map; // Enregistrez la carte dans la référence
+    const map = useMap(); 
+    mapRef.current = map;
 
     useMapEvents({
       click(e) {
         if (showReponse) {
-          return; // Ignore les clics si showReponse est false
+          return;
         }
 
         console.log("Carte cliquée : début du traitement");
@@ -39,7 +39,6 @@ export default function InteractiveMap({ onMarkerPositionChange, showReponse, im
         setClickedPosition({ lat, lng });
         onMarkerPositionChange({ lat, lng });
 
-        // Déplacez la vue de la carte vers la position cliquée
         map.flyTo(e.latlng, map.getZoom());
       }
     });
@@ -53,7 +52,7 @@ export default function InteractiveMap({ onMarkerPositionChange, showReponse, im
         [imageLocalisation.lat, imageLocalisation.lng],
         [clickedPosition.lat, clickedPosition.lng],
       ]);
-      mapRef.current?.fitBounds(bounds); // Ajuste la vue de la carte pour inclure les deux points
+      mapRef.current?.fitBounds(bounds);
     }
   }, [clickedPosition, showReponse, imageLocalisation]);
 
@@ -77,8 +76,8 @@ export default function InteractiveMap({ onMarkerPositionChange, showReponse, im
           />
           <DrawCircle 
             imageLocalisation={imageLocalisation} 
-            radius={300000}  // Rayon de 300 km en mètres
-            color="purple"  // Couleur violette
+            radius={300000}  
+            color="purple"
           />
           <DrawCircle 
             imageLocalisation={imageLocalisation} 

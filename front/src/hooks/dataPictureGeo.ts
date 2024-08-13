@@ -12,7 +12,7 @@ const fetchDataPictureGeo = async (nbImage: number): Promise<DataPictureGeoType>
     return dataPictureSchema.parse(data);
 };
 
-// Modification pour garantir des indices uniques
+// Génération des indexs uniques
 const getRandomIndices = (num: number, max: number): number[] => {
     const indices: number[] = [];
     while (indices.length < num) {
@@ -24,35 +24,32 @@ const getRandomIndices = (num: number, max: number): number[] => {
     return indices;
 };
 
-// Fonction unique pour récupérer et traiter les images
+// Récupérer et traiter les images
 const fetchAndHandleImages = async (nbTours: number): Promise<DataPictureGeoType[]> => {
     try {
-        // Récupération des indices aléatoires uniques
+
         const randomIndices = getRandomIndices(nbTours, keys.length);
         console.log("Indices aléatoires uniques générés : ", randomIndices);
 
-        // Création des promesses pour récupérer les images
         const fetchImagePromises = randomIndices.map(nbImage => 
             fetchDataPictureGeo(nbImage)
         );
 
-        // Attente de toutes les promesses et gestion des résultats
         const images = await Promise.all(fetchImagePromises);
         console.log("Les images renvoyées du hook : ", images);
 
-        // Retourner les images pour que useQuery puisse les utiliser
         console.log("Les images envoyées : ", images);
         return images;
 
     } catch (error) {
         console.error('Error fetching images:', error);
-        throw error; // Lancer l'erreur pour que useQuery puisse la gérer
+        throw error;
     }
 };
 
 export const useGetDataPictureGeo = (nbTours: number) => {
     return useQuery<DataPictureGeoType[], Error>({
-        queryKey: [`dataPictureGeo/${nbTours}`], // Utilisation de queryKey pour identifier la requête
-        queryFn: () => fetchAndHandleImages(nbTours), // Appel de fetchImages avec nbTours pour récupérer plusieurs images
+        queryKey: [`dataPictureGeo/${nbTours}`], 
+        queryFn: () => fetchAndHandleImages(nbTours), 
     });
 };

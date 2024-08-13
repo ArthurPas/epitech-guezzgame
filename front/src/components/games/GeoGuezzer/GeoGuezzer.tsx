@@ -89,7 +89,7 @@ const GeoGuezzer = () => {
         const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         
         // Retourne la distance en kilomètres
-        return R * c;
+        return Math.round(R * c);
     }
 
     // Actions au clic sur la map
@@ -121,7 +121,7 @@ const GeoGuezzer = () => {
            
             setScore(prevScore => {
                 const newScore = distance < 300 ? prevScore + 300 : prevScore;
-                console.log(distance < 300 ? "Gagné !" : "Perdu !");
+                console.log(distance < 300 ? "Gagné !" : "Trop loin, pas de points !");
                 console.log("Score :", newScore);
                 return newScore;
             });
@@ -179,12 +179,12 @@ const GeoGuezzer = () => {
                 <Dialog open={showModalFeedback} onOpenChange={() => { }}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle className='text-center'>Retour</DialogTitle>
+                            <DialogTitle className='text-center'>Fin de tour</DialogTitle>
                         </DialogHeader>
                         <DialogDescription className='text-center'>
-                            {distance < 100 ? "Gagné" : "Perdu"} <br />
+                            {distance < 300 ? "Gagné" : "Trop loin, pas de points !"} <br />
                             {"Ton score : "}{score} <br />
-                            {"Distance : "}{distance} <br />
+                            {"Distance : "}{distance}{" km"} <br />
                         </DialogDescription>
                         <DialogFooter>
                             <div className="flex justify-center w-full">
