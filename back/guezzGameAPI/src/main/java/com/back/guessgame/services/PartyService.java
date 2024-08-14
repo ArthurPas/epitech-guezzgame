@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class PartyService {
@@ -48,11 +47,12 @@ public class PartyService {
 		return partyRepository.findById(id).map(GeneralPartyDto::new).stream().findFirst();
 	}
 
-	public List<GeneralPartyDto> getPartyByPartyCode(long partyCode) {
-		List<GeneralPartyDto> toto = partyRepository.findAll().stream().filter(party -> party.getPartyCode() == partyCode).map(GeneralPartyDto::new).collect(Collectors.toList());
-		logger.info(toto.toString());
-		return toto;
-
+	public List<GeneralPartyDto> getPartyByPartyCode(Long partyCode) {
+		List<GeneralPartyDto> parties = new ArrayList<>();
+		for (Party party : partyRepository.findAllByPartyCode(partyCode)) {
+			parties.add(new GeneralPartyDto(party));
+		}
+		return parties;
 	}
 
 	public PartyResultDto getResultScores(long partyCode) {

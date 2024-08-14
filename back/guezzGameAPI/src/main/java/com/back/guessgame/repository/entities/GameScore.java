@@ -22,8 +22,7 @@ public class GameScore {
 	private User user;
 	@ManyToOne(targetEntity = Game.class)
 	private Game game;
-	@ManyToOne(targetEntity = Party.class)
-	private Party party;
+	private Long partyCode;
 	private int nbRound;
 	private ActionType actionType;
 	private int points;

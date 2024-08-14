@@ -41,6 +41,7 @@ public class WebSocketService {
 		GameScore gameScore = new GameScore();
 		gameScore.setUser(user);
 		gameScore.setGame(gameRepository.findOneByName(socketContent.getGameName()));
+		gameScore.setPartyCode(socketContent.getPartyId());
 		gameScore.setActionType(socketContent.getActionType());
 		gameScore.setPoints(socketContent.getNbPoints());
 		gameScore.setDate(socketContent.getDate());

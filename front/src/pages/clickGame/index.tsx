@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useStompClient,useSubscription } from 'react-stomp-hooks';
 import { jwtDecode } from "jwt-decode";
+import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 let userLogin = "anonymous"
 if (typeof window !== "undefined") {
   const token = localStorage.getItem("authToken") || '';
   const jwtDecoded = jwtDecode(token);
   userLogin = jwtDecoded.sub || "anonymous";
 }
-const items = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
+const items = [' 1', ' 2', ' 3', ' 4', ' 5'];
 const bonuses = [
   { type: 'Bonus', points: 5 },
   { type: 'Bonus', points: 10 },
@@ -45,7 +46,8 @@ const isOverlapping = (pos1: { x: number; y: number; }, pos2: { x: number; y: nu
 };
 
 const Game = () => {
-  const nbRound = 2;
+  const nbRound = 1;
+  const [result, setResult] = useState([{login: "", score: 0}]);
   const [targetItem, setTargetItem] = useState('');
   const [shuffledItems, setShuffledItems] = useState<string[]>([]);
   const [log, setLog] = useState<{ login: string; timestamp: number; }[]>([]);
@@ -63,9 +65,19 @@ const Game = () => {
   useSubscription('/topic/reply/endRound', (message) => {
     setIsWaiting(message.body === 'NEXT_ROUND');
   });
-  useSubscription('/topic/reply/endGame', (message) => {
+  useSubscription('/topic/reply/endGame', (message => {
     setGameOver(message.body === 'END_GAME');
-  });
+  }));
+  useSubscription('/topic/reply/score', (message => {
+    console.log(message.body);
+    const parsedResult = JSON.parse(message.body);
+    if (Array.isArray(parsedResult)) {
+      setResult(parsedResult);
+    } else {
+      setResult([]);
+    }
+  }));
+
   useEffect(() => {
     if (isWaiting) {
       if (countdown > 0) {
@@ -82,8 +94,8 @@ const Game = () => {
   const setNewRound = () => {
     setTargetItem(getRandomItem(items));
     setShuffledItems(shuffleArray([...items]));
-    setCountdown(5);
-    if (round >= nbRound){
+    setCountdown(1);
+    if (round > nbRound){
       setGameOver(true);
       const playerInfo = { login: userLogin, timestamp: Date.now() };
       sendToHost('END_GAME', 0, playerInfo, round);
@@ -120,7 +132,7 @@ const Game = () => {
         console.log(`${bonusOrMalus.type} applied: ${bonusOrMalus.points} points!`, playerInfo);
       }
       setLog((prevLog) => [...prevLog, playerInfo] as { login: string; timestamp: number; }[]);
-      // setScore((prevScore) => prevScore + points);
+      setScore((prevScore) => prevScore + points);
       sendSocketAfterClick(points, playerInfo, round);
       sendSocketEndRound(points, playerInfo, round);
       // setIsWaiting(true);
@@ -145,15 +157,31 @@ const Game = () => {
 
   if(isGameOver){
     return (
+        <>
+        <h1>Résultat !</h1>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-          <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent>
-          <div className="flex flex-col items-center justify-center p-6">
-            <h2>FINITO</h2>
-          </div>
-        </DialogContent>
-      </Dialog>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[100px]">Classement</TableHead>
+                <TableHead className="w-[100px]">Pseudo</TableHead>
+                <TableHead>Points</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {result.map((player, index) => (
+                  <TableRow key={player.login}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{player.login}</TableCell>
+                    <TableCell>{player.score}</TableCell>
+                    </TableRow>))
+              }
+            </TableBody>
+          </Table>
         </div>
+
+        </>
       )
   }
   else {

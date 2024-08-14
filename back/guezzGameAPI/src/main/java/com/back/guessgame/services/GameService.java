@@ -7,7 +7,6 @@ import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.GameDto;
 import com.back.guessgame.repository.entities.Game;
 import com.back.guessgame.repository.entities.GameScore;
-import com.back.guessgame.repository.entities.Party;
 import com.back.guessgame.repository.entities.User;
 import org.springframework.stereotype.Service;
 
@@ -54,8 +53,8 @@ public class GameService {
 
 	// exemple : if i was the user who click the faster I will get nb points / 1 (by my rank)
 	// The 5th will have nb points  / 5
-	public int nbPointsByDate(Game game, User user, Party party) {
-		List<GameScore> gameScore = gameScoreRepository.findAllByPartyAndGame(party, game);
+	public int nbPointsByDate(Game game, User user, Long partyCode) {
+		List<GameScore> gameScore = gameScoreRepository.findAllByPartyCodeAndGame(partyCode, game);
 		int points = 0;
 		List<GameScore> orderedByTime = gameScore.stream().sorted((gs1, gs2) -> gs1.getDate().compareTo(gs2.getDate())).toList();
 		for (int i = 0; i < orderedByTime.size(); i++) {
@@ -66,21 +65,21 @@ public class GameService {
 		return points;
 	}
 
-	public long getTheFasterUserId(Game game, Party party){
-		List<GameScore> gameScore = gameScoreRepository.findAllByPartyAndGame(party, game);
+	public long getTheFasterUserId(Game game, Long partyCode) {
+		List<GameScore> gameScore = gameScoreRepository.findAllByPartyCodeAndGame(partyCode, game);
 		List<GameScore> orderedByTime = gameScore.stream().sorted((gs1, gs2) -> gs1.getDate().compareTo(gs2.getDate())).toList();
 		return orderedByTime.get(0).getUser().getId();
 	}
 
-	public long getTheFasterUserIdByRound(Game game, Party party, int nbRound){
-		List<GameScore> gameScore = gameScoreRepository.findAllByPartyAndGameAndNbRound(party, game, nbRound);
+	public long getTheFasterUserIdByRound(Game game, Long partyCode, int nbRound) {
+		List<GameScore> gameScore = gameScoreRepository.findAllByPartyCodeAndGameAndNbRound(partyCode, game, nbRound);
 		List<GameScore> orderedByTime = gameScore.stream().sorted((gs1, gs2) -> gs1.getDate().compareTo(gs2.getDate())).toList();
 		return orderedByTime.get(0).getUser().getId();
 	}
 
-	public int calculatePointsByUserByGame(Game game, User user, Party party) {
+	public int calculatePointsByUserByGame(Game game, User user, Long partyCode) {
 		int points = 0;
-		List<GameScore> gameScore = gameScoreRepository.findAllByUserAndGameAndParty(user, game, party);
+		List<GameScore> gameScore = gameScoreRepository.findAllByUserAndGameAndPartyCode(user, game, partyCode);
 		for (GameScore gs : gameScore) {
 			switch (gs.getActionType()) {
 				case ADD_POINTS:
@@ -90,13 +89,13 @@ public class GameService {
 					points -= gs.getPoints();
 					break;
 				case ADD_POINTS_BY_DATE:
-					points += this.nbPointsByDate(game, user, party);
+					points += this.nbPointsByDate(game, user, partyCode);
 				case FASTER_WIN:
-					if (user.getId().equals(this.getTheFasterUserId(game, party))) {
+					if(user.getId().equals(this.getTheFasterUserId(game, partyCode))) {
 						points += gs.getPoints();
 					}
 				case FASTER_WIN_BY_ROUND:
-					if (user.getId().equals(this.getTheFasterUserIdByRound(game, party, gs.getNbRound()))) {
+					if(user.getId().equals(this.getTheFasterUserIdByRound(game, partyCode, gs.getNbRound()))) {
 						points += gs.getPoints();
 					}
 				default:

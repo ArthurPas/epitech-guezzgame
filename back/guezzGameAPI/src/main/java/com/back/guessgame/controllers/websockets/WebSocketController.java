@@ -1,9 +1,12 @@
 package com.back.guessgame.controllers.websockets;
 
+import com.back.guessgame.repository.PartyRepository;
 import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.ActionType;
+import com.back.guessgame.repository.dto.SocketScoreResult;
 import com.back.guessgame.repository.dto.WebSocketPayload;
 import com.back.guessgame.repository.entities.GameScore;
+import com.back.guessgame.repository.entities.Party;
 import com.back.guessgame.repository.entities.User;
 import com.back.guessgame.services.GameService;
 import com.back.guessgame.services.PartyService;
@@ -15,13 +18,12 @@ import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @CrossOrigin(origins = "http://*.guezzgame.fun*")
@@ -42,6 +44,8 @@ public class WebSocketController {
 
         @Autowired
         private AuthenticationManager authenticationManager;
+        @Autowired
+        private PartyRepository partyRepository;
 
 
         @MessageMapping("/broadcast")
@@ -85,11 +89,12 @@ public class WebSocketController {
                 }
                 if(gameScore.getActionType().equals(ActionType.END_GAME)) {
                         messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
-                        Map<User, Integer> userPoints = new HashMap<>();
-                        for (User user : partyService.getAllUserByPartyId(gameScore.getParty().getId())) {
-                                userPoints.put(user, gameService.calculatePointsByUserByGame(gameScore.getGame(), user, gameScore.getParty()));
+                        List<SocketScoreResult> userPoints = new ArrayList<>();
+                        for (Party party : partyRepository.findAllByPartyCode(gameScore.getPartyCode())) {
+                                User user = userRepository.findById(party.getUser().getId()).orElse(null);
+                                userPoints.add(new SocketScoreResult(user, gameService.calculatePointsByUserByGame(gameScore.getGame(), user, gameScore.getPartyCode())));
                         }
-                        messagingTemplate.convertAndSend("/topic/reply", userPoints);
+                        messagingTemplate.convertAndSend("/topic/reply/score", userPoints);
                 }
 
         }

@@ -24,6 +24,6 @@ public class Game {
 	private String rules;
 	private Boolean isRemoteCompatible;
 
-	@ManyToMany(mappedBy = "games")
+	@ManyToMany(mappedBy = "games", fetch = FetchType.EAGER)
 	private List<Party> parties;
 }
