@@ -18,5 +18,5 @@ public class WebSocketPayload {
 	private int nbPoints;
 	private String gameName;
 	private String roundNumber;
-	private long partyId;
+	private Long partyCode;
 }

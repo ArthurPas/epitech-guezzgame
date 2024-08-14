@@ -2,11 +2,8 @@ package com.back.guessgame.controllers.websockets;
 
 import com.back.guessgame.repository.PartyRepository;
 import com.back.guessgame.repository.UserRepository;
-import com.back.guessgame.repository.dto.ActionType;
-import com.back.guessgame.repository.dto.SocketScoreResult;
 import com.back.guessgame.repository.dto.WebSocketPayload;
 import com.back.guessgame.repository.entities.GameScore;
-import com.back.guessgame.repository.entities.Party;
 import com.back.guessgame.repository.entities.User;
 import com.back.guessgame.services.GameService;
 import com.back.guessgame.services.PartyService;
@@ -18,12 +15,8 @@ import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 @CrossOrigin(origins = "http://*.guezzgame.fun*")
@@ -81,21 +74,9 @@ public class WebSocketController {
         public void listenToSocket(WebSocketPayload message, @Header("simpSessionId") String sessionId) {
                 Logger logger = LoggerFactory.getLogger(WebSocketController.class);
                 logger.info("\nReceived message type : " + message.getActionType() + "\n \n with payload : " + message + "from socketId : " + sessionId);
-                logger.info(SecurityContextHolder.getContext().toString());
                 User currentUser = userRepository.findByLoginOrMail(message.getFrom(), "").orElse(null);
-                GameScore gameScore = webSocketService.saveSocket(message, currentUser);
-                if(gameScore.getActionType().equals(ActionType.END_ROUND)) {
-                        messagingTemplate.convertAndSend("/topic/reply/endRound", "NEXT_ROUND");
-                }
-                if(gameScore.getActionType().equals(ActionType.END_GAME)) {
-                        messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
-                        List<SocketScoreResult> userPoints = new ArrayList<>();
-                        for (Party party : partyRepository.findAllByPartyCode(gameScore.getPartyCode())) {
-                                User user = userRepository.findById(party.getUser().getId()).orElse(null);
-                                userPoints.add(new SocketScoreResult(user, gameService.calculatePointsByUserByGame(gameScore.getGame(), user, gameScore.getPartyCode())));
-                        }
-                        messagingTemplate.convertAndSend("/topic/reply/score", userPoints);
-                }
+                GameScore gameScore = webSocketService.createGameScore(message, currentUser);
+                webSocketService.processSocketAction(message, currentUser, gameScore, messagingTemplate);
 
         }
 
