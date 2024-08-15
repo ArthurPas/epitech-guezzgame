@@ -27,7 +27,9 @@ export const LoginForm = () => {
 
     const onSubmit = async (data: LoginSchemaType) => {
         await mutate(data, {
-            onSuccess: () => {
+            onSuccess: (response) => {
+                const token = response.token;
+                localStorage.setItem('authToken', token)
                 toast({ description: 'Connexion réussie' });
                 router.push('/');
             },

@@ -27,11 +27,11 @@ const actionTypeSchema = z.enum([
 
 const gameDataSchema = z.object({
     from: z.string(), // login
-    date: z.date(), // timestamp
+    date: z.number(), // timestamp
     nbPoints: z.number(),
-    gameName: z.enum(['blindTest', 'movieGuesser', 'clickGame', 'titre', 'geoGuesser', 'jungleSpeed']),
+    gameName: z.enum(['BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUESSER', 'JUNGLE_SPEED']),
     roundNumber: z.number(),
-    partyId: z.string(),
+    partyCode: z.string(),
     playerInfo: playerInfoSchema
 });
 
@@ -42,4 +42,5 @@ const sendToHostSchema = z.object({
 
 export type PlayerInfo = z.infer<typeof playerInfoSchema>;
 export type ActionType = z.infer<typeof actionTypeSchema>;
+export type GameData = z.infer<typeof gameDataSchema>;
 export type SendToHostType = z.infer<typeof sendToHostSchema>;

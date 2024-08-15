@@ -1,11 +1,16 @@
 import { Button } from '@/components/ui/button';
 import { useGetPopularMovies } from '@/hooks/tmdbAPI';
+import useGameWebSockets from '@/hooks/useGameWebSockets';
+import { GameData } from '@/interfaces/gameWebSockets';
 import { motion } from 'framer-motion';
+import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState, useRef } from 'react';
 
-export type MovieGuesserProps = {};
+export const MovieGuesser = () => {
+    const { isGameOver, isRoundOver, sendToHost } = useGameWebSockets();
+    console.log('isGameOver', isGameOver);
+    console.log('isRoundOver', isRoundOver);
 
-export const MovieGuesser = (props: MovieGuesserProps) => {
     // TMDB API
     const { data, isError, isPending, refetch } = useGetPopularMovies();
     console.log('data', data);
@@ -31,6 +36,23 @@ export const MovieGuesser = (props: MovieGuesserProps) => {
     const [playerGuess, setPlayerGuess] = useState<string>('');
 
     const inputRef = useRef<HTMLInputElement>(null);
+
+    let userLogin = 'anonymous';
+    if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('authToken') || '';
+        const jwtDecoded = jwtDecode(token);
+        userLogin = jwtDecoded.sub || 'anonymous';
+    }
+
+    let gameData: GameData = {
+        from: userLogin,
+        date: Date.now(), //TODO: Mettre à jour la date avant l'envoi de gameData
+        nbPoints: playerScore,
+        gameName: 'MOVIE_GUESSER',
+        roundNumber: currentRound,
+        partyCode: '124',
+        playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
+    };
 
     // Game starter
     useEffect(() => {
@@ -69,15 +91,18 @@ export const MovieGuesser = (props: MovieGuesserProps) => {
 
     const handleRoundEnd = async () => {
         console.log('Round ended');
+        sendToHost({ actionType: 'ADD_POINTS_BY_DATE', gameData });
         if (currentRound < maxRounds) {
             await refetch();
             setCurrentRound(currentRound + 1);
             setPosterIndexToDisplay(Math.floor(Math.random() * 20));
             setHasPlayerGuessed(false);
             setRoundTimer(Date.now());
+            sendToHost({ actionType: 'END_ROUND', gameData });
         } else {
             setGameActive(false);
             setGameEnded(true);
+            sendToHost({ actionType: 'END_GAME', gameData });
         }
     };
 
