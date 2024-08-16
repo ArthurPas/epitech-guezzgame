@@ -103,4 +103,20 @@ public class PartyService {
 	public List<User> getAllUserByPartyId(Long partyId) {
 		return userRepository.findAllByParties(partyRepository.findById(partyId).orElse(null));
 	}
+
+	public boolean codeExist(String code) {
+		return partyRepository.findByPartyCode(Long.valueOf(code)) != null;
+	}
+
+	public String generateCode() {
+		Random random = new Random();
+		int code = random.nextInt(9999);
+		while (codeExist(String.valueOf(code))) {
+			code = random.nextInt(9999);
+		}
+		return String.valueOf(code);
+	}
+
+	public void addUserToParty(Long partyCode) {
+	}
 }

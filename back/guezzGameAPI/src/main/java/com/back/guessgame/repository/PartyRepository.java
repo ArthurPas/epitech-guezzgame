@@ -11,4 +11,6 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
 	Party findOneById(Long partyId);
 
 	List<Party> findAllByPartyCode(Long partyCode);
+
+	Party findByPartyCode(Long partyCode);
 }
