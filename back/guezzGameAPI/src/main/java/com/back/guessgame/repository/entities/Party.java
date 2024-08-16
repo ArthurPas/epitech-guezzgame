@@ -25,7 +25,7 @@ public class Party {
 	private Integer nbPoints;
 
 	@Column(name = "party_code")
-	private long partyCode = -1;
+	private Long partyCode;
 
 	@ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
 	private User user;

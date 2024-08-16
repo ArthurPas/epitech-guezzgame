@@ -66,6 +66,8 @@ public class WebSocketService {
 
 	public List<SocketScoreResult> getScore(GameScore gameScore) {
 		List<SocketScoreResult> userPoints = new ArrayList<>();
+		Logger logger = LoggerFactory.getLogger(WebSocketController.class);
+		logger.warn(partyRepository.findAllByPartyCode(gameScore.getPartyCode()).get(0).toString());
 		for (Party party : partyRepository.findAllByPartyCode(gameScore.getPartyCode())) {
 			User user = userRepository.findById(party.getUser().getId()).orElse(null);
 			userPoints.add(new SocketScoreResult(user, gameService.calculatePointsByUserByGame(gameScore.getGame(), user, gameScore.getPartyCode())));
@@ -91,7 +93,7 @@ public class WebSocketService {
 			case "MovieGuesser":
 				movieGuesserGameplay(message, currentUser, gameScore, messagingTemplate);
 				break;
-			case "GeoGuezzer":
+			case "GEO_GUEZZER":
 				geoGuezzerGameplay(message, currentUser, gameScore, messagingTemplate);
 				break;
 		}
@@ -99,7 +101,7 @@ public class WebSocketService {
 
 	private void tapeTaupesGameplay(GameScore gameScore, SimpMessagingTemplate messagingTemplate) {
 		Logger logger = LoggerFactory.getLogger(WebSocketController.class);
-		logger.info("\nReceived message type : " + gameScore.getActionType() + "\n \n with payload : " + gameScore);
+		logger.info("\nReceived message type : " + gameScore.getActionType() + "\n \n with payload : " + gameScore.toString());
 		ActionType actionType = gameScore.getActionType();
 		switch (actionType) {
 			case START_GAME -> messagingTemplate.convertAndSend("/topic/reply/startGame", "START_GAME");
@@ -107,16 +109,30 @@ public class WebSocketService {
 			case END_GAME -> {
 				messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
 				messagingTemplate.convertAndSend("/topic/reply/score", getScore(gameScore));
-				clear(gameScore.getPartyCode());
+//				clear(gameScore.getPartyCode());
 			}
 		}
 	}
 
 	private void geoGuezzerGameplay(WebSocketPayload message, User currentUser, GameScore gameScore, SimpMessagingTemplate messagingTemplate) {
-
+		Logger logger = LoggerFactory.getLogger(WebSocketController.class);
+		logger.info("\nReceived message type : " + gameScore.getActionType() + "\n \n with payload : " + gameScore);
+		ActionType actionType = gameScore.getActionType();
+		switch (actionType) {
+			case START_GAME -> messagingTemplate.convertAndSend("/topic/reply/startGame", "START_GAME");
+			case END_ROUND -> messagingTemplate.convertAndSend("/topic/reply/endRound", "NEXT_ROUND");
+			case END_GAME -> {
+				logger.warn("finito");
+				messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
+				messagingTemplate.convertAndSend("/topic/reply/score", getScore(gameScore));
+				logger.warn(getScore(gameScore).toString());
+				clear(gameScore.getPartyCode());
+			}
+		}
 	}
 
 	private void movieGuesserGameplay(WebSocketPayload message, User currentUser, GameScore gameScore, SimpMessagingTemplate messagingTemplate) {
+
 	}
 
 	private void blindTestGameplay(WebSocketPayload message, User currentUser, GameScore gameScore, SimpMessagingTemplate messagingTemplate) {

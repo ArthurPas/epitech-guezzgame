@@ -1,12 +1,13 @@
 import { Chat } from '@/components/gameLayout/Chat';
 import { Players } from '@/components/gameLayout/Players';
+import GeoGuezzer from '@/components/games/GeoGuezzer/GeoGuezzer';
 import { MovieGuesser } from '@/components/games/MovieGuesser/MovieGuesser';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { CarouselDApiDemo } from '@/components/ui/CarouselDApiDemo';
 import { useState } from 'react';
 
-import { games } from '@/lib/constants';
+const games = ['BlindTest', 'MovieGuesser', 'TapTaupes', 'Titre', 'GeoGuezzer', 'JungleSpeed'];
 
 const Gameplay = () => {
     const [currentGame, setCurrentGame] = useState('');
@@ -38,6 +39,7 @@ const Gameplay = () => {
                     <Card className="h-[100%] rounded-[0.9rem] priority-rounded w-full lg:min-w-[98%] bg-purple-700 ">
                         {currentGame === 'BlindTest' && <CarouselDApiDemo />}
                         {currentGame === 'MovieGuesser' && <MovieGuesser />}
+                        {currentGame === 'GeoGuezzer' && <GeoGuezzer />}
                     </Card>
                 </div>
             </div>

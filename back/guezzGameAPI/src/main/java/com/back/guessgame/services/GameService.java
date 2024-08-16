@@ -1,5 +1,6 @@
 package com.back.guessgame.services;
 
+import com.back.guessgame.controllers.websockets.WebSocketController;
 import com.back.guessgame.repository.GameRepository;
 import com.back.guessgame.repository.GameScoreRepository;
 import com.back.guessgame.repository.PartyRepository;
@@ -8,6 +9,8 @@ import com.back.guessgame.repository.dto.GameDto;
 import com.back.guessgame.repository.entities.Game;
 import com.back.guessgame.repository.entities.GameScore;
 import com.back.guessgame.repository.entities.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -78,9 +81,13 @@ public class GameService {
 	}
 
 	public int calculatePointsByUserByGame(Game game, User user, Long partyCode) {
+
+		Logger logger = LoggerFactory.getLogger(GameService.class);
+		logger.warn("Calculating points for user " + user.getId() + " in game " + game.getId() + " in party " + partyCode);
 		int points = 0;
 		List<GameScore> gameScore = gameScoreRepository.findAllByUserAndGameAndPartyCode(user, game, partyCode);
 		for (GameScore gs : gameScore) {
+			logger.warn(gs.toString());
 			switch (gs.getActionType()) {
 				case ADD_POINTS:
 					points += gs.getPoints();

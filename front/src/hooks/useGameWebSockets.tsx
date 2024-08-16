@@ -6,6 +6,8 @@ export const useGameWebSockets = () => {
     const stompClient = useStompClient();
     const [isRoundOver, setIsRoundOver] = useState(false);
     const [isGameOver, setGameOver] = useState(false);
+    //TODO: un type pour le score
+    const [scoreResult, setScoreResult] = useState([{ login: '', score: 0 }]);
 
     // useSubscription allows to subscribe to a specific topic and execute a function when the back-end sends a new message on it
     useSubscription('/topic/reply/endRound', (message) => {
@@ -14,6 +16,15 @@ export const useGameWebSockets = () => {
 
     useSubscription('/topic/reply/endGame', (message) => {
         setGameOver(message.body === 'END_GAME');
+    });
+    useSubscription('/topic/reply/score', (message) => {
+        console.log(message.body + 'toto');
+        const parsedResult = JSON.parse(message.body);
+        if (Array.isArray(parsedResult)) {
+            setScoreResult(parsedResult);
+        } else {
+            setScoreResult([]);
+        }
     });
 
     // Allows to send a message to the back-end
@@ -29,6 +40,7 @@ export const useGameWebSockets = () => {
     return {
         isRoundOver,
         isGameOver,
+        scoreResult,
         sendToHost
     };
 };
