@@ -44,3 +44,44 @@ export const useParty = () => {
       mutationFn: (party: PlaylistToSend) => Party(party)
   });
 };
+
+export const fetchRandomCode= async () => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/party/generateRandomCode`);
+  const data = await response.json();
+  console.log(data.code);
+  return data.code;
+};
+
+export const useRandomCode = () => {
+  return useQuery<number>({
+    queryKey: [`/randomCode`],
+    queryFn: () => fetchRandomCode(),
+})};
+
+
+export const joinParty= async (partyCode:number, userLogin:string) => {
+  const token = localStorage.getItem('authToken')
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/party/join/${partyCode}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+      },
+        body: JSON.stringify({login: userLogin})
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+    }
+    return await response.json();
+} catch (error) {
+    console.error("Failed to join party", error);
+    throw error;
+}
+};
+
+export const useJoinParty = (userLogin:string) => {
+  return useMutation({
+    mutationKey: ['party'],
+    mutationFn: (partyCode: number) => joinParty(partyCode,userLogin)
+})};

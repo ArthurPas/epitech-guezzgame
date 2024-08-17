@@ -13,12 +13,24 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/RoomTab';
 import React from 'react';
 
-import { useParty, useGetGames } from '@/hooks/room';
+import { useParty, useGetGames, useRandomCode, useJoinParty } from '@/hooks/room';
 import { Game, PlaylistToSend } from '@/interfaces/room';
 import { useState } from 'react';
-
+import { jwtDecode } from 'jwt-decode';
+import { useToast } from '@/components/ui/use-toast';
 const Index: React.FC = () => {
-    const [partyId, setPartyId] = useState<string>('0000');
+    const { data: randomCode } = useRandomCode();
+    const { toast } = useToast();
+    let userLogin: string = 'anonymous';
+    if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('authToken') || '';
+        const jwtDecoded = jwtDecode(token);
+        userLogin = jwtDecoded.sub || 'anonymous';
+    }
+
+    const { mutate: joinGame } = useJoinParty(userLogin);
+    console.log(randomCode);
+    const [partyCode, setPartyCode] = useState<number>(randomCode || 0);
     const [playlistGames, setPlaylistGames] = useState<Game[]>([]);
     const { mutate: createParty, isLoading: isCreatingParty, error: createPartyError, data: createPartyData } = useParty();
     const { data, isError, isLoading } = useGetGames();
@@ -30,12 +42,23 @@ const Index: React.FC = () => {
 
     const handlePlayClick = () => {
         const newParty: PlaylistToSend = {
-            partyCode: Number(partyId),
+            partyCode: Number(partyCode),
             gamesId: playlistGames.map((game) => game.id),
             usersId: player.map((player) => player.id)
         };
         createParty(newParty);
         console.log(newParty);
+    };
+
+    const handleJoinClick = async () => {
+        await joinGame(partyCode, {
+            onSuccess: () => {
+                toast({ description: 'Partie trouvée' });
+            },
+            onError: (error) => {
+                toast({ description: error.message });
+            }
+        });
     };
 
     if (isLoading) {
@@ -99,7 +122,7 @@ const Index: React.FC = () => {
                                         </div>
                                         <div className="space-y-1">
                                             <Label htmlFor="idroom">ID de la room:</Label>
-                                            <Input id="idParty" value={partyId} onChange={(e) => setPartyId(e.target.value)} />
+                                            <Input id="idParty" value={randomCode} onChange={(e) => setPartyCode(inte.target.value)} />
                                         </div>
                                         <Label htmlFor="player">Player:</Label>
                                         <ScrollArea className=" h-[100px] w-[350px]">
@@ -143,6 +166,15 @@ const Index: React.FC = () => {
                                         onClick={handlePlayClick}
                                         disabled={isCreatingParty}
                                     >
+                                        {createPartyError && <p>Error: {createPartyError.message}</p>}
+                                        {createPartyData && <p>Party created successfully!</p>}
+                                    </Button>
+                                    <Button
+                                        variant="default"
+                                        className="w-full bg-amber-500 text-text dark:bg-darkBg dark:text-darkText"
+                                        onClick={handlePlayClick}
+                                        disabled={isCreatingParty}
+                                    >
                                         play !{createPartyError && <p>Error: {createPartyError.message}</p>}
                                         {createPartyData && <p>Party created successfully!</p>}
                                     </Button>
@@ -155,11 +187,20 @@ const Index: React.FC = () => {
                                 <CardContent className="space-y-2">
                                     <div className="space-y-1">
                                         <Label htmlFor="current">Room ID</Label>
-                                        <Input id="current" type="join" />
+                                        <Input
+                                            id="current"
+                                            type="join"
+                                            value={partyCode}
+                                            onChange={(e) => setPartyCode(Number(e.target.value))}
+                                        />
                                     </div>
                                 </CardContent>
                                 <CardFooter>
-                                    <Button variant="default" className="w-full bg-amber-500 text-text dark:bg-darkBg dark:text-darkText">
+                                    <Button
+                                        variant="default"
+                                        className="w-full bg-amber-500 text-text dark:bg-darkBg dark:text-darkText"
+                                        onClick={handleJoinClick}
+                                    >
                                         join
                                     </Button>
                                 </CardFooter>
