@@ -134,24 +134,22 @@ export function CarouselDApiDemo() {
 
   const extractFeaturedArtists = (title: string): string[] => {
     const featuredArtists = [];
-    const featPattern = /(?:feat|ft|featuring|with)\s+([^()]+)(?:\s*\([^)]*\))?/i;
-    const matches = title.match(featPattern);
-    
-    if (matches) {
-      const artistsString = matches[1];
-      const artists = artistsString.split(/,\s*/).map(artist => artist.trim());
-      return artists;
+    const featPattern = /(?:feat\.|ft\.|featuring|with)\s*([^,;()]+)/gi;
+    let match;
+    while ((match = featPattern.exec(title)) !== null) {
+      featuredArtists.push(match[1].trim());
     }
+    return featuredArtists;
+  };
   
-    return [];
-  };  
-
   const cleanTitle = (title: string): string => {
     let cleanedTitle = title.replace(/\s*\(.*?\)\s*/g, '').trim();
     cleanedTitle = cleanedTitle.replace(/\s*-\s*.*$/, '').trim();
     cleanedTitle = cleanedTitle.replace(/\s*from\s*.*$/i, '').trim();
+    cleanedTitle = cleanedTitle.replace(/\s*(?:feat\.|ft\.|featuring|with)\s*[^,;()]+/gi, '').trim();
     return cleanedTitle;
   };
+  
 
   const handleSubmit = () => {
     const originalTitle = tracks[currentSlide]?.name ?? "";
