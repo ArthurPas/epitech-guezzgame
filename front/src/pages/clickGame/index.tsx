@@ -46,7 +46,7 @@ const isOverlapping = (pos1: { x: number; y: number }, pos2: { x: number; y: num
     return distance < size;
 };
 
-const Game = () => {
+const ClickGame = () => {
     const nbRound = 5;
     const [result, setResult] = useState([{ login: '', score: 0 }]);
     const [targetItem, setTargetItem] = useState('');
@@ -247,4 +247,4 @@ const Game = () => {
     }
 };
 
-export default Game;
+export default ClickGame;

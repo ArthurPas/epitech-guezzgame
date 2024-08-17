@@ -111,7 +111,7 @@ export const MovieGuesser = () => {
         if (hasPlayerGuessed) return;
 
         const guessTime = (Date.now() - roundTimer) / 1000;
-        const correctTitle = data[posterIndexToDisplay].title;
+        let correctTitle = data[posterIndexToDisplay].title ?? data[posterIndexToDisplay].name;
 
         // Removing special characters
         const cleanTitle = correctTitle.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '');
@@ -197,7 +197,8 @@ export const MovieGuesser = () => {
 
                     <div className="absolute left-[48.7%] xl:left-[50%] top-4 -mt-[1px] -translate-x-[49%] rounded-xl text-white w-full xl:w-[70%] 3xl:w-[65.3%] flex justify-center overflow-hidden">
                         <p>
-                            Round {currentRound}/{maxRounds} | Score : {playerScore} | Nom du film : {data[posterIndexToDisplay].title}
+                            Round {currentRound}/{maxRounds} | Score : {playerScore} | Réponse : {data[posterIndexToDisplay]?.title}
+                            {data[posterIndexToDisplay]?.name}
                         </p>
                     </div>
 
@@ -206,7 +207,7 @@ export const MovieGuesser = () => {
                         <div className="absolute bottom-0 -left-4 flex justify-center w-[30%] mx-auto rounded-lg mt-4 p-4 z-[-1]">
                             <form className="flex w-1/2" onSubmit={handleSubmit}>
                                 <input
-                                    placeholder="Nom du film"
+                                    placeholder="Nom du film / série"
                                     type="text"
                                     className="p-2 border rounded-md z-30"
                                     ref={inputRef}

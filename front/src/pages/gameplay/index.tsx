@@ -5,9 +5,10 @@ import { MovieGuesser } from '@/components/games/MovieGuesser/MovieGuesser';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { CarouselDApiDemo } from '@/components/ui/CarouselDApiDemo';
+import ClickGame from '@/pages/clickGame';
 import { useState } from 'react';
 
-const games = ['BlindTest', 'MovieGuesser', 'TapTaupes', 'Titre', 'GeoGuezzer', 'JungleSpeed'];
+const games = ['BlindTest', 'MovieGuesser', 'ClickGame', 'GeoGuezzer', 'WIP', 'WIP'];
 
 const Gameplay = () => {
     const [currentGame, setCurrentGame] = useState('');
@@ -40,6 +41,7 @@ const Gameplay = () => {
                         {currentGame === 'BlindTest' && <CarouselDApiDemo />}
                         {currentGame === 'MovieGuesser' && <MovieGuesser />}
                         {currentGame === 'GeoGuezzer' && <GeoGuezzer />}
+                        {currentGame === 'ClickGame' && <ClickGame />}
                     </Card>
                 </div>
             </div>

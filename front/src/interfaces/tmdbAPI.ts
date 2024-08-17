@@ -3,6 +3,7 @@ import { z } from 'zod';
 const tmdbMovieResults = z.object({
   id: z.number(),
   title: z.string(),
+  name: z.string(),
   overview: z.string(),
   poster_path: z.string(),
 });
