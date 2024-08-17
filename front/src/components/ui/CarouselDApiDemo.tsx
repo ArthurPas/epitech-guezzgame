@@ -12,6 +12,14 @@ import { useGetTracks } from "@/hooks/spotifyApi";
 import { TrackType } from "@/interfaces/spotifyApi";
 import AudioMotionAnalyzer from "audiomotion-analyzer";
 
+const shuffleArray = (array: any[]) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
+
 export function CarouselDApiDemo() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [tracks, setTracks] = React.useState<TrackType>([]);
@@ -32,10 +40,11 @@ export function CarouselDApiDemo() {
   const { data, error, isLoading } = useGetTracks();
 
   React.useEffect(() => {
-    if (data) {
-      setTracks(data);
-      setCount(data.length);
-      setScores(new Array(data.length).fill(null));
+    if (Array.isArray(data)) {
+      const shuffledData = shuffleArray([...data]);
+      setTracks(shuffledData);
+      setCount(shuffledData.length);
+      setScores(new Array(shuffledData.length).fill(null));
     }
   }, [data]);
 
