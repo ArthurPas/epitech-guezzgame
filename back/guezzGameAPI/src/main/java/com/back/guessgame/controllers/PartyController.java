@@ -3,9 +3,8 @@ package com.back.guessgame.controllers;
 import com.back.guessgame.repository.GameRepository;
 import com.back.guessgame.repository.PartyRepository;
 import com.back.guessgame.repository.UserRepository;
-import com.back.guessgame.repository.dto.GeneralPartyDto;
-import com.back.guessgame.repository.dto.NewPartyDto;
-import com.back.guessgame.repository.dto.PartyResultDto;
+import com.back.guessgame.repository.dto.*;
+import com.back.guessgame.repository.entities.Game;
 import com.back.guessgame.repository.entities.Party;
 import com.back.guessgame.repository.entities.User;
 import com.back.guessgame.services.JwtService;
@@ -20,7 +19,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,7 +61,7 @@ public class PartyController {
 	}
 
 	@PostMapping
-	public List<Long> createParty(@RequestBody NewPartyDto party) {
+	public Long createParty(@RequestBody NewPartyDto party) {
 		return partyService.newParty(party);
 	}
 
@@ -106,20 +104,36 @@ public class PartyController {
 		return new ResponseEntity<>(Json.pretty(jsonResponse), null, 200);
 	}
 
-	@PostMapping("/join/{partyCode}")
-	public ResponseEntity<String> inviteLink(@PathVariable String partyCode, @RequestBody Map<String, String> login) {
-		if(partyCode == null) {
-			return new ResponseEntity<>(Json.pretty("no partyCode"), null, 400);
-		}
-		User user = userRepository.findByLoginOrMail(login.get("login"), "").orElse(null);
+	@PostMapping("/join")
+	public ResponseEntity<String> inviteLink(@RequestBody NewPartyDto partyDto) {
+		User user = userRepository.findByLoginOrMail(partyDto.getUserLogin(), "").orElse(null);
 		if(user == null) {
 			return new ResponseEntity<>(Json.pretty("user not found"), null, 404);
-
 		}
 		Map<String, Long> jsonResponse = new HashMap<>();
 		jsonResponse.put("userId", user.getId());
 		messagingTemplate.convertAndSend("/topic/reply/joinParty", user.getId());
+		partyService.addUserToParty(new NewPartyDto(user.getLogin(),partyDto.getPartyCode(),""));
 		return new ResponseEntity<>(Json.pretty(jsonResponse), null, 200);
+	}
+
+	@PostMapping("/addGame")
+	public ResponseEntity<String> addGame(@RequestBody NewPartyDto partyDto) {
+		Game game = gameRepository.findOneByName(partyDto.getGameName());
+		partyService.addGameToParties(game.getId(), partyDto.getPartyCode());
+		if(game == null) {
+			return new ResponseEntity<>(Json.pretty("game not found"), null, 404);
+		}
+		return new ResponseEntity<>(Json.pretty("game added"), null, 200);
+	}
+	@PostMapping("/removeGame")
+	public ResponseEntity<String> removeGame(@RequestBody NewPartyDto partyDto) {
+		Game game = gameRepository.findOneByName(partyDto.getGameName());
+		partyService.removeGameToParties(game.getId(), partyDto.getPartyCode());
+		if(game == null) {
+			return new ResponseEntity<>(Json.pretty("game not found"), null, 404);
+		}
+		return new ResponseEntity<>(Json.pretty("game added"), null, 200);
 	}
 
 

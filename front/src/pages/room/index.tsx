@@ -1,11 +1,5 @@
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-const player = [
-    {
-        id: 1,
-        player: 'player 1',
-        host: 'host'
-    }
-];
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -13,13 +7,14 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/RoomTab';
 import React from 'react';
 
-import { useParty, useGetGames, useRandomCode, useJoinParty } from '@/hooks/room';
-import { Game, PlaylistToSend } from '@/interfaces/room';
+import { useNewParty, useAddGame, useRemoveGame, useGetGames, useRandomCode, useJoinParty } from '@/hooks/room';
+import { Game, NewParty, PlaylistToSend } from '@/interfaces/room';
 import { useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { useToast } from '@/components/ui/use-toast';
-const Index: React.FC = () => {
-    const { data: randomCode } = useRandomCode();
+import { set } from 'zod';
+import { useRouter } from 'next/router';
+const Index = () => {
     const { toast } = useToast();
     let userLogin: string = 'anonymous';
     if (typeof window !== 'undefined') {
@@ -27,31 +22,57 @@ const Index: React.FC = () => {
         const jwtDecoded = jwtDecode(token);
         userLogin = jwtDecoded.sub || 'anonymous';
     }
-
+    const [partyCode, setPartyCode] = useState<number>(123);
     const { mutate: joinGame } = useJoinParty(userLogin);
-    console.log(randomCode);
-    const [partyCode, setPartyCode] = useState<number>(randomCode || 0);
+    const { data: randomCode } = useRandomCode() as { data: number };
     const [playlistGames, setPlaylistGames] = useState<Game[]>([]);
-    const { mutate: createParty, isLoading: isCreatingParty, error: createPartyError, data: createPartyData } = useParty();
+    const { mutate: createParty, isLoading: isCreatingParty, error: createPartyError, data: createPartyData } = useNewParty();
+    const { mutate: addGameQuery } = useAddGame();
+    const { mutate: removeGameQuery } = useRemoveGame();
+    const [partyCreated, setPartyCreated] = useState<boolean>(false);
     const { data, isError, isLoading } = useGetGames();
+    const router = useRouter();
+    const player = [
+        {
+            id: 1,
+            player: userLogin,
+            host: 'host'
+        }
+    ];
     const addGame = (Game: Game) => {
+        addGameQuery({ partyCode: randomCode, gameName: Game.name, userLogin: '' });
         if (!playlistGames.some((g) => g.name === Game.name)) {
             setPlaylistGames([...playlistGames, Game]);
         }
     };
-
-    const handlePlayClick = () => {
-        const newParty: PlaylistToSend = {
-            partyCode: Number(partyCode),
-            gamesId: playlistGames.map((game) => game.id),
-            usersId: player.map((player) => player.id)
+    const removeGame = (Game: Game) => {
+        removeGameQuery({ partyCode: randomCode, gameName: Game.name, userLogin: '' });
+        setPlaylistGames(playlistGames.filter((g) => g.name !== Game.name));
+    };
+    const handleCreateClick = async () => {
+        const newParty: NewParty = {
+            partyCode: randomCode,
+            userLogin: userLogin,
+            gameName: ''
         };
-        createParty(newParty);
-        console.log(newParty);
+        await createParty(newParty, {
+            onSuccess: () => {
+                toast({ description: 'Lets go, choisis tes guezzgames et attend tes amis' });
+                setPartyCreated(true);
+            },
+            onError: (error) => {
+                toast({ description: error.message });
+            }
+        });
+    };
+
+    const handlePlayClick = async () => {
+        toast({ description: 'Letzz ggo ...' });
+        router.push('/gameplay');
     };
 
     const handleJoinClick = async () => {
-        await joinGame(partyCode, {
+        await joinGame(randomCode, {
             onSuccess: () => {
                 toast({ description: 'Partie trouvée' });
             },
@@ -122,7 +143,7 @@ const Index: React.FC = () => {
                                         </div>
                                         <div className="space-y-1">
                                             <Label htmlFor="idroom">ID de la room:</Label>
-                                            <Input id="idParty" value={randomCode} onChange={(e) => setPartyCode(inte.target.value)} />
+                                            <Input disabled id="idParty" value={randomCode} />
                                         </div>
                                         <Label htmlFor="player">Player:</Label>
                                         <ScrollArea className=" h-[100px] w-[350px]">
@@ -151,7 +172,7 @@ const Index: React.FC = () => {
                                             <Label htmlFor="playlistGame">Playlist Game:</Label>
                                             <div className="grid grid-cols-2 gap-4">
                                                 {playlistGames.map((game, index) => (
-                                                    <Button key={index} className="default">
+                                                    <Button key={index} className="default" onClick={() => removeGame(game)}>
                                                         {game.name}
                                                     </Button>
                                                 ))}
@@ -163,11 +184,10 @@ const Index: React.FC = () => {
                                     <Button
                                         variant="default"
                                         className="w-full bg-amber-500 text-text dark:bg-darkBg dark:text-darkText"
-                                        onClick={handlePlayClick}
-                                        disabled={isCreatingParty}
+                                        onClick={handleCreateClick}
+                                        disabled={partyCreated}
                                     >
-                                        {createPartyError && <p>Error: {createPartyError.message}</p>}
-                                        {createPartyData && <p>Party created successfully!</p>}
+                                        Nouveau guezzgame !
                                     </Button>
                                     <Button
                                         variant="default"
@@ -175,8 +195,7 @@ const Index: React.FC = () => {
                                         onClick={handlePlayClick}
                                         disabled={isCreatingParty}
                                     >
-                                        play !{createPartyError && <p>Error: {createPartyError.message}</p>}
-                                        {createPartyData && <p>Party created successfully!</p>}
+                                        On y va
                                     </Button>
                                 </CardFooter>
                             </Card>
@@ -187,12 +206,7 @@ const Index: React.FC = () => {
                                 <CardContent className="space-y-2">
                                     <div className="space-y-1">
                                         <Label htmlFor="current">Room ID</Label>
-                                        <Input
-                                            id="current"
-                                            type="join"
-                                            value={partyCode}
-                                            onChange={(e) => setPartyCode(Number(e.target.value))}
-                                        />
+                                        <Input id="current" type="join" onChange={(e) => setPartyCode(Number(e.target.value))} />
                                     </div>
                                 </CardContent>
                                 <CardFooter>
@@ -230,6 +244,6 @@ const Index: React.FC = () => {
 };
 
 export default Index;
-function createParty(newParty: PlaylistToSend) {
-    throw new Error('Function not implemented.');
-}
+// function createParty(newParty: PlaylistToSend) {
+//     throw new Error('Function not implemented.');
+// }

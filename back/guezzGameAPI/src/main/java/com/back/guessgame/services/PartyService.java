@@ -4,11 +4,7 @@ import com.back.guessgame.controllers.PartyController;
 import com.back.guessgame.repository.GameRepository;
 import com.back.guessgame.repository.PartyRepository;
 import com.back.guessgame.repository.UserRepository;
-import com.back.guessgame.repository.dto.GeneralPartyDto;
-import com.back.guessgame.repository.dto.NewPartyDto;
-import com.back.guessgame.repository.dto.PartyResultDto;
-import com.back.guessgame.repository.dto.Score;
-import com.back.guessgame.repository.entities.Game;
+import com.back.guessgame.repository.dto.*;
 import com.back.guessgame.repository.entities.Party;
 import com.back.guessgame.repository.entities.User;
 import org.slf4j.Logger;
@@ -66,27 +62,12 @@ public class PartyService {
 		return new PartyResultDto(scores, parties.get(0).getPartyCode());
 	}
 
-	public List<Long> newParty(NewPartyDto partyDto) {
-		List<User> users = new ArrayList<>(userRepository.findAllById(partyDto.getUsers()));
-		List<Game> games = new ArrayList<>(gameRepository.findAllById(partyDto.getGamesId()));
-		if(users.isEmpty()) {
-			throw HttpClientErrorException.create(HttpStatus.NOT_FOUND, "Users not found", null, null, null);
-		}
-		if(games.isEmpty()) {
-			throw HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "A party cannot have 0 game", null, null, null);
-		}
-		List<Long> ids = new ArrayList<>();
-		for (User u : users) {
-			Party party = new Party();
-			party.setPartyCode(partyDto.getPartyCode());
-			party.setUser(u);
-			for (Game g : games) {
-				party.getGames().add(g);
-			}
-			partyRepository.save(party);
-			ids.add(party.getId());
-		}
-		return ids;
+	public Long newParty(NewPartyDto partyDto) {
+		Party party = new Party();
+		party.setPartyCode(partyDto.getPartyCode());
+		party.setNbPoints(0);
+		addUserToPartyAlreadyCreated(party, partyDto.getUserLogin());
+		return partyDto.getPartyCode();
 	}
 
 	public long updateParty(Party party, GeneralPartyDto partyDetails) {
@@ -117,6 +98,38 @@ public class PartyService {
 		return (long) code;
 	}
 
-	public void addUserToParty(Long partyCode) {
+	public void addUserToPartyAlreadyCreated(Party party, String login) {
+		User user = userRepository.findByLoginOrMail(login, "").orElse(null);
+		party.setUser(user);
+		party.setNbPoints(0);
+		if(partyRepository.existsPartyByUserAndPartyCode(user, party.getPartyCode())) {
+			throw HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "user already joined a party with the same partycode", null, null, null);
+		}else {
+			partyRepository.save(party);
+		}
+		partyRepository.save(party);
 	}
+	public void addUserToParty(NewPartyDto partyDto) {
+		Party party = new Party();
+		party.setNbPoints(0);
+		party.setPartyCode(partyDto.getPartyCode());
+		addUserToPartyAlreadyCreated(party, partyDto.getUserLogin());
+	}
+	public void addGameToParties(Long gameId, Long partyCode) {
+		for (Party party : partyRepository.findAllByPartyCode(partyCode)) {
+			if(party != null) {
+				party.getGames().add(gameRepository.findById(gameId).orElse(null));
+				partyRepository.save(party);
+			}
+		}
+	}
+	public void removeGameToParties(Long gameId, Long partyCode) {
+		for (Party party : partyRepository.findAllByPartyCode(partyCode)) {
+			if(party != null) {
+				party.getGames().remove(gameRepository.findById(gameId).orElse(null));
+				partyRepository.save(party);
+			}
+		}
+	}
+
 }
