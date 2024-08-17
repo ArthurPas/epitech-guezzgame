@@ -1,6 +1,5 @@
 package com.back.guessgame.controllers;
 
-import com.back.guessgame.configuration.Utils;
 import com.back.guessgame.repository.GameRepository;
 import com.back.guessgame.repository.PartyRepository;
 import com.back.guessgame.repository.UserRepository;
@@ -12,7 +11,6 @@ import com.back.guessgame.repository.entities.User;
 import com.back.guessgame.services.JwtService;
 import com.back.guessgame.services.PartyService;
 import io.swagger.v3.core.util.Json;
-import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/party")
@@ -89,7 +90,7 @@ public class PartyController {
 	@GetMapping("/codeExist/{code}")
 	public ResponseEntity<String> codeExist(@PathVariable String code) {
 		Map<String, Boolean> jsonResponse = new HashMap<>();
-		boolean isAvailable = partyService.codeExist(code);
+		boolean isAvailable = partyService.codeAvailable(code);
 		jsonResponse.put("isAvailable", isAvailable);
 		if(isAvailable) {
 			return new ResponseEntity<>(Json.pretty(jsonResponse), null, 200);
@@ -100,17 +101,20 @@ public class PartyController {
 	@GetMapping("/generateRandomCode")
 	public ResponseEntity<String> generateCode() {
 		Map<String, String> jsonResponse = new HashMap<>();
-		String code = partyService.generateCode();
-		jsonResponse.put("code", code);
+		Long code = partyService.generateCode();
+		jsonResponse.put("code", code.toString());
 		return new ResponseEntity<>(Json.pretty(jsonResponse), null, 200);
 	}
 
-	@GetMapping("/join/{partyCode}")
-	public ResponseEntity<String> inviteLink(@PathVariable Long partyCode, HttpServletRequest request) {
-		String jwt = Utils.extractJwtFromRequest(request);
-		User user = userRepository.findByLoginOrMail(jwtService.extractUsername(jwt), "").orElse(null);
+	@PostMapping("/join/{partyCode}")
+	public ResponseEntity<String> inviteLink(@PathVariable String partyCode, @RequestBody Map<String, String> login) {
+		if(partyCode == null) {
+			return new ResponseEntity<>(Json.pretty("no partyCode"), null, 400);
+		}
+		User user = userRepository.findByLoginOrMail(login.get("login"), "").orElse(null);
 		if(user == null) {
-			return new ResponseEntity<>(Json.pretty(Collections.singletonMap("error", "User not found")), null, 400);
+			return new ResponseEntity<>(Json.pretty("user not found"), null, 404);
+
 		}
 		Map<String, Long> jsonResponse = new HashMap<>();
 		jsonResponse.put("userId", user.getId());

@@ -6,11 +6,16 @@ import lombok.Data;
 import java.util.Set;
 
 @Data
+
 public class NewPartyDto {
 
 	@JsonProperty("usersId")
 	private Set<Long> users;
-	private long partyCode;
+	private Long partyCode;
 	@JsonProperty("gamesId")
 	private Set<Long> gamesId;
+
+	public NewPartyDto(Long partyCode) {
+		this.partyCode = partyCode;
+	}
 }

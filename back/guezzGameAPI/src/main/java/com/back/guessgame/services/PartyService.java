@@ -104,17 +104,17 @@ public class PartyService {
 		return userRepository.findAllByParties(partyRepository.findById(partyId).orElse(null));
 	}
 
-	public boolean codeExist(String code) {
-		return partyRepository.findByPartyCode(Long.valueOf(code)) != null;
+	public boolean codeAvailable(String code) {
+		return partyRepository.findAllByPartyCode(Long.valueOf(code)).isEmpty();
 	}
 
-	public String generateCode() {
+	public Long generateCode() {
 		Random random = new Random();
 		int code = random.nextInt(9999);
-		while (codeExist(String.valueOf(code))) {
+		while (!codeAvailable(String.valueOf(code))) {
 			code = random.nextInt(9999);
 		}
-		return String.valueOf(code);
+		return (long) code;
 	}
 
 	public void addUserToParty(Long partyCode) {
