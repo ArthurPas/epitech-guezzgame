@@ -4,6 +4,7 @@ import { z } from 'zod';
 export const gameSchema = z.object({
   id: z.number(),
   name: z.string(),
+  urlPicture: z.string(),
 });
 
 export type Game = z.infer<typeof gameSchema>;

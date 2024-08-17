@@ -110,10 +110,15 @@ public class PartyController {
 		if(user == null) {
 			return new ResponseEntity<>(Json.pretty("user not found"), null, 404);
 		}
-		Map<String, Long> jsonResponse = new HashMap<>();
-		jsonResponse.put("userId", user.getId());
-		messagingTemplate.convertAndSend("/topic/reply/joinParty", user.getId());
-		partyService.addUserToParty(new NewPartyDto(user.getLogin(),partyDto.getPartyCode(),""));
+		Map<String, String> jsonResponse = new HashMap<>();
+		jsonResponse.put("userLogin", user.getLogin());
+		try {
+			partyService.addUserToParty(new NewPartyDto(user.getLogin(),partyDto.getPartyCode(),""));
+		}catch (Exception e) {
+			return new ResponseEntity<>(Json.pretty("user already joined a party with the same partycode"), null, 400);
+		}
+
+		messagingTemplate.convertAndSend("/topic/reply/joinParty", jsonResponse);
 		return new ResponseEntity<>(Json.pretty(jsonResponse), null, 200);
 	}
 

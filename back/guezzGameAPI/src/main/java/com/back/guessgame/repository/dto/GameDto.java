@@ -16,9 +16,11 @@ public class GameDto {
 	private Integer nbPlayerMin;
 	private String rules;
 	private Boolean isRemoteCompatible;
+	private String urlPicture;
 
 	public GameDto(Game game) {
 		this.id = game.getId();
+		this.urlPicture = game.getUrlPicture();
 		this.name = game.getName();
 		this.nbPlayerMax = game.getNbPlayerMax();
 		this.nbPlayerMin = game.getNbPlayerMin();
