@@ -245,7 +245,7 @@ const Index = () => {
                                 <CardContent className="space-y-2">
                                     <div className="space-y-1">
                                         <Label htmlFor="current">Room ID</Label>
-                                        <Input id="current" type="join" onChange={(e) => setPartyCode(Number(e.target.value))} />
+                                        <Input id="current" type="join" onChange={(e) => setDisplayPartyCode(e.target.value)} />
                                     </div>
                                 </CardContent>
                                 <CardFooter>
