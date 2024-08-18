@@ -77,7 +77,6 @@ public class WebSocketController {
                 User currentUser = userRepository.findByLoginOrMail(message.getFrom(), "").orElse(null);
                 GameScore gameScore = webSocketService.createGameScore(message, currentUser);
                 webSocketService.processSocketAction(message, currentUser, gameScore, messagingTemplate);
-
         }
 
 }

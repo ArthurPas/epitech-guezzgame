@@ -4,6 +4,7 @@ import { z } from 'zod';
 export const gameSchema = z.object({
   id: z.number(),
   name: z.string(),
+  urlPicture: z.string(),
 });
 
 export type Game = z.infer<typeof gameSchema>;
@@ -24,11 +25,11 @@ export const partySchema = z.object({
 export type Playlist = z.infer<typeof partySchema>;
 
 
-export const partyToSendSchema = z.object({
+export const newPartySchema = z.object({
   partyCode:z.number(),
-  gamesId: z.array(z.number()),
-  usersId:z.array(z.number())
+  userLogin:z.string(),
+  gameName:z.string()
 });
 
 
-export type PlaylistToSend = z.infer<typeof partyToSendSchema>;
+export type NewParty = z.infer<typeof newPartySchema>;

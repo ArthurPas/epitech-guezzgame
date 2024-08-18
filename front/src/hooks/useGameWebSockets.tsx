@@ -8,6 +8,9 @@ export const useGameWebSockets = () => {
     const [isGameOver, setGameOver] = useState(false);
     //TODO: un type pour le score
     const [scoreResult, setScoreResult] = useState([{ login: '', score: 0 }]);
+    const defaultMessage = 'Votre future guezzTeam';
+    //{ userLogin: 'Votre guezzTeam' }]:🤮 mais tant pis ça fonctionne bien
+    const [usersJoinedParty, setUsersJoinedParty] = useState([{ userLogin: defaultMessage }]);
 
     // useSubscription allows to subscribe to a specific topic and execute a function when the back-end sends a new message on it
     useSubscription('/topic/reply/endRound', (message) => {
@@ -26,6 +29,17 @@ export const useGameWebSockets = () => {
             setScoreResult([]);
         }
     });
+    useSubscription('/topic/reply/joinParty', (message) => {
+        console.log(message.body + 'joinParty');
+        const parsedResult: { userLogin: string } = JSON.parse(message.body);
+        console.log(parsedResult.userLogin + 'toto');
+        setUsersJoinedParty((prevState) => {
+            if (prevState.length === 1 && prevState[0].userLogin === defaultMessage) {
+                return [parsedResult];
+            }
+            return [...prevState, parsedResult];
+        });
+    });
 
     // Allows to send a message to the back-end
     const sendToHost = ({ actionType, gameData }: SendToHostType) => {
@@ -41,6 +55,7 @@ export const useGameWebSockets = () => {
         isRoundOver,
         isGameOver,
         scoreResult,
+        usersJoinedParty,
         sendToHost
     };
 };
