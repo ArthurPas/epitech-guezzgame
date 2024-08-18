@@ -23,7 +23,8 @@ public class Game {
 	private Integer nbPlayerMin;
 	private String rules;
 	private Boolean isRemoteCompatible;
-
+	@Column(name = "url_picture")
+	private String urlPicture;
 	@ManyToMany(mappedBy = "games", fetch = FetchType.EAGER)
 	private List<Party> parties;
 }
