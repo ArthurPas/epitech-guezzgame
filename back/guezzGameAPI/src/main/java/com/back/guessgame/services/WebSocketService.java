@@ -48,8 +48,8 @@ public class WebSocketService {
 	}
 
 	public GameScore saveGameScore(GameScore gameScore) {
-		gameScoreRepository.save(gameScore);
-		return gameScore;
+		GameScore gameScoreSaved = gameScoreRepository.save(gameScore);
+		return gameScoreSaved;
 	}
 
 	public GameScore createGameScore(WebSocketPayload socketContent, User user) {
@@ -68,6 +68,7 @@ public class WebSocketService {
 		List<SocketScoreResult> userPoints = new ArrayList<>();
 		Logger logger = LoggerFactory.getLogger(WebSocketController.class);
 		logger.warn(partyRepository.findAllByPartyCode(gameScore.getPartyCode()).get(0).toString());
+
 		for (Party party : partyRepository.findAllByPartyCode(gameScore.getPartyCode())) {
 			User user = userRepository.findById(party.getUser().getId()).orElse(null);
 			userPoints.add(new SocketScoreResult(user, gameService.calculatePointsByUserByGame(gameScore.getGame(), user, gameScore.getPartyCode())));
@@ -80,11 +81,13 @@ public class WebSocketService {
 	}
 
 	public void processSocketAction(WebSocketPayload message, User currentUser, GameScore gameScore, SimpMessagingTemplate messagingTemplate) {
-		if(!(message.getActionType().equals(ActionType.END_ROUND) || message.getActionType().equals(ActionType.END_GAME) || message.getActionType().equals(ActionType.START_GAME))) {
-			saveGameScore(gameScore);
+		saveGameScore(gameScore);
+		if(message.getActionType().equals(ActionType.USER_READY))
+		{
+			checkIfAllUsersReady(currentUser, gameScore, messagingTemplate);
 		}
 		switch (gameScore.getGame().getName()) {
-			case "clickGame":
+			case "CLICK_GAME":
 				tapeTaupesGameplay(gameScore, messagingTemplate);
 				break;
 			case "BlindTest":
@@ -97,6 +100,23 @@ public class WebSocketService {
 				geoGuezzerGameplay(message, currentUser, gameScore, messagingTemplate);
 				break;
 		}
+	}
+
+	private boolean checkIfAllUsersReady(User currentUser, GameScore gameScore, SimpMessagingTemplate messagingTemplate) {
+		List<GameScore> gameScores = gameScoreRepository.findAllByPartyCodeAndGame(gameScore.getPartyCode(),gameScore.getGame());
+		int nbPlayerReady = 0;
+		int nbPlayer = partyRepository.findAllByPartyCode(gameScore.getPartyCode()).size();
+		Logger logger = LoggerFactory.getLogger(WebSocketController.class);
+		for (GameScore gs : gameScores) {
+			if (gs.getActionType().equals(ActionType.USER_READY)) {
+				nbPlayerReady++;
+			}
+		}
+		boolean allReady = nbPlayerReady == nbPlayer;
+		logger.warn("\nNB PLAYER READY : " + nbPlayerReady + "\n \n NB PLAYER TOTAL : " + nbPlayer);
+
+		messagingTemplate.convertAndSend("/topic/reply/allPlayerReady",allReady);
+		return allReady;
 	}
 
 	private void tapeTaupesGameplay(GameScore gameScore, SimpMessagingTemplate messagingTemplate) {

@@ -6,6 +6,9 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useStompClient, useSubscription } from 'react-stomp-hooks';
 import { jwtDecode } from 'jwt-decode';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import WaitForPlayers from '@/components/gameLayout/waitScreen';
+import useGameWebSockets from '@/hooks/useGameWebSockets';
+import { GameData } from '@/interfaces/gameWebSockets';
 let userLogin = 'anonymous';
 if (typeof window !== 'undefined') {
     const token = localStorage.getItem('authToken') || '';
@@ -47,6 +50,7 @@ const isOverlapping = (pos1: { x: number; y: number }, pos2: { x: number; y: num
 };
 
 const ClickGame = () => {
+    const { isGameOver, isRoundOver, setIsRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
     const nbRound = 5;
     const [result, setResult] = useState([{ login: '', score: 0 }]);
     const [targetItem, setTargetItem] = useState('');
@@ -57,28 +61,22 @@ const ClickGame = () => {
     const [score, setScore] = useState(0);
     const [round, setRound] = useState(1);
     const [modalOpen, setModalOpen] = useState(true);
-    const [isGameOver, setGameOver] = useState(false);
     const stompClient = useStompClient();
     useEffect(() => {
         setNewRound();
     }, []);
-
-    useSubscription('/topic/reply/endRound', (message) => {
-        setIsWaiting(message.body === 'NEXT_ROUND');
-    });
-    useSubscription('/topic/reply/endGame', (message) => {
-        setGameOver(message.body === 'END_GAME');
-    });
-    useSubscription('/topic/reply/score', (message) => {
-        console.log(message.body);
-        const parsedResult = JSON.parse(message.body);
-        if (Array.isArray(parsedResult)) {
-            setResult(parsedResult);
-        } else {
-            setResult([]);
-        }
-    });
-
+    useEffect(() => {
+        setIsWaiting(isRoundOver);
+    }, [isRoundOver]);
+    let gameData: GameData = {
+        from: userLogin,
+        date: Date.now(), //TODO: Mettre à jour la date avant l'envoi de gameData
+        nbPoints: score,
+        gameName: 'CLICK_GAME',
+        roundNumber: round,
+        partyCode: '456',
+        playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
+    };
     useEffect(() => {
         if (isWaiting) {
             if (countdown > 0) {
@@ -86,6 +84,7 @@ const ClickGame = () => {
                 return () => clearTimeout(timer);
             } else {
                 setIsWaiting(false);
+                setIsRoundOver(false);
                 setRound(round + 1);
                 setNewRound();
             }
@@ -97,33 +96,17 @@ const ClickGame = () => {
         setShuffledItems(shuffleArray([...items]));
         setCountdown(5);
         if (round > nbRound) {
-            setGameOver(true);
-            const playerInfo = { login: userLogin, timestamp: Date.now() };
-            sendToHost('END_GAME', 0, playerInfo, round);
+            sendToHost({ actionType: 'END_GAME', gameData });
         }
     };
-
-    function sendToHost(actionType: string, points: number, playerInfo: { login: string; timestamp: number }, roundNumber: number) {
-        if (stompClient) {
-            stompClient.publish({
-                destination: '/app/sendToHost',
-                body: JSON.stringify({
-                    actionType: actionType,
-                    from: userLogin,
-                    date: playerInfo.timestamp,
-                    nbPoints: points,
-                    gameName: 'clickGame',
-                    roundNumber: roundNumber,
-                    partyCode: '123'
-                })
-            });
-        }
-    }
     function sendSocketAfterClick(points: number, playerInfo: { login: string; timestamp: number }, roundNumber: number) {
-        sendToHost('FASTER_WIN', points, playerInfo, roundNumber);
+        gameData.date = Date.now();
+        gameData.nbPoints = score;
+        gameData.roundNumber = round;
+        sendToHost({ actionType: 'FASTER_WIN', gameData });
     }
     function sendSocketEndRound(points: number, playerInfo: { login: string; timestamp: number }, roundNumber: number) {
-        sendToHost('END_ROUND', points, playerInfo, roundNumber);
+        sendToHost({ actionType: 'END_ROUND', gameData });
     }
 
     const handleClick = (item: string) => {
@@ -190,60 +173,82 @@ const ClickGame = () => {
             </>
         );
     } else {
-        return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-                    <DialogContent>
-                        <div className="flex flex-col items-center justify-center p-6">
-                            <h2 className="text-xl font-bold mb-4">Click Game</h2>
-                            <p>
-                                Les règles du Click Game sont simples : Vous devez cliquer sur l'item correct aussi rapidement que possible.
-                            </p>
-                            <br />
-                            <h2 className="text-xl font-bold">Système de points :</h2>
-                            <ul className="p-4">
-                                <li>Cliquez sur l'item correct pour gagner 10 points.</li>
-                                <li>À chaque manche, un bonus ou un malus aléatoire peut être appliqué au score.</li>
-                                <li>Un bonus peut ajouter 5 ou 10 points supplémentaires.</li>
-                                <li>Un malus peut retirer 5 ou 10 points.</li>
-                            </ul>
-                            <Button
-                                onClick={handleStartGame}
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                            >
-                                Commencer le Click Game
-                            </Button>
-                        </div>
-                    </DialogContent>
-                </Dialog>
-                <div style={{ position: 'absolute', top: '10px', left: '10px' }}>
-                    <h1>Find the item: {targetItem}</h1>
-                    <h2>Score: {score}</h2>
-                </div>
-                <Card style={{ position: 'relative', width: '600px', height: '600px', border: '2px solid black', padding: '20px' }}>
-                    <div style={{ position: 'absolute', top: '50px', left: '10px' }}>
-                        {isWaiting ? <h2>Next round in: {countdown}s</h2> : null}
-                    </div>
-                    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                        {shuffledItems.map((item, index) => {
-                            const positions = shuffledItems.slice(0, index).map((_, i) => getRandomPosition(500, 500));
-                            const { x, y } = getNonOverlappingPosition(positions, 500, 500);
-                            return (
+        if (modalOpen) {
+            return (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                    <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+                        <DialogContent>
+                            <div className="flex flex-col items-center justify-center p-6">
+                                <h2 className="text-xl font-bold mb-4">Click Game</h2>
+                                <p>
+                                    Les règles du Click Game sont simples : Vous devez cliquer sur l'item correct aussi rapidement que
+                                    possible.
+                                </p>
+                                <br />
+                                <h2 className="text-xl font-bold">Système de points :</h2>
+                                <ul className="p-4">
+                                    <li>Cliquez sur l'item correct pour gagner 10 points.</li>
+                                    <li>À chaque manche, un bonus ou un malus aléatoire peut être appliqué au score.</li>
+                                    <li>Un bonus peut ajouter 5 ou 10 points supplémentaires.</li>
+                                    <li>Un malus peut retirer 5 ou 10 points.</li>
+                                </ul>
                                 <Button
-                                    key={item}
-                                    onClick={() => !isWaiting && handleClick(item)}
-                                    style={{ position: 'absolute', left: `${x}px`, top: `${y}px` }}
-                                    disabled={isWaiting}
-                                    className="bg-[#eec17e]"
+                                    onClick={handleStartGame}
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                 >
-                                    {item}
+                                    Commencer le Click Game
                                 </Button>
-                            );
-                        })}
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                </div>
+            );
+        }
+        if (!allPlayersReady && !modalOpen) {
+            //C'est hyper moche
+            return (
+                <WaitForPlayers
+                    from={gameData.from}
+                    date={gameData.date}
+                    nbPoints={0}
+                    gameName={gameData.gameName}
+                    roundNumber={0}
+                    partyCode={gameData.partyCode}
+                    playerInfo={gameData.playerInfo}
+                ></WaitForPlayers>
+            );
+        } else {
+            return (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                    <div style={{ position: 'absolute', top: '10px', left: '10px' }}>
+                        <h1>Find the item: {targetItem}</h1>
+                        <h2>Score: {score}</h2>
                     </div>
-                </Card>
-            </div>
-        );
+                    <Card style={{ position: 'relative', width: '600px', height: '600px', border: '2px solid black', padding: '20px' }}>
+                        <div style={{ position: 'absolute', top: '50px', left: '10px' }}>
+                            {isWaiting ? <h2>Next round in: {countdown}s</h2> : null}
+                        </div>
+                        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                            {shuffledItems.map((item, index) => {
+                                const positions = shuffledItems.slice(0, index).map((_, i) => getRandomPosition(500, 500));
+                                const { x, y } = getNonOverlappingPosition(positions, 500, 500);
+                                return (
+                                    <Button
+                                        key={item}
+                                        onClick={() => !isWaiting && handleClick(item)}
+                                        style={{ position: 'absolute', left: `${x}px`, top: `${y}px` }}
+                                        disabled={isWaiting}
+                                        className="bg-[#eec17e]"
+                                    >
+                                        {item}
+                                    </Button>
+                                );
+                            })}
+                        </div>
+                    </Card>
+                </div>
+            );
+        }
     }
 };
 

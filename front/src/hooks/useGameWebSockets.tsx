@@ -8,9 +8,11 @@ export const useGameWebSockets = () => {
     const [isGameOver, setGameOver] = useState(false);
     //TODO: un type pour le score
     const [scoreResult, setScoreResult] = useState([{ login: '', score: 0 }]);
+    const [allPlayersReady, setAllPlayersReady] = useState(false);
 
     // useSubscription allows to subscribe to a specific topic and execute a function when the back-end sends a new message on it
     useSubscription('/topic/reply/endRound', (message) => {
+        console.log(message.body + 'endRound');
         setIsRoundOver(message.body === 'NEXT_ROUND');
     });
 
@@ -25,6 +27,10 @@ export const useGameWebSockets = () => {
         } else {
             setScoreResult([]);
         }
+    });
+    useSubscription('/topic/reply/allPlayerReady', (message) => {
+        console.log(message.body + 'allPlayerReady');
+        setAllPlayersReady(message.body === 'true');
     });
 
     // Allows to send a message to the back-end
@@ -41,6 +47,8 @@ export const useGameWebSockets = () => {
         isRoundOver,
         isGameOver,
         scoreResult,
+        allPlayersReady,
+        setIsRoundOver,
         sendToHost
     };
 };

@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import React, { useState, useEffect } from 'react';
-
+import { WaitForPlayers } from '@/components/gameLayout/waitScreen';
 import { useGetDataEndGame } from '../../hooks/dataEndGame';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 

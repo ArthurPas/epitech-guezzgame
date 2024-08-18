@@ -8,11 +8,12 @@ import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogD
 import { useGetDataPictureGeo } from '@/hooks/dataPictureGeo';
 import { jwtDecode } from 'jwt-decode';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import WaitForPlayers from '@/components/gameLayout/waitScreen';
 
 const Map = dynamic(() => import('./Map'), { ssr: false });
 
 const GeoGuezzer = () => {
-    const { isGameOver, isRoundOver, sendToHost, scoreResult } = useGameWebSockets();
+    const { isGameOver, isRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
     console.log('isGameOver', isGameOver);
     console.log('isRoundOver', isRoundOver);
 
@@ -54,7 +55,7 @@ const GeoGuezzer = () => {
         nbPoints: 0,
         gameName: 'GEO_GUEZZER',
         roundNumber: 0,
-        partyCode: '123',
+        partyCode: '456',
         playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
     };
 
@@ -189,6 +190,21 @@ const GeoGuezzer = () => {
             setShowEndGame(true);
         }
     };
+    if (!allPlayersReady && !showModalRules) {
+        return (
+            //C'est hyper moche
+            <WaitForPlayers
+                from={gameData.from}
+                date={gameData.date}
+                nbPoints={0}
+                gameName={gameData.gameName}
+                roundNumber={0}
+                partyCode={gameData.partyCode}
+                playerInfo={gameData.playerInfo}
+            ></WaitForPlayers>
+        );
+    }
+    //Pas encore utilisée (toujour à voir si on garde ou pas)
     if (waitingForOther) {
         if (isGameOver) {
             setWaitingForOther(false);
