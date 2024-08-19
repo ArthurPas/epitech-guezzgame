@@ -47,7 +47,7 @@ public class WebSocketController {
         public String broadcastMessage(@Payload String message) {
                 Logger logger = LoggerFactory.getLogger(WebSocketController.class);
                 logger.info("Received message: {}", message);
-                return "You have received a message: " + message;
+                return "" + message;
         }
 
         @MessageMapping("/user-message")
