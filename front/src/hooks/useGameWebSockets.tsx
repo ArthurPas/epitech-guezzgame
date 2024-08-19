@@ -15,7 +15,6 @@ export const useGameWebSockets = () => {
 
     // useSubscription allows to subscribe to a specific topic and execute a function when the back-end sends a new message on it
     useSubscription('/topic/reply/endRound', (message) => {
-        console.log(message.body + 'endRound');
         setIsRoundOver(message.body === 'NEXT_ROUND');
     });
 
@@ -34,38 +33,38 @@ export const useGameWebSockets = () => {
     useSubscription('/topic/reply/allPlayerReady', (message) => {
         console.log(message.body + 'allPlayerReady');
         setAllPlayersReady(message.body === 'true');
-        useSubscription('/topic/reply/joinParty', (message) => {
-            console.log(message.body + 'joinParty');
-            const parsedResult: { userLogin: string } = JSON.parse(message.body);
-            console.log(parsedResult.userLogin + 'toto');
-            setUsersJoinedParty((prevState) => {
-                if (prevState.length === 1 && prevState[0].userLogin === defaultMessage) {
-                    return [parsedResult];
-                }
-                return [...prevState, parsedResult];
-            });
-        });
-
-        // Allows to send a message to the back-end
-        const sendToHost = ({ actionType, gameData }: SendToHostType) => {
-            if (stompClient) {
-                stompClient.publish({
-                    destination: '/app/sendToHost',
-                    body: JSON.stringify({ actionType, ...gameData })
-                });
-            }
-        };
-
-        return {
-            isRoundOver,
-            isGameOver,
-            scoreResult,
-            allPlayersReady,
-            setIsRoundOver,
-            usersJoinedParty,
-            sendToHost
-        };
     });
+
+    useSubscription('/topic/reply/joinParty', (message) => {
+        console.log(message.body + 'joinParty');
+        const parsedResult: { userLogin: string } = JSON.parse(message.body);
+        console.log(parsedResult.userLogin + 'toto');
+        setUsersJoinedParty((prevState) => {
+            if (prevState.length === 1 && prevState[0].userLogin === defaultMessage) {
+                return [parsedResult];
+            }
+            return [...prevState, parsedResult];
+        });
+    });
+
+    // Allows to send a message to the back-end
+    const sendToHost = ({ actionType, gameData }: SendToHostType) => {
+        if (stompClient) {
+            stompClient.publish({
+                destination: '/app/sendToHost',
+                body: JSON.stringify({ actionType, ...gameData })
+            });
+        }
+    };
+
+    return {
+        isRoundOver,
+        isGameOver,
+        scoreResult,
+        usersJoinedParty,
+        allPlayersReady,
+        sendToHost
+    };
 };
 
 export default useGameWebSockets;
