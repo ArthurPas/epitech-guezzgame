@@ -44,10 +44,10 @@ public class WebSocketController {
 
         @MessageMapping("/broadcast")
         @SendTo("/topic/reply")
-        public String broadcastMessage(@Payload String message) {
+        public ChatWebSocketPayload broadcastMessage(@Payload ChatWebSocketPayload message) {
                 Logger logger = LoggerFactory.getLogger(WebSocketController.class);
-                logger.info("Received message: {}", message);
-                return "" + message;
+                logger.info("Received message from {}: {}", message.getUsername(), message.getMessage());
+                return message;
         }
 
         @MessageMapping("/user-message")

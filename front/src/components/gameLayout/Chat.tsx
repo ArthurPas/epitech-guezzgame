@@ -36,14 +36,14 @@ export const Chat = (className: ChatProps) => {
         >
             <CardTitle className="px-3 py-3 font-medium">Chat</CardTitle>
             <ScrollArea className="h-[15rem] 3xl:h-[15rem] px-3 w-full rounded-lg">
-                {chatMessages.map((message, index) => (
+                {chatMessages.map((messageData, index) => (
                     <div className="-mt-[2px]">
-                        <span className="text-[12px] font-bold ml-[3px]">Arthur</span>
+                        <span className="text-[12px] font-bold ml-[3px]">{messageData.username}</span>
                         <div
                             key={index}
                             className="p-1 bg-purple-100 mb-1 px-2 rounded-lg text-[14px] max-w-[206px] break-words font-normal"
                         >
-                            <span>{message}</span>
+                            <span>{messageData.message}</span>
                         </div>
                     </div>
                 ))}
