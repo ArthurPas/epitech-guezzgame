@@ -32,26 +32,26 @@ export const Chat = (className: ChatProps) => {
 
     return (
         <Card
-            className={cn(className, 'hidden md:block h-[100%] bg-purple-300 rounded-[0.9rem] w-[70%] lg:w-auto priority-rounded relative')}
+            className={cn(
+                className,
+                'hidden md:flex flex-col h-full lg:h-[35vh] xl:h-[50vh] 3xl:h-[60vh] bg-purple-300 rounded-[0.9rem] w-[70%] lg:w-auto priority-rounded relative'
+            )}
         >
             <CardTitle className="px-3 py-3 font-medium">Chat</CardTitle>
-            <ScrollArea className="h-[15rem] 3xl:h-[15rem] px-3 w-full rounded-lg">
+            <ScrollArea className="flex-1 px-3 w-full rounded-lg overflow-y-auto max-h-[calc(100vh-150px)]">
                 {chatMessages.map((messageData, index) => (
-                    <div className="-mt-[2px]">
+                    <div key={index} className="flex flex-col mb-1">
                         <span className="text-[12px] font-bold ml-[3px]">{messageData.username}</span>
-                        <div
-                            key={index}
-                            className="p-1 bg-purple-100 mb-1 px-2 rounded-lg text-[14px] max-w-[206px] break-words font-normal"
-                        >
+                        <div className="p-1 bg-purple-100 px-2 rounded-lg text-[14px] break-words font-normal w-full max-w-full">
                             <span>{messageData.message}</span>
                         </div>
                     </div>
                 ))}
                 <div ref={messagesEndRef}></div>
             </ScrollArea>
-            <form onSubmit={handleSubmit(onSubmit)} className="absolute bottom-1 flex w-full px-1">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex w-full px-1 py-2">
                 <Input
-                    className="w-[90%] ml-1 mr-[0.125rem] rounded-xl text-start"
+                    className="flex-1 ml-1 mr-[0.125rem] rounded-xl text-start"
                     placeholder="Ecrivez votre message"
                     {...register('message', { required: true })}
                 />
