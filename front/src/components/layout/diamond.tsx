@@ -6,7 +6,7 @@ export const Diamond = () => {
 
 export const DiamondWall = () => {
     return (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[70%] z-[-1] opacity-40">
+        <div className="hidden xl:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[70%] z-[-1] opacity-40">
             <svg xmlns="http://www.w3.org/2000/svg" width={2653} height={1702} fill="none">
                 <rect
                     width={342.823}

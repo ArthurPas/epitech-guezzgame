@@ -1,21 +1,18 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { LoginSchemaType, RegisterSchemaType, loginSchema, registerSchema } from '@/interfaces/auth';
+import { Form, FormControl, FormField, FormLabel, FormMessage } from '@/components/ui/form';
+import { LoginSchemaType, loginSchema } from '@/interfaces/auth';
 import { useLogin } from '@/hooks/auth';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/router';
 
-export type LoginFormProps = {};
-
-export const LoginForm = (props: LoginFormProps) => {
+export const LoginForm = () => {
     const { mutate } = useLogin();
     const { toast } = useToast();
     const router = useRouter();
@@ -30,7 +27,9 @@ export const LoginForm = (props: LoginFormProps) => {
 
     const onSubmit = async (data: LoginSchemaType) => {
         await mutate(data, {
-            onSuccess: () => {
+            onSuccess: (response) => {
+                const token = response.token;
+                localStorage.setItem('authToken', token)
                 toast({ description: 'Connexion réussie' });
                 router.push('/');
             },
@@ -49,7 +48,7 @@ export const LoginForm = (props: LoginFormProps) => {
                             <Label htmlFor="email">Anonymous</Label>
                             <Input id="email" placeholder="Identifiant" />
                         </div>
-                        <Button className="bg-amber-300 mt-3" variant={'default'}>
+                        <Button className="bg-amber-300 mt-3 bg-gradient-to-b from-amber-300 to-yellow-600" variant={'default'}>
                             Jouer
                         </Button>
                     </div>
@@ -90,7 +89,7 @@ export const LoginForm = (props: LoginFormProps) => {
                                         )}
                                     />
                                 </div>
-                                <Button type="submit" className="bg-amber-300 mt-3">
+                                <Button type="submit" className="bg-amber-300 mt-3 bg-gradient-to-b from-amber-300 to-yellow-600">
                                     Connexion
                                 </Button>
                             </div>

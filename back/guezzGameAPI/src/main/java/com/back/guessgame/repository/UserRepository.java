@@ -1,5 +1,6 @@
 package com.back.guessgame.repository;
 
+import com.back.guessgame.repository.entities.Party;
 import com.back.guessgame.repository.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -16,5 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	Boolean existsByMail(String mail);
 
 	List<User> findAllByLoginContainingIgnoreCase(String login);
+
+	List<User> findAllByParties(Party partyId);
 
 }
