@@ -51,8 +51,8 @@ const isOverlapping = (pos1: { x: number; y: number }, pos2: { x: number; y: num
 
 const ClickGame = () => {
     const { isGameOver, isRoundOver, setIsRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
-    const nbRound = 5;
-    const [result, setResult] = useState([{ login: '', score: 0 }]);
+    const nbRound = 1;
+    // const [result, setResult] = useState([{ login: '', score: 0 }]);
     const [targetItem, setTargetItem] = useState('');
     const [shuffledItems, setShuffledItems] = useState<string[]>([]);
     const [log, setLog] = useState<{ login: string; timestamp: number }[]>([]);
@@ -74,7 +74,7 @@ const ClickGame = () => {
         nbPoints: score,
         gameName: 'CLICK_GAME',
         roundNumber: round,
-        partyCode: '456',
+        partyCode: localStorage.getItem('partyCode') || '',
         playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
     };
     useEffect(() => {
@@ -94,7 +94,7 @@ const ClickGame = () => {
     const setNewRound = () => {
         setTargetItem(getRandomItem(items));
         setShuffledItems(shuffleArray([...items]));
-        setCountdown(5);
+        setCountdown(1);
         if (round > nbRound) {
             sendToHost({ actionType: 'END_GAME', gameData });
         }
@@ -160,7 +160,7 @@ const ClickGame = () => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {result.map((player, index) => (
+                            {scoreResult.map((player, index) => (
                                 <TableRow key={player.login}>
                                     <TableCell>{index + 1}</TableCell>
                                     <TableCell>{player.login}</TableCell>

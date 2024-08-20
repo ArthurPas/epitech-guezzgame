@@ -30,7 +30,7 @@ const GeoGuezzer = () => {
 
     //Gestion des tours
     const [nbTours, setNbTours] = useState<number>(1); // Nombre de tours en cours de jeu
-    const nbTotalTours = 2; // Nombre total de tours
+    const nbTotalTours = 1; // Nombre total de tours
 
     // Récupération des images en début de partie
     const { data, isError, isPending } = useGetDataPictureGeo(nbTotalTours);
@@ -55,7 +55,7 @@ const GeoGuezzer = () => {
         nbPoints: 0,
         gameName: 'GEO_GUEZZER',
         roundNumber: 0,
-        partyCode: '456',
+        partyCode: localStorage.getItem('partyCode') || '',
         playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
     };
 

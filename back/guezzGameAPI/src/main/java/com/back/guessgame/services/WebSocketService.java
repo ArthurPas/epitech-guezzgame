@@ -8,6 +8,7 @@ import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.ActionType;
 import com.back.guessgame.repository.dto.SocketScoreResult;
 import com.back.guessgame.repository.dto.WebSocketPayload;
+import com.back.guessgame.repository.entities.Game;
 import com.back.guessgame.repository.entities.GameScore;
 import com.back.guessgame.repository.entities.Party;
 import com.back.guessgame.repository.entities.User;
@@ -82,33 +83,67 @@ public class WebSocketService {
 
 	public void processSocketAction(WebSocketPayload message, User currentUser, GameScore gameScore, SimpMessagingTemplate messagingTemplate) {
 		saveGameScore(gameScore);
-		if(message.getActionType().equals(ActionType.USER_READY))
-		{
+		if(message.getActionType().equals(ActionType.USER_READY)) {
 			checkIfAllUsersReady(currentUser, gameScore, messagingTemplate);
+		}
+		if(message.getActionType().equals(ActionType.NEXT_GAME)) {
+			sendNextGame(gameScore, messagingTemplate);
+		}
+		if(message.getActionType().equals(ActionType.END_GAME)) {
+			messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
+			sendNextGame(gameScore, messagingTemplate);
+			clear(gameScore.getPartyCode());
 		}
 		switch (gameScore.getGame().getName()) {
 			case "CLICK_GAME":
-				tapeTaupesGameplay(gameScore, messagingTemplate);
+				clickGameGamePlay(gameScore, messagingTemplate);
 				break;
-			case "BlindTest":
+			case "BLIND_TEST":
 				blindTestGameplay(message, currentUser, gameScore, messagingTemplate);
 				break;
-			case "MovieGuesser":
+			case "MOVIE_GUESSER":
 				movieGuesserGameplay(message, currentUser, gameScore, messagingTemplate);
 				break;
 			case "GEO_GUEZZER":
 				geoGuezzerGameplay(message, currentUser, gameScore, messagingTemplate);
 				break;
 		}
+
+	}
+
+	private void sendNextGame(GameScore gameScore, SimpMessagingTemplate messagingTemplate) {
+		Party party = partyRepository.findAllByPartyCode(gameScore.getPartyCode()).get(0);
+		List<Long> gamesId = party.getGames().stream().map(Game::getId).sorted().toList();
+		Logger logger = LoggerFactory.getLogger(WebSocketController.class);
+		Long currentGameIndex = gameScore.getGame().getId() + 1;
+		logger.warn("gamesId : " + gamesId);
+		while (!gamesId.contains(currentGameIndex)) {
+			{
+				currentGameIndex++;
+				logger.warn("CURRENT GAME INDEX : " + currentGameIndex);
+				if(currentGameIndex > gameRepository.count()) {
+					break;
+				}
+			}
+		}
+
+		if(currentGameIndex > gameRepository.count()) {
+			messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
+			clear(gameScore.getPartyCode());
+		} else {
+			Game nextGame = gameRepository.findOneById(gamesId.get(gamesId.indexOf(currentGameIndex)));
+			messagingTemplate.convertAndSend("/topic/reply/nextGame", nextGame.getName());
+			logger.warn("NEXT GAME : " + nextGame.getName());
+		}
 	}
 
 	private boolean checkIfAllUsersReady(User currentUser, GameScore gameScore, SimpMessagingTemplate messagingTemplate) {
-		List<GameScore> gameScores = gameScoreRepository.findAllByPartyCodeAndGame(gameScore.getPartyCode(),gameScore.getGame());
+		List<GameScore> gameScores = gameScoreRepository.findAllByPartyCodeAndGame(gameScore.getPartyCode(), gameScore.getGame());
 		int nbPlayerReady = 0;
 		int nbPlayer = partyRepository.findAllByPartyCode(gameScore.getPartyCode()).size();
 		Logger logger = LoggerFactory.getLogger(WebSocketController.class);
 		for (GameScore gs : gameScores) {
-			if (gs.getActionType().equals(ActionType.USER_READY)) {
+			if(gs.getActionType().equals(ActionType.USER_READY)) {
 				nbPlayerReady++;
 			}
 		}
@@ -119,7 +154,7 @@ public class WebSocketService {
 		return allReady;
 	}
 
-	private void tapeTaupesGameplay(GameScore gameScore, SimpMessagingTemplate messagingTemplate) {
+	private void clickGameGamePlay(GameScore gameScore, SimpMessagingTemplate messagingTemplate) {
 		Logger logger = LoggerFactory.getLogger(WebSocketController.class);
 		logger.info("\nReceived message type : " + gameScore.getActionType() + "\n \n with payload : " + gameScore.toString());
 		ActionType actionType = gameScore.getActionType();
@@ -129,7 +164,6 @@ public class WebSocketService {
 			case END_GAME -> {
 				messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
 				messagingTemplate.convertAndSend("/topic/reply/score", getScore(gameScore));
-//				clear(gameScore.getPartyCode());
 			}
 		}
 	}

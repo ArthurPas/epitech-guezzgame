@@ -13,6 +13,7 @@ export const useGameWebSockets = () => {
     //{ userLogin: 'Votre guezzTeam' }]:🤮 mais tant pis ça fonctionne bien
     const [usersJoinedParty, setUsersJoinedParty] = useState([{ userLogin: defaultMessage }]);
 
+    const [currentGame, setCurrentGame] = useState('MENU');
     // useSubscription allows to subscribe to a specific topic and execute a function when the back-end sends a new message on it
     useSubscription('/topic/reply/endRound', (message) => {
         setIsRoundOver(message.body === 'NEXT_ROUND');
@@ -47,6 +48,11 @@ export const useGameWebSockets = () => {
         });
     });
 
+    useSubscription('/topic/reply/nextGame', (message) => {
+        console.log(message.body + 'nextGame');
+        setCurrentGame(message.body);
+    });
+
     // Allows to send a message to the back-end
     const sendToHost = ({ actionType, gameData }: SendToHostType) => {
         if (stompClient) {
@@ -63,6 +69,8 @@ export const useGameWebSockets = () => {
         scoreResult,
         usersJoinedParty,
         allPlayersReady,
+        currentGame,
+        setIsRoundOver,
         sendToHost
     };
 };

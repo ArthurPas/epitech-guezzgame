@@ -3,7 +3,9 @@ package com.back.guessgame.controllers;
 import com.back.guessgame.repository.GameRepository;
 import com.back.guessgame.repository.PartyRepository;
 import com.back.guessgame.repository.UserRepository;
-import com.back.guessgame.repository.dto.*;
+import com.back.guessgame.repository.dto.GeneralPartyDto;
+import com.back.guessgame.repository.dto.NewPartyDto;
+import com.back.guessgame.repository.dto.PartyResultDto;
 import com.back.guessgame.repository.entities.Game;
 import com.back.guessgame.repository.entities.Party;
 import com.back.guessgame.repository.entities.User;
@@ -129,6 +131,7 @@ public class PartyController {
 		if(game == null) {
 			return new ResponseEntity<>(Json.pretty("game not found"), null, 404);
 		}
+		gameRepository.save(game);
 		return new ResponseEntity<>(Json.pretty("game added"), null, 200);
 	}
 	@PostMapping("/removeGame")
