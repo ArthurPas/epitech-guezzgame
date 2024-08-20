@@ -33,12 +33,12 @@ export const Header = () => {
                     </Button>
                 </Link>
                 <Link href={'/marketplace'}>
-                    <Button variant="reverse" className="rounded-lg shadow">
+                    <Button variant="reverse" className="rounded-lg shadow ">
                         <ShoppingBag />
                     </Button>
                 </Link>
                 <Link href={'/room'}>
-                    <Button variant="reverse" className="rounded-lg shadow bg-amber-300">
+                    <Button variant="reverse" className="rounded-lg shadow bg-gradient-to-b from-amber-300 to-amber-500">
                         <Play />
                     </Button>
                 </Link>
@@ -49,7 +49,7 @@ export const Header = () => {
                     </Button>
                 </Link>
                 <Link href={'/register'}>
-                    <Button variant="reverse" className="rounded-lg shadow bg-amber-300">
+                    <Button variant="reverse" className="rounded-lg shadow bg-gradient-to-b from-amber-300 to-amber-500">
                         Créer son compte
                     </Button>
                 </Link>

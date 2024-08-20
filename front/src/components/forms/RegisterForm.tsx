@@ -147,7 +147,7 @@ export const RegisterForm = () => {
                         </div>
                     </CardContent>
                     <CardFooter className="items-center justify-center justify-self-center">
-                        <Button type="submit" className="bg-amber-300 bg-gradient-to-b from-amber-300 to-yellow-600" variant={'default'}>
+                        <Button type="submit" className="bg-amber-400 w-36" variant={'default'}>
                             S'inscrire
                         </Button>
                     </CardFooter>
