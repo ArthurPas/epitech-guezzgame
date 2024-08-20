@@ -48,7 +48,7 @@ export const RegisterForm = () => {
         await mutate(data, {
             onSuccess: () => {
                 toast({ description: 'Inscription réussie' });
-                router.push('/login');
+                router.push('/');
             },
             onError: (error) => {
                 toast({ description: error.message });
