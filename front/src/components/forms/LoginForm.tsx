@@ -29,9 +29,9 @@ export const LoginForm = () => {
         await mutate(data, {
             onSuccess: (response) => {
                 const token = response.token;
-                localStorage.setItem('authToken', token)
+                localStorage.setItem('authToken', token);
                 toast({ description: 'Connexion réussie' });
-                router.push('/');
+                router.push('/room');
             },
             onError: (error) => {
                 toast({ description: error.message });

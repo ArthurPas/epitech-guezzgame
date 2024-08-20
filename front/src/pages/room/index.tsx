@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/RoomTab';
 import React from 'react';
-
+import { GameData } from '@/interfaces/gameWebSockets';
 import { useNewParty, useAddGame, useRemoveGame, useGetGames, useRandomCode, useJoinParty } from '@/hooks/room';
 import { Game, NewParty } from '@/interfaces/room';
 import { useState } from 'react';
@@ -26,16 +26,18 @@ const Index = () => {
         }
     }
     const { mutate: joinGame } = useJoinParty(userLogin);
-    const { data: randomCode } = useRandomCode() as { data: number };
+    const { data: fetchRandomCode } = useRandomCode() as { data: number };
+    const randomCode = fetchRandomCode;
     const [playlistGames, setPlaylistGames] = useState<Game[]>([]);
     const { mutate: createParty, isLoading: isCreatingParty, error: createPartyError, data: createPartyData } = useNewParty();
     const { mutate: addGameQuery } = useAddGame();
     const { mutate: removeGameQuery } = useRemoveGame();
     const [partyCreated, setPartyCreated] = useState<boolean>(false);
     const { data: games, isError, isLoading } = useGetGames();
-    const { usersJoinedParty } = useGameWebSockets();
+    const { usersJoinedParty, sendToHost } = useGameWebSockets();
     const [displayPartyCode, setDisplayPartyCode] = useState<string>('####');
     const router = useRouter();
+    console.log(randomCode);
     const addGame = (Game: Game) => {
         addGameQuery({ partyCode: randomCode, gameName: Game.name, userLogin: '' });
         if (!playlistGames.some((g) => g.name === Game.name)) {
@@ -57,14 +59,7 @@ const Index = () => {
                 setDisplayPartyCode(randomCode.toString());
                 toast({ description: 'Lets go, choisis tes guezzgames et attend tes amis' });
                 setPartyCreated(true);
-            },
-            onError: (error) => {
-                toast({ description: error.message });
-            }
-        });
-        await joinGame(randomCode, {
-            onSuccess: () => {
-                toast({ description: "Vous serez l'hôte de cette guezzSession" });
+                localStorage.setItem('partyCode', randomCode.toString());
             },
             onError: (error) => {
                 toast({ description: error.message });
@@ -174,7 +169,7 @@ const Index = () => {
                                         <div className="flex flex-col m-2">
                                             <Label htmlFor="Game">Game:</Label>
                                             <div className="grid grid-cols-2 gap-4">
-                                                {games.map((game: Game) => (
+                                                {games.slice(1).map((game: Game) => (
                                                     <Button
                                                         key={game.id}
                                                         className="default"
@@ -206,7 +201,7 @@ const Index = () => {
                                                     <Button
                                                         key={game.id}
                                                         className="default"
-                                                        onClick={() => addGame(game)}
+                                                        onClick={() => removeGame(game)}
                                                         style={{
                                                             backgroundImage: `url(${game.urlPicture})`,
                                                             backgroundSize: 'cover',
