@@ -23,14 +23,15 @@ const actionTypeSchema = z.enum([
     'START_ROUND',
     'FASTER_WIN',
     'FASTER_WIN_BY_ROUND',
-    'PERSONAL_GAME_END'
+    'PERSONAL_GAME_END',
+    'NEXT_GAME'
 ]);
 
 const gameDataSchema = z.object({
     from: z.string(), // login
     date: z.number(), // timestamp
     nbPoints: z.number(),
-    gameName: z.enum(['BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUEZZER', 'JUNGLE_SPEED']),
+    gameName: z.enum(['MENU','BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUEZZER', 'JUNGLE_SPEED']),
     roundNumber: z.number(),
     partyCode: z.string(),
     playerInfo: playerInfoSchema

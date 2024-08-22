@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/RoomTab';
 import React from 'react';
-
+import { GameData } from '@/interfaces/gameWebSockets';
 import { useNewParty, useAddGame, useRemoveGame, useGetGames, useRandomCode, useJoinParty } from '@/hooks/room';
 import { Game, NewParty } from '@/interfaces/room';
 import { useState } from 'react';
@@ -15,6 +15,7 @@ import { useToast } from '@/components/ui/use-toast';
 import useGameWebSockets from '@/hooks/useGameWebSockets';
 import { useRouter } from 'next/router';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Chat } from '@/components/gameLayout/Chat';
 const Index = () => {
     const { toast } = useToast();
     let userLogin: string = 'anonymous';
@@ -26,16 +27,18 @@ const Index = () => {
         }
     }
     const { mutate: joinGame } = useJoinParty(userLogin);
-    const { data: randomCode } = useRandomCode() as { data: number };
+    const { data: fetchRandomCode } = useRandomCode() as { data: number };
+    const randomCode = fetchRandomCode;
     const [playlistGames, setPlaylistGames] = useState<Game[]>([]);
     const { mutate: createParty, isLoading: isCreatingParty, error: createPartyError, data: createPartyData } = useNewParty();
     const { mutate: addGameQuery } = useAddGame();
     const { mutate: removeGameQuery } = useRemoveGame();
     const [partyCreated, setPartyCreated] = useState<boolean>(false);
     const { data: games, isError, isLoading } = useGetGames();
-    const { usersJoinedParty } = useGameWebSockets();
+    const { usersJoinedParty, sendToHost } = useGameWebSockets();
     const [displayPartyCode, setDisplayPartyCode] = useState<string>('####');
     const router = useRouter();
+    console.log(randomCode);
     const addGame = (Game: Game) => {
         addGameQuery({ partyCode: randomCode, gameName: Game.name, userLogin: '' });
         if (!playlistGames.some((g) => g.name === Game.name)) {
@@ -57,14 +60,7 @@ const Index = () => {
                 setDisplayPartyCode(randomCode.toString());
                 toast({ description: 'Lets go, choisis tes guezzgames et attend tes amis' });
                 setPartyCreated(true);
-            },
-            onError: (error) => {
-                toast({ description: error.message });
-            }
-        });
-        await joinGame(randomCode, {
-            onSuccess: () => {
-                toast({ description: "Vous serez l'hôte de cette guezzSession" });
+                localStorage.setItem('partyCode', randomCode.toString());
             },
             onError: (error) => {
                 toast({ description: error.message });
@@ -98,54 +94,20 @@ const Index = () => {
 
     return (
         <div>
-            <div className="flex justify-around py-10 h-[20vh]">
-                <div>
-                    <Button className="bg-amber-500">Retour</Button>
-                </div>
-                <div className="flex flex-col">
-                    <div className="text-center ">
-                        <h1>GuezGame</h1>
-                    </div>
-
-                    {/* <div className="flex flex-row">
-                        <ScrollArea className="h-[80px] w-[520px]">
-                            <div className="flex space-x-4">
-                                {Array(14)
-                                    .fill(0)
-                                    .map((_, index) => (
-                                        <div
-                                            key={index}
-                                            className="rounded-base border-2 border-border dark:border-darkBorder bg-main px-2 py-1 font-mono text-sm"
-                                        >
-                                            <p>day{index + 1}</p>
-                                            <h3>+100</h3>
-                                        </div>
-                                    ))}
-                            </div>
-                            <ScrollBar orientation="horizontal" />
-                        </ScrollArea>
-                    </div> */}
-                </div>
-
-                <div>
-                    <Button className="bg-amber-500">Profil</Button>
-                </div>
-            </div>
-
-            <div className="flex justify-around py-5vh h-[60vh]">
+            <div className="flex justify-around py-5vh h-[60vh] mt-[9rem]">
                 <div>
                     <Tabs defaultValue="create" className="w-[800px]">
                         <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="create">Crée une room</TabsTrigger>
-                            <TabsTrigger value="join">rejoindre une room</TabsTrigger>
+                            <TabsTrigger value="create">Créer une room</TabsTrigger>
+                            <TabsTrigger value="join">Rejoindre une room</TabsTrigger>
                         </TabsList>
                         <TabsContent value="create">
-                            <Card className="p-5">
+                            <Card className="p-5 rounded-[0.9rem]">
                                 <CardContent className="grid grid-cols-2">
                                     <div className="grid-cols-1 m-2">
                                         <Button
                                             variant="default"
-                                            className="w-full bg-amber-500 text-text dark:bg-darkBg dark:text-darkText"
+                                            className="w-full bg-amber-400 text-text dark:bg-darkBg dark:text-darkText"
                                             onClick={handleCreateClick}
                                             disabled={partyCreated}
                                         >
@@ -174,7 +136,7 @@ const Index = () => {
                                         <div className="flex flex-col m-2">
                                             <Label htmlFor="Game">Game:</Label>
                                             <div className="grid grid-cols-2 gap-4">
-                                                {games.map((game: Game) => (
+                                                {games.slice(1).map((game: Game) => (
                                                     <Button
                                                         key={game.id}
                                                         className="default"
@@ -206,7 +168,7 @@ const Index = () => {
                                                     <Button
                                                         key={game.id}
                                                         className="default"
-                                                        onClick={() => addGame(game)}
+                                                        onClick={() => removeGame(game)}
                                                         style={{
                                                             backgroundImage: `url(${game.urlPicture})`,
                                                             backgroundSize: 'cover',
@@ -230,7 +192,7 @@ const Index = () => {
                                 <CardFooter>
                                     <Button
                                         variant="default"
-                                        className="w-full m-2 bg-amber-500 text-text dark:bg-darkBg dark:text-darkText"
+                                        className="w-full m-2 bg-amber-400 text-text dark:bg-darkBg dark:text-darkText"
                                         onClick={handlePlayClick}
                                         disabled={isCreatingParty}
                                     >
@@ -251,10 +213,10 @@ const Index = () => {
                                 <CardFooter>
                                     <Button
                                         variant="default"
-                                        className="w-full bg-amber-500 text-text dark:bg-darkBg dark:text-darkText"
+                                        className="w-full bg-amber-400 text-text dark:bg-darkBg dark:text-darkText"
                                         onClick={handleJoinClick}
                                     >
-                                        join
+                                        Rejoindre
                                     </Button>
                                 </CardFooter>
                             </Card>
@@ -262,21 +224,7 @@ const Index = () => {
                     </Tabs>
                 </div>
 
-                <div>
-                    <Card className="w-[350px] h-[450px] p-5">
-                        <CardHeader>
-                            <CardTitle>Chat</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <Input disabled className="w-[100%]" type="message" placeholder="comming soon" />
-                        </CardContent>
-                        <CardFooter className="">
-                            {/* <Button className="bg-amber-500 right-0" variant="default">
-                                send
-                            </Button> */}
-                        </CardFooter>
-                    </Card>
-                </div>
+                <Chat />
             </div>
         </div>
     );

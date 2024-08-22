@@ -21,8 +21,8 @@ export const MovieGuesser = () => {
     const [gameEnded, setGameEnded] = useState(false);
 
     // ROUND STATE
-    const maxRounds = 5;
-    const roundDuration = 12;
+    const maxRounds = 2;
+    const roundDuration = 2;
     const [currentRound, setCurrentRound] = useState(1);
     const [posterIndexToDisplay, setPosterIndexToDisplay] = useState<number>(1);
     const [initialX, setInitialX] = useState<number>(Math.floor(Math.random() * 500));
@@ -36,7 +36,7 @@ export const MovieGuesser = () => {
     const [playerGuess, setPlayerGuess] = useState<string>('');
 
     const inputRef = useRef<HTMLInputElement>(null);
-
+    const partyCode = localStorage?.getItem('partyCode') || '';
     let userLogin = 'anonymous';
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('authToken') || '';
@@ -50,7 +50,7 @@ export const MovieGuesser = () => {
         nbPoints: playerScore,
         gameName: 'MOVIE_GUESSER',
         roundNumber: currentRound,
-        partyCode: '124',
+        partyCode: partyCode || ' ',
         playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
     };
 
@@ -103,6 +103,7 @@ export const MovieGuesser = () => {
             setGameActive(false);
             setGameEnded(true);
             sendToHost({ actionType: 'END_GAME', gameData });
+            console.log('END_GAME sent');
         }
     };
 
