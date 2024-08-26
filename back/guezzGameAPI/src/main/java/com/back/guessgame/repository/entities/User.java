@@ -50,9 +50,9 @@ public class User implements UserDetails {
 
 	private List<User> friendships;
 
-	@HashCodeExclude
-	@OneToMany(mappedBy = "user")
-	private List<Inventory> items;
+	@ManyToMany(targetEntity = Item.class)
+	@JoinTable(name = "items_users", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "item_id"))
+	private List<Item> items;
 
 	@HashCodeExclude
 	@OneToMany(targetEntity = Party.class)

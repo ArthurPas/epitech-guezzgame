@@ -1,10 +1,11 @@
 package com.back.guessgame.controllers;
 
 import com.back.guessgame.repository.ItemRepository;
+import com.back.guessgame.repository.dto.BuyItemLoginDto;
 import com.back.guessgame.repository.dto.ItemDto;
 import com.back.guessgame.repository.entities.Item;
 import com.back.guessgame.services.ItemService;
-import io.swagger.v3.oas.annotations.Hidden;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/item")
-@Hidden
+@Slf4j
 public class ItemController {
 
 	@Autowired
@@ -26,12 +27,12 @@ public class ItemController {
 	}
 
 	@GetMapping("/list")
-	public List<Item> getAllItems() {
-		return itemService.findAll();
+	public List<ItemDto> getAllItems() {
+		return itemService.findAll().stream().map(ItemDto::new).toList();
 	}
 
 	@GetMapping("/list/{name}")
-	public List<Item> getItemsByName(@PathVariable String name) {
+	public List<ItemDto> getItemsByName(@PathVariable String name) {
 		return itemService.findByName(name);
 	}
 
@@ -53,5 +54,15 @@ public class ItemController {
 	@DeleteMapping("/{id}")
 	public void deleteItem(@PathVariable Long id) {
 		itemService.deleteById(id);
+	}
+
+	@GetMapping("user/{login}")
+	public List<ItemDto> getMyItems(@PathVariable String login) {
+		return itemService.findMyItems(login);
+	}
+
+	@PostMapping("/buy")
+	public void buyItem(@RequestBody BuyItemLoginDto buy) {
+		itemService.buyItem(buy.getItemId(), buy.getLogin());
 	}
 }
