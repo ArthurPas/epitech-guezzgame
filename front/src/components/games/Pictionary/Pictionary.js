@@ -7,8 +7,6 @@ const Pictionary = () => {
   const [mouseData, setMouseData] = useState({ x: 0, y: 0 });
   const [color, setColor] = useState('#000000');
   const [size, setSize] = useState(10);
-
-  // Utilisez useStompClient pour obtenir le client STOMP
   const stompClient = useStompClient();
 
   useEffect(() => {
@@ -18,19 +16,17 @@ const Pictionary = () => {
     canvas.height = window.innerHeight;
     setCanvasCTX(ctx);
 
-    // Ecouter les événements de dessin via les websockets
-    if (stompClient) { // Vérifiez que stompClient est défini
+    if (stompClient) {
       const subscription = stompClient.subscribe('/topic/draw', (message) => {
         const data = JSON.parse(message.body);
         drawFromSocket(data);
       });
 
-      // Nettoyez l'abonnement quand le composant est démonté
       return () => {
         subscription.unsubscribe();
       };
     }
-  }, [stompClient]); // Dépendance sur stompClient pour réagir à sa disponibilité
+  }, [stompClient]);
 
   const SetPos = (e) => {
     setMouseData({
