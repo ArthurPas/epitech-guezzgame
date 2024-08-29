@@ -27,7 +27,7 @@ export const RegisterForm = () => {
     const { toast } = useToast();
     const router = useRouter();
     const [selectedProfilePic, setSelectedProfilePic] = useState(
-        'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720445553/shrek_3_q2izv4.webp'
+        'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720513515/shrek_4_vnuik2.webp'
     );
 
     const form = useForm<RegisterSchemaType>({
@@ -147,7 +147,7 @@ export const RegisterForm = () => {
                         </div>
                     </CardContent>
                     <CardFooter className="items-center justify-center justify-self-center">
-                        <Button type="submit" className="bg-amber-400 w-36" variant={'default'}>
+                        <Button type="submit" className="bg-gradient-to-b from-amber-300 to-amber-500 w-36" variant={'default'}>
                             S'inscrire
                         </Button>
                     </CardFooter>

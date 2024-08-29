@@ -74,10 +74,9 @@ const Gameplay = () => {
                     <div className="flex flex-row  lg:flex-col justify-between w-full lg:w-[20%] gap-2 lg:gap-3 h-[20%] lg:h-[100%] ">
                         <Players />
                         <Chat />
-                        <div></div>
                     </div>
                     <div className="relative w-full flex flex-col items-center gap-2 h-[100%]">
-                        <Card className="h-[100%] rounded-[0.9rem] priority-rounded w-full lg:min-w-[98%] bg-purple-700 ">
+                        <Card className="h-[100%] rounded-[0.9rem] priority-rounded w-full lg:min-w-[98%] bg-gradient-to-b from-purple-700 via-purple-700 to-purple-700">
                             {currentGame === 'BLIND_TEST' && <CarouselDApiDemo />}
                             {currentGame === 'MOVIE_GUESSER' && <MovieGuesser />}
                             {currentGame === 'GEO_GUEZZER' && <GeoGuezzer />}

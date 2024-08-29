@@ -110,12 +110,12 @@ const UserProfile: React.FC = () => {
     return (
         <>
             <div className="flex justify-center p-5">
-                <div className="bg-[#eec17e] rounded-lg">
+                <div className="bg-amber-400 rounded-lg">
                     <HoverCard>
                         <HoverCardTrigger asChild>
                             <Button variant="link">Coins: {userData?.nbCoin}</Button>
                         </HoverCardTrigger>
-                        <HoverCardContent className="w-100 bg-[#eec17e]">
+                        <HoverCardContent className="w-100 bg-amber-400">
                             <div>
                                 <div>
                                     <div>
@@ -168,12 +168,12 @@ const UserProfile: React.FC = () => {
                         tempSelectedAsset={tempSelectedAsset}
                     >
                         <DialogTrigger asChild>
-                            <Avatar className="w-32 h-32 md:w-48 md:h-48 mx-auto cursor-pointer hover:ring-4 ring-[#eec17e] ring-opacity-50 transition duration-300">
+                            {/* <Avatar className="w-32 h-32 md:w-48 md:h-48 mx-auto cursor-pointer hover:ring-4 ring-amber-400 ring-opacity-50 transition duration-300">
                                 <AvatarImage src={selectedAsset?.url ?? userData?.picture} />
-                            </Avatar>
+                            </Avatar> */}
                         </DialogTrigger>
                         <DialogPortal>
-                            <DialogContent className="p-7">
+                            <DialogContent className="p-7 bg-purple-200">
                                 <DialogHeader>
                                     <DialogTitle>Edit Photo</DialogTitle>
                                 </DialogHeader>
@@ -183,7 +183,7 @@ const UserProfile: React.FC = () => {
                                             key={index}
                                             onClick={() => changePP(asset)}
                                             className={`flex items-center bg-purple-100 m-3 rounded-full w-20 h-20 cursor-pointer ${
-                                                tempSelectedAsset?.url === asset.url ? 'ring-4 ring-[#eec17e]' : ''
+                                                tempSelectedAsset?.url === asset.url ? 'ring-4 ring-amber-400' : ''
                                             }`}
                                         >
                                             <div className="text-[#37034e] w-full">
@@ -191,7 +191,7 @@ const UserProfile: React.FC = () => {
                                                     <img
                                                         src={asset.url}
                                                         alt={`Asset ${index}`}
-                                                        className="w-full h-full rounded-full object-cover"
+                                                        className="w-full h-full rounded-full border border-black object-cover"
                                                     />
                                                 ) : (
                                                     `Asset ${index}`
@@ -202,33 +202,33 @@ const UserProfile: React.FC = () => {
                                 </div>
                                 <DialogFooter>
                                     <DialogClose onClick={handleModalClose}>
-                                        <Button className="bg-[#eec17e]">Cancel</Button>
+                                        <Button className="bg-amber-400">Cancel</Button>
                                     </DialogClose>
                                     <DialogClose onClick={handleSave}>
-                                        <Button className="bg-[#eec17e]">Save</Button>
+                                        <Button className="bg-amber-400">Save</Button>
                                     </DialogClose>
                                 </DialogFooter>
                             </DialogContent>
                         </DialogPortal>
                     </Dialog>
-                    <h1 className="mt-4 text-[#eec17e]">
+                    <h1 className="mt-4 text-amber-400">
                         {userData?.login}, {currentUser.title}
                     </h1>
-                    <h3 className="text-[#eec17e] text-md md:text-lg">
+                    <h3 className="text-amber-400 text-md md:text-lg">
                         Level: {userData?.level.level} - XP: {userData?.xpPoint}
                     </h3>
                     <Dialog onClose={handleModalClose} set={setTempSelectedAsset} onSave={handleSave} tempSelectedAsset={tempSelectedAsset}>
                         <DialogTrigger asChild>
-                            <Button className="bg-[#eec17e]">Mes badges</Button>
+                            <Button className="bg-amber-400">Mes badges</Button>
                         </DialogTrigger>
                         <DialogPortal>
-                            <DialogContent className="p-7">
+                            <DialogContent className="p-7 ">
                                 <DialogHeader>
                                     <DialogTitle>Mes badges</DialogTitle>
                                 </DialogHeader>
                                 <div className="flex justify-center flex-wrap">
                                     <Badge
-                                        className="flex items-center bg-[#d8b4fe] m-3 cursor-pointer hover:ring-2 ring-[#eec17e] border-none"
+                                        className="flex items-center bg-[#d8b4fe] m-3 cursor-pointer hover:ring-2 ring-amber-400 border-none"
                                         onClick={displayBadgeMeme}
                                     >
                                         <div className="text-[#37034e]">Level {userData?.level.level}</div>
@@ -241,7 +241,7 @@ const UserProfile: React.FC = () => {
                                 </div>
                                 <DialogFooter>
                                     <DialogClose onClick={handleModalClose}>
-                                        <Button className="bg-[#eec17e]">Fermer</Button>
+                                        <Button className="text-amber-400">Fermer</Button>
                                     </DialogClose>
                                 </DialogFooter>
                             </DialogContent>
@@ -250,7 +250,7 @@ const UserProfile: React.FC = () => {
                 </div>
             </div>
             <div className="flex flex-col md:flex-row p-5 pb-0 md:m-40 md:mt-0">
-                <Card className="bg-purple-300 rounded-lg p-5 w-full md:w-1/2 mx-auto text-white mb-5 md:mr-5 md:mb-0">
+                <Card className="bg-purple-300 rounded-2xl p-5 w-full md:w-1/2 mx-auto text-white mb-5 md:mr-5 md:mb-0">
                     <div className="flex justify-around">
                         <div className="mb-5 w-48">
                             <div className="text-2xl md:text-3xl text-center text-[#37034e]">Games</div>
@@ -273,7 +273,7 @@ const UserProfile: React.FC = () => {
                         </h3>
                     </div>
                 </Card>
-                <Card className="bg-purple-300 rounded-lg p-5 w-full md:w-1/2 mx-auto md:ml-5">
+                <Card className="bg-purple-300 rounded-2xl p-5 w-full md:w-1/2 mx-auto md:ml-5">
                     <div className="text-2xl md:text-3xl text-center mb-2 text-[#37034e]">Mes amis</div>
                     <ScrollArea className="h-72 w-full rounded-md">
                         <div className="flex flex-col gap-4">

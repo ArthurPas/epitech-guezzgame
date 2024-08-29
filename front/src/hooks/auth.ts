@@ -1,6 +1,13 @@
 import { LoginSchemaType, RegisterSchemaType } from '@/interfaces/auth';
 import { useMutation } from '@tanstack/react-query';
 
+export const useIsLoggedIn = () => {
+    if (typeof window !== 'undefined') {
+        return !!localStorage.getItem('authToken');
+    }
+    return false;
+};
+
 export const login = async (registrationData: LoginSchemaType) => {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
@@ -23,8 +30,8 @@ export const login = async (registrationData: LoginSchemaType) => {
         }
 
         const data = await response.json(); //For now the back-end responds with a string, not with a token, so we don't need to do a response.json()
-                                            // et bah maintenant si {"token": "ey.......", "expireIn": 36000}
-                                            // ;)
+        // et bah maintenant si {"token": "ey.......", "expireIn": 36000}
+        // ;)
         return data;
     } catch (error) {
         if (error instanceof Error && error.message.length < 100) {

@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import React from 'react';
@@ -78,16 +77,16 @@ const Index = () => {
     return (
         <div className="grid gap min-h-screen w-full">
             <div className="grid place-items-center mb-8 mt-[4rem]">
-                <h1 className="text-orange-300 text-[64px]">Helpcenter</h1>
+                <h1 className="text-amber-400 text-[64px]">Helpcenter</h1>
             </div>
 
-            <div className="mt-[2.5rem] mb-[5rem]">
+            <div className="mb-[8rem]">
                 <Card className="w-[60%] h-[90%] mx-auto rounded-[4rem] mb-5 flex flex-col justify-center bg-purple-300 bg-opacity-75">
                     <CardContent className="p-8 max-h-[600px] overflow-y-auto flex flex-col justify-center items-center mx-1">
                         <ScrollArea className="h-[600px] px-4 w-full rounded-md">
                             {sections.map((section) => (
                                 <div key={section.type}>
-                                    <h2 className="text-center text-[25px] font-bold pt-4 pb-[6px]">{section.title}</h2>
+                                    <h2 className="text-center text-[25px] font-bold pt-4 pb-[6px] text-purple-950">{section.title}</h2>
                                     {renderQuestions(questionsData.filter((q) => q.type === section.type))}
                                 </div>
                             ))}

@@ -31,7 +31,7 @@ export default function App({ Component, pageProps }: AppProps) {
                     {!isGameplayRoute && <Header />}
                     <Component {...pageProps} />
                     {/* <ReactQueryDevtools initialIsOpen={false} /> */}
-                    {!isGameplayRoute && <DiamondWall />}
+                    <DiamondWall />
 
                     <Toaster />
                 </HydrationBoundary>
