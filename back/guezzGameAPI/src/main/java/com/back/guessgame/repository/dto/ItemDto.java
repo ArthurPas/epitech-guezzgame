@@ -1,9 +1,13 @@
 package com.back.guessgame.repository.dto;
 
 import com.back.guessgame.repository.entities.Item;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ItemDto {
 
 	private Long id;
