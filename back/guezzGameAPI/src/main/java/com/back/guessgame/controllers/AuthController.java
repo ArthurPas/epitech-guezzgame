@@ -6,6 +6,7 @@ import com.back.guessgame.repository.dto.LoginResponse;
 import com.back.guessgame.repository.dto.SignUpDto;
 import com.back.guessgame.repository.entities.User;
 import com.back.guessgame.services.JwtService;
+import com.back.guessgame.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class AuthController {
 	private AuthenticationManager authenticationManager;
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private UserService	 userService;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
@@ -51,6 +55,10 @@ public class AuthController {
 		LoginResponse loginResponse = new LoginResponse();
 		loginResponse.setToken(jwtToken);
 		loginResponse.setExpiresIn(jwtService.getExpirationTime());
+
+		User user = userRepository.findByLoginOrMail(loginDto.getLogin(),loginDto.getLogin()).orElse(null);
+		assert user != null;
+		userService.setDayStreak(user.getId());
 		return ResponseEntity.ok(loginResponse);
 	}
 
