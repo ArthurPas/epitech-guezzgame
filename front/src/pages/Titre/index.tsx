@@ -4,7 +4,7 @@ import TitleInput from '../../components/titreGame/TitleInput';
 import TitlesDisplay from '../../components/titreGame/TitleDisplay';
 import Voting from '../../components/titreGame/VotingTitle';
 import ResultsDisplay from '../../components/titreGame/ResultsDisplay';
-import { Card } from '@/components/ui/card';
+
 
 const index = () => {
   const images = [
@@ -30,7 +30,7 @@ const index = () => {
     setStep((prevStep) => prevStep + 1);
   };
   const handleTitleSubmit = (title) => {
-    const newTitle = { text: title, author: 'Your Name' }; // Replace 'Your Name' with actual user identifier
+    const newTitle = { text: title, author: 'Your Name' };
     setTitles([...titles, newTitle]);
     setOwnTitle(title);
     setStep(3);
@@ -41,7 +41,7 @@ const index = () => {
       ...prevVotes,
       [title]: (prevVotes[title] || 0) + 1,
     }));
-    setStep(5); // Move to results display step
+    setStep(5);
   };
 
   return (

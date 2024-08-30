@@ -6,10 +6,8 @@ const ImageDisplay = ({ images, onNextStep, setCurrentImage, randomIndex }) => {
       const selectedImage = images[randomIndex];
       setCurrentImage(selectedImage);
 
-      // Set a timeout to automatically go to the next step after 30 seconds
-      const timer = setTimeout(onNextStep, 30000);
+      const timer = setTimeout(onNextStep, 5000);
 
-      // Cleanup the timeout if the component unmounts or if images change
       return () => clearTimeout(timer);
     }
   }, [images, onNextStep, setCurrentImage, randomIndex]);

@@ -14,14 +14,12 @@ const TitlesDisplay = ({ titles, image, onNextStep }) => {
         return prevIndex + 1;
       });
     }, 5000);
-
-    // Cleanup interval on component unmount
     return () => clearInterval(interval);
   }, [titles, onNextStep]);
 
   return (
-    <div className="flex flex-col items-center">
-      <img src={image} alt="Random" className="max-w-full max-h-full mb-4" />
+    <div className="flex flex-col justify-center items-center min-h-screen text-center">
+      <img src={image} alt="Random"  className="w-72 h-72 object-cover" />
       <div className="bg-gray-200 p-2 m-2 rounded shadow">
         {titles[currentIndex].text}
       </div>
