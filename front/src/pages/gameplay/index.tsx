@@ -31,7 +31,7 @@ const Gameplay = () => {
         };
         sendToHost({ actionType: 'NEXT_GAME', gameData: gameData });
     }
-    const debugDev = false;
+    const debugDev = true;
     if (debugDev) {
         return (
             <>
