@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { useGetPopularMovies } from '@/hooks/tmdbAPI';
 import useGameWebSockets from '@/hooks/useGameWebSockets';
 import { GameData } from '@/interfaces/gameWebSockets';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState, useRef } from 'react';
 
@@ -22,7 +22,7 @@ export const MovieGuesser = () => {
 
     // ROUND STATE
     const maxRounds = 5;
-    const roundDuration = 10;
+    const roundDuration = 12;
     const [currentRound, setCurrentRound] = useState(1);
     const [posterIndexToDisplay, setPosterIndexToDisplay] = useState<number>(1);
     const [initialX, setInitialX] = useState<number>(Math.floor(Math.random() * 500));
@@ -34,6 +34,8 @@ export const MovieGuesser = () => {
     const [playerScore, setPlayerScore] = useState(0);
     const [hasPlayerGuessed, setHasPlayerGuessed] = useState(false);
     const [playerGuess, setPlayerGuess] = useState<string>('');
+    const [pointsGained, setPointsGained] = useState<number>(0); 
+    const [animatePoints, setAnimatePoints] = useState(false); 
 
     const inputRef = useRef<HTMLInputElement>(null);
     let userLogin = 'anonymous';
@@ -47,12 +49,12 @@ export const MovieGuesser = () => {
 
     let gameData: GameData = {
         from: userLogin,
-        date: Date.now(), //TODO: Mettre à jour la date avant l'envoi de gameData
+        date: Date.now(),
         nbPoints: playerScore,
         gameName: 'MOVIE_GUESSER',
         roundNumber: currentRound,
         partyCode: partyCode || ' ',
-        playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
+        playerInfo: { login: userLogin, timestamp: Date.now() }
     };
 
     // Game starter
@@ -68,7 +70,7 @@ export const MovieGuesser = () => {
         }
     }, [countdown]);
 
-    //Reset initial position of the image when round changes
+    // Reset initial position of the image when round changes
     useEffect(() => {
         if (gameActive && currentRound > 1) {
             setInitialX(Math.floor(Math.random() * 500));
@@ -138,6 +140,8 @@ export const MovieGuesser = () => {
                 points = 10;
             }
             setPlayerScore(playerScore + points);
+            setPointsGained(points); // Set the points gained
+            setAnimatePoints(true); // Trigger the animation
             setHasPlayerGuessed(true);
         }
     };
@@ -225,6 +229,21 @@ export const MovieGuesser = () => {
                             </form>
                         </div>
                     </div>
+
+                    <AnimatePresence>
+                        {animatePoints && (
+                            <motion.div
+                                className="absolute font-bold left-[50%] z-[50000] bottom-0 transform -translate-x-1/2 bg-gradient-to-b rounded-xl text-white from-amber-300 to-amber-500 px-4 text-2xl"
+                                initial={{ opacity: 1, y: -150 }}
+                                animate={{ opacity: 0, y: -300 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 2 }}
+                                onAnimationComplete={() => setAnimatePoints(false)}
+                            >
+                                +{pointsGained} points!
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             )}
 
