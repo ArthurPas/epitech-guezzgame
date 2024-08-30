@@ -21,8 +21,8 @@ export const MovieGuesser = () => {
     const [gameEnded, setGameEnded] = useState(false);
 
     // ROUND STATE
-    const maxRounds = 2;
-    const roundDuration = 2;
+    const maxRounds = 5;
+    const roundDuration = 10;
     const [currentRound, setCurrentRound] = useState(1);
     const [posterIndexToDisplay, setPosterIndexToDisplay] = useState<number>(1);
     const [initialX, setInitialX] = useState<number>(Math.floor(Math.random() * 500));
@@ -36,9 +36,10 @@ export const MovieGuesser = () => {
     const [playerGuess, setPlayerGuess] = useState<string>('');
 
     const inputRef = useRef<HTMLInputElement>(null);
-    const partyCode = localStorage?.getItem('partyCode') || '';
     let userLogin = 'anonymous';
+    let partyCode = '';
     if (typeof window !== 'undefined') {
+        partyCode = localStorage?.getItem('partyCode') || '';
         const token = localStorage.getItem('authToken') || '';
         const jwtDecoded = jwtDecode(token);
         userLogin = jwtDecoded.sub || 'anonymous';
@@ -198,9 +199,9 @@ export const MovieGuesser = () => {
 
                     <div className="absolute left-[48.7%] xl:left-[50%] top-4 -mt-[1px] -translate-x-[49%] rounded-xl text-white w-full xl:w-[70%] 3xl:w-[65.3%] flex justify-center overflow-hidden">
                         <p>
-                            Round {currentRound}/{maxRounds} | Score : {playerScore} | Réponse : {data[posterIndexToDisplay]?.title}
-                            {data[posterIndexToDisplay]?.name}
+                            Round {currentRound}/{maxRounds} | Score : {playerScore}
                         </p>
+                        {/* | Réponse : {data[posterIndexToDisplay]?.title} {data[posterIndexToDisplay]?.name} */}
                     </div>
 
                     {/* Form */}
@@ -236,7 +237,7 @@ export const MovieGuesser = () => {
                         }}
                     />
                     <h2 className="flex justify-center text-white pt-6">Jeu terminé !</h2>
-                    <p className="flex justify-center text-white pt-6">Score final : {playerScore}</p>
+                    <p className="flex justify-center text-white pt-6">Score : {playerScore}</p>
                 </div>
             )}
         </div>
