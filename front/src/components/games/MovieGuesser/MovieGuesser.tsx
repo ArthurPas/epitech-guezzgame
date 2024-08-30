@@ -34,8 +34,8 @@ export const MovieGuesser = () => {
     const [playerScore, setPlayerScore] = useState(0);
     const [hasPlayerGuessed, setHasPlayerGuessed] = useState(false);
     const [playerGuess, setPlayerGuess] = useState<string>('');
-    const [pointsGained, setPointsGained] = useState<number>(0); 
-    const [animatePoints, setAnimatePoints] = useState(false); 
+    const [pointsGained, setPointsGained] = useState<number>(0);
+    const [animatePoints, setAnimatePoints] = useState(false);
 
     const inputRef = useRef<HTMLInputElement>(null);
     let userLogin = 'anonymous';
@@ -234,8 +234,8 @@ export const MovieGuesser = () => {
                         {animatePoints && (
                             <motion.div
                                 className="absolute font-bold left-[50%] z-[50000] bottom-0 transform -translate-x-1/2 bg-gradient-to-b rounded-xl text-white from-amber-300 to-amber-500 px-4 text-2xl"
-                                initial={{ opacity: 1, y: -150 }}
-                                animate={{ opacity: 0, y: -300 }}
+                                initial={{ opacity: 1, x: -80, y: -350 }}
+                                animate={{ opacity: 0, x: -80, y: -500 }}
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 2 }}
                                 onAnimationComplete={() => setAnimatePoints(false)}

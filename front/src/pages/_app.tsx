@@ -8,6 +8,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { useRouter } from 'next/router';
 import { DiamondWall } from '@/components/layout/diamond';
 import { Header } from '@/components/Header/Header';
+import Head from 'next/head';
 
 export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter();
@@ -28,6 +29,10 @@ export default function App({ Component, pageProps }: AppProps) {
         <StompSessionProvider url="http://localhost:8080/ws-endpoint">
             <QueryClientProvider client={queryClient}>
                 <HydrationBoundary state={pageProps.dehydratedState}>
+                    <Head>
+                        <title>GuezGame</title>
+                        <meta name="description" content="Fun mini-games" />
+                    </Head>
                     {!isGameplayRoute && <Header />}
                     <Component {...pageProps} />
                     {/* <ReactQueryDevtools initialIsOpen={false} /> */}
