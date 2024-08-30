@@ -33,8 +33,8 @@ export const Chat = (className: ChatProps) => {
     return (
         <Card
             className={cn(
-                className,
-                'hidden md:flex flex-col h-full lg:h-[35vh] xl:h-[50vh] 3xl:h-[60vh] bg-purple-300 rounded-[0.9rem] w-[70%] lg:w-auto priority-rounded relative'
+                'hidden md:flex flex-col h-full lg:h-[58vh] xl:h-[58vh] 3xl:h-[60vh] bg-purple-300 rounded-[0.9rem] w-[70%] lg:w-auto priority-rounded relative',
+                className
             )}
         >
             <CardTitle className="px-3 py-3 font-medium">Chat</CardTitle>
