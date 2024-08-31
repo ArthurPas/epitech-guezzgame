@@ -57,7 +57,7 @@ const Gameplay = () => {
                         </div>
                     </div>
                     <div className="relative w-full flex flex-col items-center gap-2 h-[100%]">
-                        <Card className="h-[100%] rounded-[0.9rem] priority-rounded w-full lg:min-w-[98%] bg-purple-700 ">
+                        <Card className="h-[100%] rounded-[0.9rem] priority-rounded w-full lg:min-w-[98%] from-purple-700 via-purple-700 to-purple-700">
                             {currentGameDebug === 'BLIND_TEST' && <CarouselDApiDemo />}
                             {currentGameDebug === 'MOVIE_GUESSER' && <MovieGuesser />}
                             {currentGameDebug === 'GEO_GUEZZER' && <GeoGuezzer />}
