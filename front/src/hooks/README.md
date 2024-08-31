@@ -23,8 +23,8 @@ export const useGetUser = () => {
     });
 };
 
-//src/components/Footer.tsx
-const { data, isError, isPending } = useGetFooterLinks(); 
+//src/components/UserList.tsx
+const { data, isError, isPending } = useGetUser(); 
 
     if (isPending) {
         return <span>Chargement</span>;

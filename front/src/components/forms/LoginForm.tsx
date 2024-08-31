@@ -65,7 +65,7 @@ export const LoginForm = () => {
                                         name="login"
                                         render={({ field }) => (
                                             <div className="flex flex-col items-center min-w-[220px]">
-                                                <FormLabel htmlFor="mail">Email</FormLabel>
+                                                <FormLabel htmlFor="mail">Login</FormLabel>
                                                 <FormControl>
                                                     <Input id="mail" placeholder="Ton pseudo" {...field} />
                                                 </FormControl>

@@ -37,6 +37,7 @@ const Index = () => {
     const { usersJoinedParty, sendToHost } = useGameWebSockets();
     const [displayPartyCode, setDisplayPartyCode] = useState<string>('####');
     const [isRoomGenerated, setIsRoomGenerated] = useState<boolean>(false);
+    const [activeTab, setActiveTab] = useState<string>('join');
 
     const router = useRouter();
 
@@ -60,7 +61,7 @@ const Index = () => {
         await createParty(newParty, {
             onSuccess: () => {
                 setDisplayPartyCode(randomCode.toString());
-                toast({ description: 'Room générée ! Partage le code à tes amis et sélectionne tes jeux avant de lancer la partie.' });
+                toast({ description: 'Room générée ! Tu peux partager le code à tes amis et choisir tes jeux 🌭' });
                 setPartyCreated(true);
                 localStorage.setItem('partyCode', randomCode.toString());
                 setIsRoomGenerated(true);
@@ -77,9 +78,13 @@ const Index = () => {
     };
 
     const handleJoinClick = async () => {
-        await joinGame(randomCode, {
+        await joinGame(parseInt(displayPartyCode, 10), {
             onSuccess: () => {
                 toast({ description: 'Partie trouvée' });
+                setPartyCreated(true);
+                localStorage.setItem('partyCode', displayPartyCode);
+                setIsRoomGenerated(true);
+                setActiveTab('create');
             },
             onError: (error) => {
                 toast({ description: error.message });
@@ -98,7 +103,7 @@ const Index = () => {
     return (
         <div className="flex justify-around gap-4 py-5vh mt-[8rem] w-[100%] lg:px-[10rem]">
             <div className="w-[100%] px-4">
-                <Tabs defaultValue="join" className="w-[100%]">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[100%]">
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="join" className="rounded-xl">
                             Rejoindre une room
@@ -112,7 +117,13 @@ const Index = () => {
                             <CardContent className="space-y-2">
                                 <div className="space-y-1">
                                     <Label htmlFor="current">Room ID</Label>
-                                    <Input id="current" type="join" onChange={(e) => setDisplayPartyCode(e.target.value)} />
+                                    <Input
+                                        id="current"
+                                        type="join"
+                                        onChange={(e) => {
+                                            setDisplayPartyCode(e.target.value);
+                                        }}
+                                    />
                                 </div>
                             </CardContent>
                             <CardFooter>
