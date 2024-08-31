@@ -8,8 +8,10 @@ import com.back.guessgame.repository.entities.Item;
 import com.back.guessgame.repository.entities.User;
 import com.back.guessgame.services.ItemService;
 import com.back.guessgame.services.JwtService;
+import io.swagger.v3.core.util.Json;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -74,7 +76,8 @@ public class ItemController {
 
 
 	@PostMapping("/buy/{itemId}")
-	public void buyItem(@RequestBody BuyItemLoginDto buy, @PathVariable Long itemId) {
+	public ResponseEntity<String> buyItem(@RequestBody BuyItemLoginDto buy, @PathVariable Long itemId) {
 		itemService.buyItem(itemId, buy.getLogin());
+		return new ResponseEntity<>(Json.pretty(itemId), null, 200);
 	}
 }

@@ -14,6 +14,7 @@ export const useFetchItems = () => {
 };
 
 export const buyItem = async (item:BuyItemPayload) => {
+    console.log(item+"fetch");
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/item/buy/${item.id}`,{
         method: 'POST',
         headers: {

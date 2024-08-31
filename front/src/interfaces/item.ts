@@ -13,7 +13,7 @@ export type ItemType = z.infer<typeof itemSchema>;
 
 const buyItem = z.object({
     id: z.number(),
-    login: z.string(),
+    login: z.string()
 });
 
 export type BuyItemPayload = z.infer<typeof buyItem>;
