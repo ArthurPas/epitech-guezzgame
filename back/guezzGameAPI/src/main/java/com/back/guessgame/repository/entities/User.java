@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -57,6 +58,10 @@ public class User implements UserDetails {
 	@HashCodeExclude
 	@OneToMany(targetEntity = Party.class)
 	private List<Party> parties;
+
+	private Date lastConnection;
+
+	private Integer daySteak = 0;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

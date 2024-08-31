@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { useGetPopularMovies } from '@/hooks/tmdbAPI';
 import useGameWebSockets from '@/hooks/useGameWebSockets';
 import { GameData } from '@/interfaces/gameWebSockets';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState, useRef } from 'react';
 
@@ -34,11 +34,14 @@ export const MovieGuesser = () => {
     const [playerScore, setPlayerScore] = useState(0);
     const [hasPlayerGuessed, setHasPlayerGuessed] = useState(false);
     const [playerGuess, setPlayerGuess] = useState<string>('');
+    const [pointsGained, setPointsGained] = useState<number>(0);
+    const [animatePoints, setAnimatePoints] = useState(false);
 
     const inputRef = useRef<HTMLInputElement>(null);
-
     let userLogin = 'anonymous';
+    let partyCode = '';
     if (typeof window !== 'undefined') {
+        partyCode = localStorage?.getItem('partyCode') || '';
         const token = localStorage.getItem('authToken') || '';
         const jwtDecoded = jwtDecode(token);
         userLogin = jwtDecoded.sub || 'anonymous';
@@ -46,12 +49,12 @@ export const MovieGuesser = () => {
 
     let gameData: GameData = {
         from: userLogin,
-        date: Date.now(), //TODO: Mettre à jour la date avant l'envoi de gameData
+        date: Date.now(),
         nbPoints: playerScore,
         gameName: 'MOVIE_GUESSER',
         roundNumber: currentRound,
-        partyCode: '124',
-        playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
+        partyCode: partyCode || ' ',
+        playerInfo: { login: userLogin, timestamp: Date.now() }
     };
 
     // Game starter
@@ -67,7 +70,7 @@ export const MovieGuesser = () => {
         }
     }, [countdown]);
 
-    //Reset initial position of the image when round changes
+    // Reset initial position of the image when round changes
     useEffect(() => {
         if (gameActive && currentRound > 1) {
             setInitialX(Math.floor(Math.random() * 500));
@@ -103,6 +106,7 @@ export const MovieGuesser = () => {
             setGameActive(false);
             setGameEnded(true);
             sendToHost({ actionType: 'END_GAME', gameData });
+            console.log('END_GAME sent');
         }
     };
 
@@ -136,6 +140,8 @@ export const MovieGuesser = () => {
                 points = 10;
             }
             setPlayerScore(playerScore + points);
+            setPointsGained(points); // Set the points gained
+            setAnimatePoints(true); // Trigger the animation
             setHasPlayerGuessed(true);
         }
     };
@@ -197,9 +203,9 @@ export const MovieGuesser = () => {
 
                     <div className="absolute left-[48.7%] xl:left-[50%] top-4 -mt-[1px] -translate-x-[49%] rounded-xl text-white w-full xl:w-[70%] 3xl:w-[65.3%] flex justify-center overflow-hidden">
                         <p>
-                            Round {currentRound}/{maxRounds} | Score : {playerScore} | Réponse : {data[posterIndexToDisplay]?.title}
-                            {data[posterIndexToDisplay]?.name}
+                            Round {currentRound}/{maxRounds} | Score : {playerScore}
                         </p>
+                        {/* | Réponse : {data[posterIndexToDisplay]?.title} {data[posterIndexToDisplay]?.name} */}
                     </div>
 
                     {/* Form */}
@@ -223,6 +229,21 @@ export const MovieGuesser = () => {
                             </form>
                         </div>
                     </div>
+
+                    <AnimatePresence>
+                        {animatePoints && (
+                            <motion.div
+                                className="absolute font-bold left-[50%] z-[50000] bottom-0 transform -translate-x-1/2 bg-gradient-to-b rounded-xl text-white from-amber-300 to-amber-500 px-4 text-2xl"
+                                initial={{ opacity: 1, x: -80, y: -350 }}
+                                animate={{ opacity: 0, x: -80, y: -500 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 2 }}
+                                onAnimationComplete={() => setAnimatePoints(false)}
+                            >
+                                +{pointsGained} points!
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             )}
 
@@ -235,7 +256,7 @@ export const MovieGuesser = () => {
                         }}
                     />
                     <h2 className="flex justify-center text-white pt-6">Jeu terminé !</h2>
-                    <p className="flex justify-center text-white pt-6">Score final : {playerScore}</p>
+                    <p className="flex justify-center text-white pt-6">Score : {playerScore}</p>
                 </div>
             )}
         </div>

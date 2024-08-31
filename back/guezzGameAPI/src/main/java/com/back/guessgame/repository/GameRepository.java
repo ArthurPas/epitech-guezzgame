@@ -11,4 +11,6 @@ public interface GameRepository extends JpaRepository<Game, Long> {
 	public List<Game> findAllByNameContainingIgnoreCase(String name);
 
 	public Game findOneByName(String name);
+
+	Game findOneById(Long id);
 }

@@ -98,7 +98,7 @@ export const responsiveFontSizes = plugin(function ({ addUtilities }) {
             cursor: 'pointer',
 
             '&:hover': {
-                opacity: '0.7',
+                opacity: '0.9',
                 textDecoration: 'none'
             },
 
