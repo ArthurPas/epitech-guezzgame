@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class BuyItemLoginDto {
 
-	private Long itemId;
+	private Integer itemId;
 	private String login;
 }

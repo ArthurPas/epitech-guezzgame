@@ -1,5 +1,5 @@
 import { ItemType,BuyItemPayload } from '@/interfaces/item';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 export const fetchItems = async () => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/item/list`);
@@ -14,7 +14,7 @@ export const useFetchItems = () => {
 };
 
 export const buyItem = async (item:BuyItemPayload) => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/item/buy`,{
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/item/buy/${item.id}`,{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -26,9 +26,30 @@ export const buyItem = async (item:BuyItemPayload) => {
     return data;
 };
 
-export const useGetFriends = (item: BuyItemPayload) => {
-    return useQuery<void>({
-        queryKey: [`/buy`],
-        queryFn: () => buyItem(item),
+export const useBuyItem = () => {
+    return useMutation({
+        mutationKey: ['buy'],
+        mutationFn: buyItem
+    });
+};
+
+export const getInventory= async () => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/item/mine`,{
+        method: 'GET',
+        headers: {
+            'accept': '*/*',
+            'Content-Type': 'application/json',
+            'Authorization': `${localStorage.getItem('authToken')}`
+        }
+    });
+    
+    const data = await response.json();
+    return data;
+};
+
+export const useFetchInventory = () => {
+    return useQuery<[ItemType]>({
+        queryKey: [`inventory`],
+        queryFn: () => getInventory(),
     });
 };

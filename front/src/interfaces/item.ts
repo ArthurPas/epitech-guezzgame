@@ -6,8 +6,7 @@ const itemSchema = z.object({
     description: z.string(),
     picture: z.string().url(),
     price: z.number(),
-    rarity: z.string(), 
-    xpPoint: z.number()
+    rarity: z.number()
 });
 
 export type ItemType = z.infer<typeof itemSchema>;

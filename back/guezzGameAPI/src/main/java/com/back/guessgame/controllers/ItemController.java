@@ -1,10 +1,13 @@
 package com.back.guessgame.controllers;
 
 import com.back.guessgame.repository.ItemRepository;
+import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.BuyItemLoginDto;
 import com.back.guessgame.repository.dto.ItemDto;
 import com.back.guessgame.repository.entities.Item;
+import com.back.guessgame.repository.entities.User;
 import com.back.guessgame.services.ItemService;
+import com.back.guessgame.services.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +23,10 @@ public class ItemController {
 	private ItemRepository itemRepository;
 
 	private ItemService itemService;
+	@Autowired
+	private JwtService jwtService;
+	@Autowired
+	private UserRepository userRepository;
 
 	private ItemController(ItemRepository itemRepository, ItemService itemService) {
 		this.itemRepository = itemRepository;
@@ -56,13 +63,18 @@ public class ItemController {
 		itemService.deleteById(id);
 	}
 
-	@GetMapping("user/{login}")
-	public List<ItemDto> getMyItems(@PathVariable String login) {
-		return itemService.findMyItems(login);
+	@GetMapping("/mine")
+	public List<ItemDto> getMyInfos(@RequestHeader(name = "Authorization") String token) {
+		String login = jwtService.extractUsername(token);
+		User user = userRepository.findByLoginOrMail(login, "").orElse(null);
+
+		assert user != null;
+		return itemService.findMyItems(user.getLogin());
 	}
 
-	@PostMapping("/buy")
-	public void buyItem(@RequestBody BuyItemLoginDto buy) {
-		itemService.buyItem(buy.getItemId(), buy.getLogin());
+
+	@PostMapping("/buy/{itemId}")
+	public void buyItem(@RequestBody BuyItemLoginDto buy, @PathVariable Long itemId) {
+		itemService.buyItem(itemId, buy.getLogin());
 	}
 }
