@@ -9,16 +9,20 @@ import useGameWebSockets from '@/hooks/useGameWebSockets';
 import ClickGame from '@/pages/clickGame';
 import { useState } from 'react';
 import { GameData } from '@/interfaces/gameWebSockets';
+import { useGetPartyScores } from '@/hooks/partyScores';
 
 const games = ['BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUEZZER', 'JUNGLE_SPEED'];
 const Gameplay = () => {
     const { currentGame, sendToHost } = useGameWebSockets();
     const [currentGameDebug, setCurrentGameDebug] = useState('');
     console.log('currentGame', currentGame);
-    let partyCode = ' ';
+    let partyCode = '';
     if (typeof window !== 'undefined') {
         partyCode = localStorage?.getItem('partyCode') || '';
     }
+    const { data: partyScoresData, isError: isPartyScoreError, isLoading: isPartyScoresLoading } = useGetPartyScores(partyCode);
+    console.log('partyScoresData', partyScoresData);
+
     if (currentGame === 'MENU') {
         let gameData: GameData = {
             from: '',
@@ -37,7 +41,7 @@ const Gameplay = () => {
             <>
                 <div className="flex flex-col-reverse lg:flex-row-reverse p-4 lg:p-6 gap-2 lg:gap-4 h-[100vh]">
                     <div className="flex flex-row  lg:flex-col justify-between w-full lg:w-[20%] gap-2 lg:gap-3 h-[20%] lg:h-[100%] ">
-                        <Players />
+                        {!isPartyScoresLoading && !isPartyScoreError && partyScoresData && <Players playerData={partyScoresData.scores} />}
                         <Chat />
                         <div>
                             {games.map((game) => {
@@ -72,7 +76,7 @@ const Gameplay = () => {
             <>
                 <div className="flex flex-col-reverse lg:flex-row-reverse p-4 lg:p-6 gap-2 lg:gap-4 h-[100vh]">
                     <div className="flex flex-row  lg:flex-col justify-between w-full lg:w-[20%] gap-2 lg:gap-3 h-[20%] lg:h-[100%] ">
-                        <Players />
+                        {!isPartyScoresLoading && !isPartyScoreError && partyScoresData && <Players playerData={partyScoresData.scores} />}
                         <Chat />
                     </div>
                     <div className="relative w-full flex flex-col items-center gap-2 h-[100%]">
