@@ -15,7 +15,9 @@ const badMerguez = '/wrong_merguezz.png';
 const grill = '/homer_bbq.jpg';
 
 let userLogin = 'anonymous';
-if (typeof window !== 'undefined') {
+    let partyCode = undefined;
+    if (typeof window !== 'undefined') {
+    partyCode = localStorage?.getItem('partyCode') || '';
     const token = localStorage.getItem('authToken') || '';
     const jwtDecoded = jwtDecode(token);
     userLogin = jwtDecoded.sub || 'anonymous';
@@ -91,7 +93,7 @@ const ClickGame = () => {
         nbPoints: score,
         gameName: 'CLICK_GAME',
         roundNumber: round,
-        partyCode: localStorage.getItem('partyCode') || '',
+        partyCode: partyCode || '',
         playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
     };
     
