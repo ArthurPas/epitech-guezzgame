@@ -1,6 +1,7 @@
 import { Chat } from '@/components/gameLayout/Chat';
 import { Players } from '@/components/gameLayout/Players';
 import GeoGuezzer from '@/components/games/GeoGuezzer/GeoGuezzer';
+import CultureGuezz from '@/components/games/CultureGuezz/CultureGuezz';
 import { MovieGuesser } from '@/components/games/MovieGuesser/MovieGuesser';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -10,7 +11,7 @@ import ClickGame from '@/pages/clickGame';
 import { useState } from 'react';
 import { GameData } from '@/interfaces/gameWebSockets';
 
-const games = ['BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUEZZER', 'JUNGLE_SPEED'];
+const games = ['BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUEZZER', 'JUNGLE_SPEED', 'CultureGuezz'];
 const Gameplay = () => {
     const { currentGame, sendToHost } = useGameWebSockets();
     const [currentGameDebug, setCurrentGameDebug] = useState('');
@@ -31,7 +32,7 @@ const Gameplay = () => {
         };
         sendToHost({ actionType: 'NEXT_GAME', gameData: gameData });
     }
-    const debugDev = false;
+    const debugDev = true;
     if (debugDev) {
         return (
             <>
@@ -62,6 +63,7 @@ const Gameplay = () => {
                             {currentGameDebug === 'MOVIE_GUESSER' && <MovieGuesser />}
                             {currentGameDebug === 'GEO_GUEZZER' && <GeoGuezzer />}
                             {currentGameDebug === 'CLICK_GAME' && <ClickGame />}
+                            {currentGameDebug === 'CultureGuezz' && <CultureGuezz />}
                         </Card>
                     </div>
                 </div>
