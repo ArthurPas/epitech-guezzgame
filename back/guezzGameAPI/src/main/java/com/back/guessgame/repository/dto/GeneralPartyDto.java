@@ -3,6 +3,7 @@ package com.back.guessgame.repository.dto;
 import com.back.guessgame.repository.entities.Game;
 import com.back.guessgame.repository.entities.Party;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,14 +16,15 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Transactional
 public class GeneralPartyDto {
 	private Long id;
 	private Integer leaderRank;
 	private Integer nbPoints;
-	private long userId;
+	private Long userId;
 	@JsonProperty("gamesId")
 	private Set<Long> gamesId;
-	private long partyCode;
+	private Long partyCode;
 
 
 	public GeneralPartyDto(Party party) {

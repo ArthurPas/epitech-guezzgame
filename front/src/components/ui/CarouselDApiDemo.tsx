@@ -12,6 +12,14 @@ import { useGetTracks } from "@/hooks/spotifyApi";
 import { TrackType } from "@/interfaces/spotifyApi";
 import AudioMotionAnalyzer from "audiomotion-analyzer";
 
+const shuffleArray = (array: any[]) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
+
 export function CarouselDApiDemo() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [tracks, setTracks] = React.useState<TrackType>([]);
@@ -32,10 +40,11 @@ export function CarouselDApiDemo() {
   const { data, error, isLoading } = useGetTracks();
 
   React.useEffect(() => {
-    if (data) {
-      setTracks(data);
-      setCount(data.length);
-      setScores(new Array(data.length).fill(null));
+    if (Array.isArray(data)) {
+      const shuffledData = shuffleArray([...data]);
+      setTracks(shuffledData);
+      setCount(shuffledData.length);
+      setScores(new Array(shuffledData.length).fill(null));
     }
   }, [data]);
 
@@ -125,24 +134,22 @@ export function CarouselDApiDemo() {
 
   const extractFeaturedArtists = (title: string): string[] => {
     const featuredArtists = [];
-    const featPattern = /(?:feat|ft|featuring|with)\s+([^()]+)(?:\s*\([^)]*\))?/i;
-    const matches = title.match(featPattern);
-    
-    if (matches) {
-      const artistsString = matches[1];
-      const artists = artistsString.split(/,\s*/).map(artist => artist.trim());
-      return artists;
+    const featPattern = /(?:feat\.|ft\.|featuring|with)\s*([^,;()]+)/gi;
+    let match;
+    while ((match = featPattern.exec(title)) !== null) {
+      featuredArtists.push(match[1].trim());
     }
+    return featuredArtists;
+  };
   
-    return [];
-  };  
-
   const cleanTitle = (title: string): string => {
     let cleanedTitle = title.replace(/\s*\(.*?\)\s*/g, '').trim();
     cleanedTitle = cleanedTitle.replace(/\s*-\s*.*$/, '').trim();
     cleanedTitle = cleanedTitle.replace(/\s*from\s*.*$/i, '').trim();
+    cleanedTitle = cleanedTitle.replace(/\s*(?:feat\.|ft\.|featuring|with)\s*[^,;()]+/gi, '').trim();
     return cleanedTitle;
   };
+  
 
   const handleSubmit = () => {
     const originalTitle = tracks[currentSlide]?.name ?? "";

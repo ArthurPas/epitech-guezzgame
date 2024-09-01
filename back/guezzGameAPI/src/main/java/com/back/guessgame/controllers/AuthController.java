@@ -2,8 +2,11 @@ package com.back.guessgame.controllers;
 
 import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.LoginDto;
+import com.back.guessgame.repository.dto.LoginResponse;
 import com.back.guessgame.repository.dto.SignUpDto;
 import com.back.guessgame.repository.entities.User;
+import com.back.guessgame.services.JwtService;
+import com.back.guessgame.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,18 +32,34 @@ public class AuthController {
 	private AuthenticationManager authenticationManager;
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private UserService	 userService;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	private final JwtService jwtService;
+
+	public AuthController(JwtService jwtService) {
+		this.jwtService = jwtService;
+	}
 
 	@PostMapping("/login")
-	public ResponseEntity<String> authenticateUser(@RequestBody LoginDto loginDto) {
+	public ResponseEntity<LoginResponse> authenticateUser(@RequestBody LoginDto loginDto) {
 
 		UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(loginDto.getLogin(), loginDto.getPassword());
 		Authentication auth = authenticationManager.authenticate(authReq);
 		SecurityContext sc = SecurityContextHolder.getContext();
 		sc.setAuthentication(auth);
+		String jwtToken = jwtService.generateToken(userRepository.findByLoginOrMail(loginDto.getLogin(), "").orElse(null));
 
-		return new ResponseEntity<>("User signed-in successfully!.", HttpStatus.OK);
+		LoginResponse loginResponse = new LoginResponse();
+		loginResponse.setToken(jwtToken);
+		loginResponse.setExpiresIn(jwtService.getExpirationTime());
+
+		User user = userRepository.findByLoginOrMail(loginDto.getLogin(),loginDto.getLogin()).orElse(null);
+		assert user != null;
+		userService.setDayStreak(user.getId());
+		return ResponseEntity.ok(loginResponse);
 	}
 
 	@PostMapping("/register")
@@ -63,8 +82,11 @@ public class AuthController {
 		user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
 		user.setPicture(signUpDto.getPicture());
 		userRepository.save(user);
+		String jwtToken = jwtService.generateToken(userRepository.findByLoginOrMail(signUpDto.getLogin(), "").orElse(null));
 
-		return new ResponseEntity<>("User registered successfully", HttpStatus.OK);
-
+		LoginResponse loginResponse = new LoginResponse();
+		loginResponse.setToken(jwtToken);
+		loginResponse.setExpiresIn(jwtService.getExpirationTime());
+		return ResponseEntity.ok(loginResponse);
 	}
 }

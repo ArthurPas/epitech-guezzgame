@@ -27,9 +27,11 @@ export const LoginForm = () => {
 
     const onSubmit = async (data: LoginSchemaType) => {
         await mutate(data, {
-            onSuccess: () => {
+            onSuccess: (response) => {
+                const token = response.token;
+                localStorage.setItem('authToken', token);
                 toast({ description: 'Connexion réussie' });
-                router.push('/');
+                router.push('/room');
             },
             onError: (error) => {
                 toast({ description: error.message });
@@ -46,7 +48,7 @@ export const LoginForm = () => {
                             <Label htmlFor="email">Anonymous</Label>
                             <Input id="email" placeholder="Identifiant" />
                         </div>
-                        <Button className="bg-amber-300 mt-3 bg-gradient-to-b from-amber-300 to-yellow-600" variant={'default'}>
+                        <Button className="bg-amber-300 mt-3 bg-gradient-to-b from-amber-300 to-amber-500" variant={'default'}>
                             Jouer
                         </Button>
                     </div>
@@ -87,7 +89,7 @@ export const LoginForm = () => {
                                         )}
                                     />
                                 </div>
-                                <Button type="submit" className="bg-amber-300 mt-3 bg-gradient-to-b from-amber-300 to-yellow-600">
+                                <Button type="submit" className="bg-amber-400 mt-3 bg-gradient-to-b from-amber-300 to-amber-500">
                                     Connexion
                                 </Button>
                             </div>

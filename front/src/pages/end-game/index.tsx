@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import React, { useState, useEffect } from 'react';
-
+import { WaitForPlayers } from '@/components/gameLayout/waitScreen';
 import { useGetDataEndGame } from '../../hooks/dataEndGame';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -13,12 +13,12 @@ export interface FriendsData {
     picture?: string;
 }
 
-//------------------------------------------------------------
+//-----------------------------------------------------------------
 //TODO : Ajouter la logique pour récupérer l'utilisateur en cours
-//------------------------------------------------------------
+//-----------------------------------------------------------------
 const idCurrentPlayer: number = 9;
 
-const Index = () => {
+const EndGame = () => {
     const [position, setPosition] = useState<number | null>(null);
     const [currentPlayer, setCurrentPlayer] = useState<FriendsData | null>(null);
     const [playerData, setPlayerData] = useState<FriendsData[]>([]);
@@ -130,4 +130,4 @@ const Index = () => {
     );
 };
 
-export default Index;
+export default EndGame;

@@ -1,9 +1,13 @@
 package com.back.guessgame.controllers;
 
 import com.back.guessgame.repository.GameRepository;
+import com.back.guessgame.repository.GameScoreRepository;
+import com.back.guessgame.repository.PartyRepository;
+import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.GameDto;
 import com.back.guessgame.repository.entities.Game;
 import com.back.guessgame.services.GameService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,9 +19,17 @@ public class GameController {
 	private final GameService gameService;
 	private GameRepository gameRepository;
 
-	public GameController(GameRepository gameRepository) {
+	private final GameScoreRepository gameScoreRepository;
+
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private PartyRepository partyRepository;
+
+	public GameController(GameRepository gameRepository, GameScoreRepository gameScoreRepository, UserRepository userRepository, PartyRepository partyRepository) {
 		this.gameRepository = gameRepository;
-		this.gameService = new GameService(gameRepository);
+		this.gameService = new GameService(gameRepository, gameScoreRepository, userRepository, partyRepository);
+		this.gameScoreRepository = gameScoreRepository;
 	}
 
 	@GetMapping("/list")
@@ -48,6 +60,11 @@ public class GameController {
 			return new GameDto(game);
 		}
 		return null;
+	}
+
+	@GetMapping("/score")
+	public int getScore(@RequestParam Long gameId, @RequestParam Long userId, @RequestParam Long partyCode) {
+		return gameService.calculatePointsByUserByGame(gameRepository.findById(gameId).orElse(null), userRepository.findById(userId).orElse(null), partyCode);
 	}
 
 	@DeleteMapping("/{id}")

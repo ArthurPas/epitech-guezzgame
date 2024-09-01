@@ -1,29 +1,22 @@
 package com.back.guessgame.controllers;
 
-import com.back.guessgame.repository.BetOptionRepository;
-import com.back.guessgame.repository.BetRepository;
-import com.back.guessgame.repository.UserBetRepository;
 import com.back.guessgame.repository.UserRepository;
-import com.back.guessgame.repository.dto.BetPojo;
 import com.back.guessgame.repository.dto.FriendDto;
 import com.back.guessgame.repository.dto.StatDto;
 import com.back.guessgame.repository.dto.UserDto;
 import com.back.guessgame.repository.entities.User;
+import com.back.guessgame.services.JwtService;
 import com.back.guessgame.services.StatService;
 import com.back.guessgame.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @RestController
@@ -31,25 +24,19 @@ import java.util.Set;
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 	private final UserRepository userRepository;
-	private final BetRepository betRepository;
-	private final BetOptionRepository betOptionRepository;
-
-	private final UserBetRepository userBetRepository;
 	private final StatService statService;
 	Logger logger = LoggerFactory.getLogger(UserController.class);
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private UserService userService;
-	@Autowired
-	private AuthenticationManager authenticationManager;
 
-	public UserController(UserRepository userRepository, BetRepository betRepository, BetOptionRepository betOptionRepository, UserBetRepository userBetRepository, BetRepository gamblingRepository) {
+	@Autowired
+	private JwtService jwtService;
+
+	public UserController(UserRepository userRepository) {
 		this.userRepository = userRepository;
-		this.betRepository = betRepository;
-		this.betOptionRepository = betOptionRepository;
-		this.userBetRepository = userBetRepository;
-		this.userService = new UserService(userRepository, gamblingRepository, betOptionRepository, this.userBetRepository);
+		this.userService = new UserService(userRepository);
 		this.statService = new StatService(userRepository);
 	}
 
@@ -61,6 +48,7 @@ public class UserController {
 
 	@GetMapping("/{id}")
 	public UserDto getUserById(@PathVariable Long id) {
+		logger.info(SecurityContextHolder.getContext().toString());
 		return userService.findById(id).orElse(null);
 	}
 
@@ -109,18 +97,12 @@ public class UserController {
 		return statService.getStat(id);
 	}
 
-	@PostMapping("/placeBet")
-	public void placeBet(@RequestBody BetPojo betPojo) {
-		SecurityContext sc = SecurityContextHolder.getContext();
-		Authentication auth = sc.getAuthentication();
-		String login = auth.getPrincipal().toString();
+	@GetMapping("/getMe")
+	public UserDto getStats(@RequestHeader(name = "Authorization") String token) {
+
+		String login = jwtService.extractUsername(token);
 		User user = userRepository.findByLoginOrMail(login, "").orElse(null);
-//		if(user != null) {
-//		userService.createBet(betDto, user);
-//		}
-		userService.createBet(betPojo, Objects.requireNonNull(userRepository.findById(betPojo.getUserId()).orElse(null)));
-
+		return new UserDto(user);
 	}
-
 
 }
