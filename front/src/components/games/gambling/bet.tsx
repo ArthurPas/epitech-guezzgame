@@ -23,7 +23,7 @@ export const Bets = () => {
     // Le jeu consiste en une image fortement zoomée, qui va progressivement dézoomer. Il peut s'agit d'une affiche de film ou du portrait d'un acteur ou actrice.
     // Les joueurs doivent être les premiers à deviner à quel film ou acteur correspond l'image.
 
-    const [betAmount, setbetAmount] = React.useState(350);
+    const [betAmount, setbetAmount] = React.useState(10);
     const [authToken, setAuthToken] = useState<string | null>(null);
     useEffect(() => {
         let token = undefined;
@@ -36,7 +36,7 @@ export const Bets = () => {
             console.error('No token found in localStorage');
         }
     }, []);
-    const { data: user, isLoading: userLoading, isError: userError, error: userErrorDetails } = useGetMe(authToken);
+    const { data: user, isLoading: userLoading, isError: userError, error: userErrorDetails, refetch } = useGetMe(authToken);
     const { data, isError, isPending } = useGetBets();
     console.log(data);
 
@@ -45,6 +45,8 @@ export const Bets = () => {
         await mutate(betData, {
             onSuccess: () => {
                 toast({ description: 'Que la chance soit avec toi' });
+                setbetAmount(0);
+                refetch();
             },
             onError: (error: Error) => {
                 toast({ description: error.message });
@@ -52,7 +54,7 @@ export const Bets = () => {
         });
     };
     function onClick(adjustment: number) {
-        setbetAmount(Math.max(200, Math.min(user?.nbCoin ?? 0, betAmount + adjustment)));
+        setbetAmount(Math.max(0, Math.min(user?.nbCoin ?? 0, betAmount + adjustment)));
     }
 
     console.log(data);
@@ -142,7 +144,7 @@ export const Bets = () => {
                                                                     size="icon"
                                                                     className="h-8 w-8 shrink-0 rounded-full"
                                                                     onClick={() => onClick(10)}
-                                                                    disabled={betAmount >= user?.nbCoin}
+                                                                    disabled={betAmount >= user?.nbCoin ?? 0}
                                                                 >
                                                                     <p className="text-3xl">+</p>
                                                                     <span className="sr-only">Increase</span>
@@ -199,6 +201,9 @@ export const Bets = () => {
                     <p className="text-amber-300 text-[32px] font-Bangers">
                         <b>{user?.nbCoin}</b> coins
                     </p>
+                    <p className="p-10">Jouer avec excès comporte des risques pour la santé.</p>
+                    <p>Pour toute information n'hesitez pas à prendre contact avec un profesionel de santé</p>
+                    <p>ou appeler la radio de bassem (appel non surtaxé)</p>
                 </div>
             </div>
         </div>
