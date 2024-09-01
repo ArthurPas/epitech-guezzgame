@@ -23,8 +23,9 @@ public class GamblingController {
 
 
 	private final GamblingService gamblingService;
-	FilterProvider filterProvider = new SimpleFilterProvider().addFilter("userFilter", simpleBeanPropertyFilter).addFilter("userBetFilter", simpleBeanPropertyFilter).addFilter("betOptionFilter", simpleBeanPropertyFilter);
 	SimpleBeanPropertyFilter simpleBeanPropertyFilter = SimpleBeanPropertyFilter.serializeAllExcept("user", "gamblerBets", "password", "mail", "nbCoin", "friendships", "items", "parties", "betOption", "bet", "xpPoint", "isVip");
+	FilterProvider filterProvider = new SimpleFilterProvider().addFilter("userFilter", simpleBeanPropertyFilter).addFilter("userBetFilter", simpleBeanPropertyFilter).addFilter("betOptionFilter", simpleBeanPropertyFilter);
+
 	@Autowired
 	private JwtService jwtService;
 	@Autowired
@@ -80,6 +81,11 @@ public class GamblingController {
 		MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(gamblingService.getMyBets(user));
 		mappingJacksonValue.setFilters(filterProvider);
 		return mappingJacksonValue;
+	}
+
+	@PostMapping("/bet/{betId}/betOption/{betOptionId}")
+	public void endBet(@PathVariable Long betId, @PathVariable Long betOptionId) {
+		gamblingService.validateBet(betId, betOptionId);
 	}
 
 }

@@ -3,6 +3,7 @@ package com.back.guessgame.services;
 import com.back.guessgame.repository.BetOptionRepository;
 import com.back.guessgame.repository.BetRepository;
 import com.back.guessgame.repository.UserBetRepository;
+import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.BetDto;
 import com.back.guessgame.repository.dto.BetOptionDto;
 import com.back.guessgame.repository.entities.Bet;
@@ -24,6 +25,8 @@ public class GamblingService {
 	private final BetOptionRepository betOptionRepository;
 
 	private final UserBetRepository userBetRepository;
+	@Autowired
+	private UserRepository userRepository;
 
 	@Autowired
 	public GamblingService(BetRepository betRepository, BetOptionRepository betOptionRepository, UserBetRepository userBetRepository) {
@@ -111,5 +114,17 @@ public class GamblingService {
 
 	public List<UserBet> getMyBets(User user) {
 		return userBetRepository.findByUser(user);
+	}
+
+	public void validateBet(Long betId, Long betOptionId) {
+		BetOption betOption = betOptionRepository.findById(betOptionId).orElseThrow(null);
+		betOption.setIsWin(true);
+		betOptionRepository.save(betOption);
+		betOption.getGamblerBets().forEach(userBet -> {
+			User user = userBet.getUser();
+			user.setNbCoin((int) (userBet.getUser().getNbCoin() + userBet.getBetAmount() * betOption.getOds()));
+			userRepository.save(user);
+		});
+
 	}
 }
