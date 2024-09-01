@@ -11,8 +11,9 @@ public class UserBet {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@ManyToOne
+	@ManyToOne(targetEntity = User.class)
 	private User user;
+
 	@ManyToOne
 	private BetOption betOption;
 	private Integer betAmount;

@@ -1,6 +1,7 @@
 package com.back.guessgame.controllers;
 
 import com.back.guessgame.repository.UserRepository;
+import com.back.guessgame.repository.dto.BetPojo;
 import com.back.guessgame.repository.dto.FriendDto;
 import com.back.guessgame.repository.dto.StatDto;
 import com.back.guessgame.repository.dto.UserDto;
@@ -105,4 +106,16 @@ public class UserController {
 		return new UserDto(user);
 	}
 
+	@PostMapping("/placeBet")
+	public UserDto placeBet(@RequestHeader(name = "Authorization") String token, @RequestBody BetPojo betPojo) {
+
+		String login = jwtService.extractUsername(token);
+		User user = userRepository.findByLoginOrMail(login, "").orElse(null);
+
+		assert user != null;
+		logger.info("token : " + token);
+		logger.info("user : " + user);
+		userService.createBet(betPojo, user);
+		return new UserDto(user);
+	}
 }

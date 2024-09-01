@@ -6,6 +6,9 @@ export const fetchBets = async () => {
     const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/gambling/bets`,
         {
+            headers: {
+                'Content-Type': 'application/json',
+            },
             method: 'GET',
         }
     );
@@ -26,7 +29,8 @@ export const placeBet = async (betInfo: BetRequestType) => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/placeBet`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `${localStorage.getItem('authToken')}`
             },
             body: JSON.stringify(betInfo)
         });

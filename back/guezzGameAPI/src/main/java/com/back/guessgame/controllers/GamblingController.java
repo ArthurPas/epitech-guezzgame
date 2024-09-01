@@ -1,11 +1,15 @@
 package com.back.guessgame.controllers;
 
+import com.back.guessgame.repository.UserRepository;
 import com.back.guessgame.repository.dto.BetDto;
 import com.back.guessgame.repository.dto.BetOptionDto;
+import com.back.guessgame.repository.entities.User;
 import com.back.guessgame.services.GamblingService;
+import com.back.guessgame.services.JwtService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -17,9 +21,14 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http://localhost:3000")
 public class GamblingController {
 
-	SimpleBeanPropertyFilter simpleBeanPropertyFilter = SimpleBeanPropertyFilter.serializeAllExcept("password", "mail", "nbCoin", "friendships", "items", "parties", "betOption", "bet", "xpPoint", "isVip");
+
+	private final GamblingService gamblingService;
 	FilterProvider filterProvider = new SimpleFilterProvider().addFilter("userFilter", simpleBeanPropertyFilter).addFilter("userBetFilter", simpleBeanPropertyFilter).addFilter("betOptionFilter", simpleBeanPropertyFilter);
-	private GamblingService gamblingService;
+	SimpleBeanPropertyFilter simpleBeanPropertyFilter = SimpleBeanPropertyFilter.serializeAllExcept("user", "gamblerBets", "password", "mail", "nbCoin", "friendships", "items", "parties", "betOption", "bet", "xpPoint", "isVip");
+	@Autowired
+	private JwtService jwtService;
+	@Autowired
+	private UserRepository userRepository;
 
 	public GamblingController(GamblingService gamblingService) {
 		this.gamblingService = gamblingService;
@@ -61,6 +70,16 @@ public class GamblingController {
 	public ResponseEntity<?> createBetOption(@RequestBody BetOptionDto BetOption) {
 		gamblingService.createBetOption(BetOption);
 		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+
+	@GetMapping("/myBets")
+	public MappingJacksonValue getMyBets(@RequestHeader(name = "Authorization") String token) {
+		String login = jwtService.extractUsername(token);
+		User user = userRepository.findByLoginOrMail(login, "").orElse(null);
+
+		MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(gamblingService.getMyBets(user));
+		mappingJacksonValue.setFilters(filterProvider);
+		return mappingJacksonValue;
 	}
 
 }

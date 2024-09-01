@@ -109,4 +109,7 @@ public class GamblingService {
 	}
 
 
+	public List<UserBet> getMyBets(User user) {
+		return userBetRepository.findByUser(user);
+	}
 }
