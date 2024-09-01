@@ -98,7 +98,7 @@ public class UserController {
 	}
 
 	@GetMapping("/getMe")
-	public UserDto getStats(@RequestHeader(name = "Authorization") String token) {
+	public UserDto getMyInfos(@RequestHeader(name = "Authorization") String token) {
 
 		String login = jwtService.extractUsername(token);
 		User user = userRepository.findByLoginOrMail(login, "").orElse(null);
