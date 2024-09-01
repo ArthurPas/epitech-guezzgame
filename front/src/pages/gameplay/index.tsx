@@ -11,11 +11,10 @@ import ClickGame from '@/pages/clickGame';
 import { useState } from 'react';
 import { GameData } from '@/interfaces/gameWebSockets';
 
-const games = ['BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUEZZER', 'JUNGLE_SPEED', 'CultureGuezz'];
+const games = ['BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUEZZER', 'JUNGLE_SPEED', 'CULTURE_GUEZZ'];
 const Gameplay = () => {
     const { currentGame, sendToHost } = useGameWebSockets();
     const [currentGameDebug, setCurrentGameDebug] = useState('');
-    console.log('currentGame', currentGame);
     let partyCode = ' ';
     if (typeof window !== 'undefined') {
         partyCode = localStorage?.getItem('partyCode') || '';
@@ -32,7 +31,7 @@ const Gameplay = () => {
         };
         sendToHost({ actionType: 'NEXT_GAME', gameData: gameData });
     }
-    const debugDev = true;
+    const debugDev = false;
     if (debugDev) {
         return (
             <>
@@ -63,7 +62,7 @@ const Gameplay = () => {
                             {currentGameDebug === 'MOVIE_GUESSER' && <MovieGuesser />}
                             {currentGameDebug === 'GEO_GUEZZER' && <GeoGuezzer />}
                             {currentGameDebug === 'CLICK_GAME' && <ClickGame />}
-                            {currentGameDebug === 'CultureGuezz' && <CultureGuezz />}
+                            {currentGameDebug === 'CULTURE_GUEZZ' && <CultureGuezz />}
                         </Card>
                     </div>
                 </div>
@@ -84,6 +83,7 @@ const Gameplay = () => {
                             {currentGame === 'MOVIE_GUESSER' && <MovieGuesser />}
                             {currentGame === 'GEO_GUEZZER' && <GeoGuezzer />}
                             {currentGame === 'CLICK_GAME' && <ClickGame />}
+                            {currentGame === 'CULTURE_GUEZZ' && <CultureGuezz />}
                         </Card>
                     </div>
                 </div>

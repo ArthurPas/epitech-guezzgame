@@ -30,7 +30,7 @@ const CultureGuezz = () => {
     console.log('isRoundOver', isRoundOver);
 
     
-    const nbTotalTours = 6;
+    const nbTotalTours = 2;
     const [tourEnCours, setTourEnCours] = useState(0);
     const [score, setScore] = useState(0);
     const [indiceQuestion, setIndiceQuestion] = useState(0);
@@ -42,9 +42,11 @@ const CultureGuezz = () => {
     const [waitingForOther, setWaitingForOther] = useState<boolean>(false);
     console.log('isWaitingForOther', waitingForOther);
     let userLogin = 'anonymous';
+    let partyCode = '';
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('authToken') || '';
         const jwtDecoded = jwtDecode(token);
+        partyCode = localStorage.getItem('partyCode') || '';
         userLogin = jwtDecoded.sub || 'anonymous';
     }
 
@@ -52,9 +54,9 @@ const CultureGuezz = () => {
         from: userLogin,
         date: Date.now(), //TODO: Mettre à jour la date avant l'envoi de gameData
         nbPoints: 0,
-        gameName: 'GEO_GUEZZER',
+        gameName: 'CULTURE_GUEZZ',
         roundNumber: 0,
-        partyCode: localStorage.getItem('partyCode') || '',
+        partyCode: partyCode,
         playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
     };
     
@@ -73,10 +75,17 @@ const CultureGuezz = () => {
         //Evaluation de la réponse du joueur
         if (reponse.some(r => r.toLowerCase() === inputValue.toLowerCase())) {
             console.log("Bonne réponse !");
-            const points = type === 'Guezz' ? 2 : 1;
-            setScore(prevScore => prevScore + points + 1); // le +1 n'est que pour le premier qui a répondu
+            gameData.date = Date.now();
+            gameData.nbPoints = type === 'Guezz' ? 2 : 1;
+            gameData.roundNumber = tourEnCours;
+            console.log('gameData', gameData);
+            sendToHost({ actionType: 'FASTER_WIN_BY_ROUND', gameData: gameData });
+            // const points = type === 'Guezz' ? 2 : 1;
+            // setScore(prevScore => prevScore + points + 1); // le +1 n'est que pour le premier qui a répondu
         } else {
-            console.log("Mauvaise réponse !");
+            console.log("Mauvaise réponse 🦁!");
+            
+         console.log('tourEnCours', tourEnCours);  
         }
 
          // Sélection nouvelle question aléatoire parmi les indices restants
@@ -91,12 +100,22 @@ const CultureGuezz = () => {
          //Mise à jour indice de la question sélectionnée et du tour en cours
          setIndiceQuestion(nextQuestionIndex);
          setTourEnCours(prev => prev + 1);
+         console.log('tourEnCours', tourEnCours);   
          setInputValue('');
 
-        if (tourEnCours + 1 === nbTotalTours) {  //C'est la fin du jeu ;)
-            //setShowEndGame(true);
+        if (tourEnCours + 1 > nbTotalTours) {  //C'est la fin du jeu ;)
+            sendToHost({ actionType: 'END_GAME', gameData: gameData });
+            console.log('Fin du jeu');
+            setShowEndGame(true);
             //return;
 
+            
+        }
+
+       
+    };
+
+    if (showEndGame){
             return (
                 <>
                     <h1>Résultat !</h1>
@@ -122,11 +141,7 @@ const CultureGuezz = () => {
                     </div>
                 </>
             );
-        }
-
-       
-    };
-
+    }
     return (
         <div>
             {showModalRules && (
@@ -144,17 +159,10 @@ const CultureGuezz = () => {
                     </DialogContent>
                 </Dialog>
             )}
-
-            {showEndGame ? (
-                <div className="flex flex-col items-center space-y-4">
-                    <h1 className='mt-80 text-amber-300'>Fin de jeu</h1>
-                    <h2 className='mt-80'>Tu as terminé le jeu avec {score} points!</h2>
-                </div>
-            ) : (
                 <div className="flex flex-col items-center space-y-4">
                     <h1 className="m-10 mt-32 mb-10 text-amber-300">CultureGuezz</h1>
                    
-                    <h3 className='mt-7 mb-0 text-xl'>Question {questionsData[indiceQuestion].type}</h3>
+                    <h3 className='mt-7 mb-0 text-xl'>Question {questionsData[indiceQuestion]?.type}</h3>
                     <Card className={`rounded-full w-[80%] ${questionsData[indiceQuestion].type === 'Guezz' ? 'bg-amber-500' : 'bg-white'}`}>
                         <CardContent className="flex flex-col justify-center items-center h-45 space-y-4 mx-20">
                             <h2 className='text-3xl text-center m-8'>{questionsData[indiceQuestion].question} ?</h2>
@@ -176,7 +184,6 @@ const CultureGuezz = () => {
                     </Card>
               
                 </div>
-            )}
         </div>
     );
 }
