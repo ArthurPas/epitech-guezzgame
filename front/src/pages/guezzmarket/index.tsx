@@ -135,9 +135,13 @@ const Index = () => {
             <div>
                 <div className="flex flex-col items-center">
                     <div>
-                        <h1>GuezzMarket</h1>
+                        <h1 className="mt-12 text-amber-400">GuezzMarket</h1>
                         <h2 className="text-[32px]  text-center font-Bangers text-amber-300 text-cent">
-                            <b>{user?.nbCoin}</b> $
+                            {user?.nbCoin && (
+                                <span>
+                                    <b>{user.nbCoin}</b> $
+                                </span>
+                            )}
                         </h2>
                     </div>
 
@@ -153,7 +157,7 @@ const Index = () => {
                             {randomShoppingItems.map((item, index) => (
                                 <CarouselItem key={index} className="flex items-stretch">
                                     <div className="p-2 flex-grow">
-                                        <Card className="h-full">
+                                        <Card className="h-full rounded-xl">
                                             <CardHeader>
                                                 <CardTitle className="h-10 text-center">{item.name}</CardTitle>
                                             </CardHeader>

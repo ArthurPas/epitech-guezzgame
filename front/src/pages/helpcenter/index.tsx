@@ -81,7 +81,7 @@ const Index = () => {
             </div>
 
             <div className="mb-[8rem]">
-                <Card className="w-[60%] h-[90%] mx-auto rounded-[4rem] mb-5 flex flex-col justify-center bg-purple-300 bg-opacity-75">
+                <Card className="w-[60%] h-[90%] mx-auto rounded-3xl mb-5 flex flex-col justify-center bg-purple-300 bg-opacity-75">
                     <CardContent className="p-8 max-h-[600px] overflow-y-auto flex flex-col justify-center items-center mx-1">
                         <ScrollArea className="h-[600px] px-4 w-full rounded-md">
                             {sections.map((section) => (

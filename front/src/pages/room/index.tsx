@@ -80,11 +80,12 @@ const Index = () => {
     const handleJoinClick = async () => {
         await joinGame(parseInt(displayPartyCode, 10), {
             onSuccess: () => {
-                toast({ description: 'Partie trouvée' });
-                setPartyCreated(true);
+                toast({ description: 'Partie trouvée ! Elle commencera quand le créateur de la room cliquera sur "Lancer la partie"' });
+                // setPartyCreated(true);
                 localStorage.setItem('partyCode', displayPartyCode);
-                setIsRoomGenerated(true);
-                setActiveTab('create');
+                // setIsRoomGenerated(true);
+                // setActiveTab('create');
+                router.push('/gameplay');
             },
             onError: (error) => {
                 toast({ description: error.message });
