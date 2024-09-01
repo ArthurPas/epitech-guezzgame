@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { GameData } from '@/interfaces/gameWebSockets';
 import { useGetPartyScores } from '@/hooks/partyScores';
 
-const games = ['BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUEZZER', 'JUNGLE_SPEED'];
+const games = ['BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUEZZER'];
 const Gameplay = () => {
     const { currentGame, sendToHost } = useGameWebSockets();
     const [currentGameDebug, setCurrentGameDebug] = useState('');
@@ -48,13 +48,13 @@ const Gameplay = () => {
                                 return (
                                     <Button
                                         key={game}
-                                        className={`m-1 ${currentGame === game ? 'bg-white' : ''}`}
+                                        className={`m-[2px] px-[8px] text-[12px] ${currentGame === game ? 'bg-white' : ''}`}
                                         variant={'reverse'}
                                         onClick={() => {
                                             setCurrentGameDebug(game);
                                         }}
                                     >
-                                        {game}
+                                        {game.split('_')[0]}
                                     </Button>
                                 );
                             })}

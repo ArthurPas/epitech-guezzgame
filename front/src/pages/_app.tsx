@@ -40,7 +40,7 @@ export default function App({ Component, pageProps }: AppProps) {
                     {!isGameplayRoute && <Header />}
                     <Component {...pageProps} />
                     {/* <ReactQueryDevtools initialIsOpen={false} /> */}
-                    <DiamondWall />
+                    {!isGameplayRoute && <DiamondWall />}
 
                     <Toaster />
                 </HydrationBoundary>

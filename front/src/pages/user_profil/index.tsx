@@ -11,7 +11,7 @@ import {
     DialogHeader,
     DialogFooter,
     DialogTitle,
-    DialogClose,
+    DialogClose
 } from '../../components/ui/dialog';
 import { useGetMe } from '@/hooks/getMe';
 import { useGetFriends } from '@/hooks/friends';
@@ -85,15 +85,7 @@ const UserProfile: React.FC = () => {
 
     return (
         <>
-            <div className="flex justify-between p-5">
-                <Button className="bg-[#eec17e]">
-                    <a href="/" className="text-[#000000]">
-                        Retour
-                    </a>
-                </Button>
-                <Button className="bg-[#eec17e]">Marketplace</Button>
-            </div>
-            <div className="flex justify-center">
+            <div className="flex justify-center mt-12">
                 <div className="text-center relative">
                     <Dialog
                         onClose={handleModalClose}
@@ -141,7 +133,7 @@ const UserProfile: React.FC = () => {
                             </DialogContent>
                         </DialogPortal>
                     </Dialog>
-                    <h1 className="mt-4 text-[#eec17e]">{user?.login ?? 'Loading...'}</h1>
+                    <h1 className="mt-4 text-amber-400">{user?.login ?? 'Loading...'}</h1>
                     <h3 className="text-[#eec17e] text-md md:text-lg">
                         Coins: {user?.nbCoin ?? 'Loading...'} - XP: {user?.xpPoint ?? 'Loading...'}
                     </h3>
@@ -152,15 +144,13 @@ const UserProfile: React.FC = () => {
                     <div className="flex flex-wrap justify-around">
                         <div className="mb-5 w-48">
                             <div className="text-2xl md:text-3xl text-center text-[#37034e] font-semibold">Niveau</div>
-                            <div className="bg-purple-200 text-[#37034e] p-2 rounded text-3xl md:text-4xl mt-2 text-center">{user?.level.level ?? 'Loading...'}</div>
+                            <div className="bg-purple-200 text-[#37034e] p-2 rounded text-3xl md:text-4xl mt-2 text-center">
+                                {user?.level.level ?? 'Loading...'}
+                            </div>
                         </div>
                         <div className="mb-5 w-48">
                             <div className="text-2xl md:text-3xl text-center text-[#37034e] font-semibold">Badge</div>
-                            <img 
-                              src={user?.level.badgePictureUrl ?? '/default-badge.png'} 
-                              alt="Badge" 
-                              className="mx-auto h-44"
-                              />
+                            <img src={user?.level.badgePictureUrl ?? '/default-badge.png'} alt="Badge" className="mx-auto h-44" />
                         </div>
                         <div className="mb-5 w-48">
                             <div className="text-2xl md:text-3xl text-center text-[#37034e] font-semibold">Victoires</div>
