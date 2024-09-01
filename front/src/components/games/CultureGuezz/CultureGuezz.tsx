@@ -1,6 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import useGameWebSockets from '@/hooks/useGameWebSockets';
+import { GameData } from '@/interfaces/gameWebSockets';
+import { jwtDecode } from 'jwt-decode';
 import React, { useState, useEffect } from 'react';
 
 const questionsData = [
@@ -20,6 +24,12 @@ const questionsData = [
 ];
 
 const CultureGuezz = () => {
+
+    const { isGameOver, isRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
+    console.log('isGameOver', isGameOver);
+    console.log('isRoundOver', isRoundOver);
+
+    
     const nbTotalTours = 6;
     const [tourEnCours, setTourEnCours] = useState(0);
     const [score, setScore] = useState(0);
@@ -29,6 +39,26 @@ const CultureGuezz = () => {
     const [showEndGame, setShowEndGame] = useState(false);
     const [availableIndices, setAvailableIndices] = useState<number[]>([]);
 
+    const [waitingForOther, setWaitingForOther] = useState<boolean>(false);
+    console.log('isWaitingForOther', waitingForOther);
+    let userLogin = 'anonymous';
+    if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('authToken') || '';
+        const jwtDecoded = jwtDecode(token);
+        userLogin = jwtDecoded.sub || 'anonymous';
+    }
+
+    let gameData: GameData = {
+        from: userLogin,
+        date: Date.now(), //TODO: Mettre à jour la date avant l'envoi de gameData
+        nbPoints: 0,
+        gameName: 'GEO_GUEZZER',
+        roundNumber: 0,
+        partyCode: localStorage.getItem('partyCode') || '',
+        playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
+    };
+    
+    //Gestion du jeu
     useEffect(() => {
         setAvailableIndices(Array.from(Array(questionsData.length).keys()));
     }, []);
@@ -40,6 +70,7 @@ const CultureGuezz = () => {
             return;
         }
 
+        //Evaluation de la réponse du joueur
         if (reponse.some(r => r.toLowerCase() === inputValue.toLowerCase())) {
             console.log("Bonne réponse !");
             const points = type === 'Guezz' ? 2 : 1;
@@ -48,23 +79,52 @@ const CultureGuezz = () => {
             console.log("Mauvaise réponse !");
         }
 
+         // Sélection nouvelle question aléatoire parmi les indices restants
+         const newAvailableIndices = [...availableIndices];
+         const randomIndex = Math.floor(Math.random() * newAvailableIndices.length);
+         const nextQuestionIndex = newAvailableIndices[randomIndex];
+         
+         // Mettre à jour les indices restants
+         newAvailableIndices.splice(randomIndex, 1);
+         setAvailableIndices(newAvailableIndices);
+ 
+         //Mise à jour indice de la question sélectionnée et du tour en cours
+         setIndiceQuestion(nextQuestionIndex);
+         setTourEnCours(prev => prev + 1);
+         setInputValue('');
+
         if (tourEnCours + 1 === nbTotalTours) {  //C'est la fin du jeu ;)
-            setShowEndGame(true);
-            return;
+            //setShowEndGame(true);
+            //return;
+
+            return (
+                <>
+                    <h1>Résultat !</h1>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[100px]">Classement</TableHead>
+                                    <TableHead className="w-[100px]">Pseudo</TableHead>
+                                    <TableHead>Points</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {scoreResult.map((player, index) => (
+                                    <TableRow key={player.login}>
+                                        <TableCell>{index + 1}</TableCell>
+                                        <TableCell>{player.login}</TableCell>
+                                        <TableCell>{player.score}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </>
+            );
         }
 
-        // Sélectionner une nouvelle question aléatoire parmi les indices restants
-        const newAvailableIndices = [...availableIndices];
-        const randomIndex = Math.floor(Math.random() * newAvailableIndices.length);
-        const nextQuestionIndex = newAvailableIndices[randomIndex];
-        
-        // Mettre à jour les indices restants
-        newAvailableIndices.splice(randomIndex, 1);
-        setAvailableIndices(newAvailableIndices);
-
-        setIndiceQuestion(nextQuestionIndex);
-        setTourEnCours(prev => prev + 1);
-        setInputValue('');
+       
     };
 
     return (
