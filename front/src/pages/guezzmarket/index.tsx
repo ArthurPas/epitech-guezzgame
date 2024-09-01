@@ -132,81 +132,80 @@ const Index = () => {
     // console.log(randomShoppingItems.forEach((item) => console.log(item.name)));
     return (
         <div className="grid justify-center">
-            <div className="flex flex-col items-center">
-                <div>
-                    <h1>GuezzMarket</h1>
-                </div>
+            <div>
+                <div className="flex flex-col items-center">
+                    <div>
+                        <h1>GuezzMarket</h1>
+                        <h2 className="text-[32px]  text-center font-Bangers text-amber-300 text-cent">
+                            <b>{user?.nbCoin}</b> $
+                        </h2>
+                    </div>
 
-                <Carousel
-                    className="w-full max-w-xs"
-                    opts={{
-                        loop: true,
-                        watchDrag: false
-                    }}
-                    plugins={[AutoScroll({})]}
-                >
-                    <CarouselContent>
-                        {randomShoppingItems.map((item, index) => (
-                            <CarouselItem key={index} className="flex items-stretch">
-                                <div className="p-2 flex-grow">
-                                    <Card className="h-full">
-                                        <CardHeader>
-                                            <CardTitle className="h-10 text-center">{item.name}</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="flex flex-col items-center gap-4 p-4">
-                                            <div className="">
-                                                <img src={item.picture} className="h-72 w-72 rounded-lg" />
-                                            </div>
-                                            <div className="flex-row items-center gap-2">
-                                                <Drawer>
-                                                    <DrawerTrigger asChild>
-                                                        <Button
-                                                            disabled={item.id === -1}
-                                                            onClick={() => {
-                                                                setItemBought(item);
-                                                                onBuyPress(item);
-                                                            }}
-                                                            className="bg-amber-300 mt-3 bg-gradient-to-b from-amber-300 to-yellow-600 flex items-baseline gap-1 text-xl font-bold tabular-nums leading-none w-72  justify-center"
-                                                        >
-                                                            {item.id === -1 ? (
-                                                                <span className="">Merguezzed</span>
-                                                            ) : (
-                                                                <p>
-                                                                    <span className="text-3xl">{item.price}</span>
-                                                                    <span className=""> GuezCoins</span>
-                                                                </p>
-                                                            )}
-                                                        </Button>
-                                                    </DrawerTrigger>
-                                                    <DrawerContent className=' mx-auto w-full max-w-sm bg-mt-3 bg-gradient-to-b from-violet-500 to-purple-900 flex items-baseline gap-1 text-xl font-bold justify-center"'>
-                                                        <DrawerHeader>
-                                                            <DrawerTitle className="flex text-3xl justify-center text-amber-300 pt-6">
-                                                                Belle affaire
-                                                            </DrawerTitle>
-                                                            <DrawerDescription>
-                                                                <img className="object-fill" src={itemBought?.picture}></img>
-                                                            </DrawerDescription>
-                                                        </DrawerHeader>
-                                                    </DrawerContent>
-                                                </Drawer>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                </Carousel>
-
-                <div className="p-2">
-                    <h2 className="text-[64px] font-Bangers text-amber-300 text-cent">
-                        <b>{user?.nbCoin}</b> $
-                    </h2>
+                    <Carousel
+                        className="w-full max-w-md max-h-max"
+                        opts={{
+                            loop: true,
+                            watchDrag: false
+                        }}
+                        plugins={[AutoScroll({})]}
+                    >
+                        <CarouselContent>
+                            {randomShoppingItems.map((item, index) => (
+                                <CarouselItem key={index} className="flex items-stretch">
+                                    <div className="p-2 flex-grow">
+                                        <Card className="h-full">
+                                            <CardHeader>
+                                                <CardTitle className="h-10 text-center">{item.name}</CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="flex flex-col items-center gap-4 p-4">
+                                                <div className="">
+                                                    <img src={item.picture} className="h-72 w-72 rounded-lg" />
+                                                </div>
+                                                <div className="flex-row items-center gap-2">
+                                                    <Drawer>
+                                                        <DrawerTrigger asChild>
+                                                            <Button
+                                                                disabled={item.id === -1}
+                                                                onClick={() => {
+                                                                    setItemBought(item);
+                                                                    onBuyPress(item);
+                                                                }}
+                                                                className="bg-amber-300 mt-3 bg-gradient-to-b from-amber-300 to-yellow-600 flex items-baseline gap-1 text-xl font-bold tabular-nums leading-none w-72  justify-center"
+                                                            >
+                                                                {item.id === -1 ? (
+                                                                    <span className="">Merguezzed</span>
+                                                                ) : (
+                                                                    <p>
+                                                                        <span className="text-3xl">{item.price}</span>
+                                                                        <span className=""> GuezCoins</span>
+                                                                    </p>
+                                                                )}
+                                                            </Button>
+                                                        </DrawerTrigger>
+                                                        <DrawerContent className=' mx-auto w-full max-w-sm bg-mt-3 bg-gradient-to-b from-violet-500 to-purple-900 flex items-baseline gap-1 text-xl font-bold justify-center"'>
+                                                            <DrawerHeader>
+                                                                <DrawerTitle className="flex text-3xl justify-center text-amber-300 pt-6">
+                                                                    Belle affaire
+                                                                </DrawerTitle>
+                                                                <DrawerDescription>
+                                                                    <img className="object-fill" src={itemBought?.picture}></img>
+                                                                </DrawerDescription>
+                                                            </DrawerHeader>
+                                                        </DrawerContent>
+                                                    </Drawer>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                    </Carousel>
                 </div>
             </div>
             <div className="flex flex-col items-center">
                 <div className="p-2">
-                    <h2>Ma collec'</h2>
+                    <h2 className="text-[32px] font-Bangers text-white text-cent">Ma collec'</h2>
                 </div>
                 <Carousel
                     opts={{
@@ -284,6 +283,8 @@ const Index = () => {
                                 </CarouselItem>
                             ))}
                     </CarouselContent>
+                    <CarouselPrevious className="bg-amber-300 bg-gradient-to-b from-amber-300 to-amber-500" />
+                    <CarouselNext className="bg-amber-300 bg-gradient-to-b from-amber-300 to-amber-500" />
                 </Carousel>
             </div>
         </div>
