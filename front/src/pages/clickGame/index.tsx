@@ -70,7 +70,7 @@ const isOverlapping = (pos1: { x: number; y: number }, pos2: { x: number; y: num
 };
 
 const ClickGame = () => {
-    const { isGameOver, isRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
+    const { isGameOver, isRoundOver, sendToHost, allPlayersReady } = useGameWebSockets();
     const nbRound = 1;
     // const [result, setResult] = useState([{ login: '', score: 0 }]);
     const [targetItem, setTargetItem] = useState('');

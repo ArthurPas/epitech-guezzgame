@@ -24,6 +24,10 @@ export const useGameWebSockets = () => {
     useSubscription('/topic/reply/endGame', (message) => {
         setGameOver(message.body === 'END_GAME');
     });
+
+    useSubscription('/topic/reply/partyOver', (message) => {
+        setPartyOver(message.body === 'END_PARTY');
+    });
     useSubscription('/topic/reply/score', (message) => {
         console.log(message.body + 'toto');
         const parsedResult = JSON.parse(message.body);

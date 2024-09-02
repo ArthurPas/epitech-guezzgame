@@ -134,7 +134,7 @@ public class WebSocketService {
 		}
 
 		if(currentGameIndex > gameRepository.count() + 1) {
-			messagingTemplate.convertAndSend("/topic/reply/endGame", "END_PARTY");
+			messagingTemplate.convertAndSend("/topic/reply/partyOver", "END_PARTY");
 			logger.warn("END GAME" + currentGameIndex + " " + gameRepository.count() + " " + gamesId);
 		} else {
 			Game nextGame = gameRepository.findOneById(gamesId.get(gamesId.indexOf(currentGameIndex)));

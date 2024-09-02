@@ -40,9 +40,6 @@ const Gameplay = () => {
         sendToHost({ actionType: 'NEXT_GAME', gameData: gameData });
     }
     const debugDev = true;
-    if (isPartyOver) {
-        return <EndGameScore login={userLogin} gameName={'MENU'} partyCode={partyCode} endParty={true} />;
-    }
     if (debugDev) {
         return (
             <>

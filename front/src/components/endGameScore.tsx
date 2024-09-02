@@ -19,12 +19,15 @@ interface EndGameScoreProps {
     gameName: string;
 
     partyCode: string;
-    endParty?: boolean;
 }
 
-const EndGameScore: React.FC<EndGameScoreProps> = ({ login, gameName, partyCode, endParty }) => {
-    const { sendToHost, scoreResult } = useGameWebSockets();
+const EndGameScore: React.FC<EndGameScoreProps> = ({ login, gameName, partyCode }) => {
+    const { sendToHost, scoreResult, isPartyOver } = useGameWebSockets();
+    const Router = useRouter();
     const navigateRoom = () => {
+        if (isPartyOver) {
+            Router.push('/room');
+        }
         const gameData = {
             from: login,
             date: Date.now(),
@@ -40,8 +43,8 @@ const EndGameScore: React.FC<EndGameScoreProps> = ({ login, gameName, partyCode,
     return (
         <div className="grid gap min-h-screen w-full">
             <div className="grid place-items-center">
-                {endParty && <h1 className="text-amber-300 text-[64px]">Fin de la partie</h1>}
-                {!endParty && <h1 className="text-amber-300 text-[64px]">Fin du jeu</h1>}
+                {isPartyOver && <h1 className="text-amber-300 text-[64px]">Fin de la partie</h1>}
+                {!isPartyOver && <h1 className="text-amber-300 text-[64px]">Fin du jeu</h1>}
             </div>
 
             <div className="mt-[2.5rem]">
@@ -75,7 +78,8 @@ const EndGameScore: React.FC<EndGameScoreProps> = ({ login, gameName, partyCode,
 
             <div className="grid place-items-center">
                 <Button className=" bg-orange-300 mb-10" onClick={navigateRoom}>
-                    Suite de la partie !
+                    {isPartyOver && 'Suite de la partie !'}
+                    {!isPartyOver && 'Prochain jeu !'}
                 </Button>
             </div>
         </div>
