@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-
+@Table(name = "Bet")
 public class Bet {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
