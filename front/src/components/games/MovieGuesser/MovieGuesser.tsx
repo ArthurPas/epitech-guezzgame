@@ -99,7 +99,8 @@ export const MovieGuesser = () => {
 
     const handleRoundEnd = async () => {
         console.log('Round ended');
-        sendToHost({ actionType: 'ADD_POINTS_BY_DATE', gameData });
+        gameData.nbPoints = playerScore;
+        sendToHost({ actionType: 'ADD_POINTS', gameData });
         if (currentRound < maxRounds) {
             await refetch();
             setCurrentRound(currentRound + 1);

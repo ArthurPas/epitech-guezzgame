@@ -32,7 +32,7 @@ const items = [
     { src: badMerguez, isGood: false },
     { src: badMerguez, isGood: false },
     { src: badMerguez, isGood: false },
-    { src: badMerguez, isGood: false },
+    { src: badMerguez, isGood: false }
 ];
 
 const bonuses = [
@@ -69,7 +69,7 @@ const isOverlapping = (pos1: { x: number; y: number }, pos2: { x: number; y: num
 };
 
 const ClickGame = () => {
-    const { isGameOver, isRoundOver, setIsRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
+    const { isGameOver, isRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
     const nbRound = 1;
     // const [result, setResult] = useState([{ login: '', score: 0 }]);
     const [targetItem, setTargetItem] = useState('');
@@ -273,7 +273,7 @@ const ClickGame = () => {
                                             top: `${y}px`,
                                             width: '150px',
                                             padding: 0,
-                                            backgroundColor: 'transparent',
+                                            backgroundColor: 'transparent'
                                         }}
                                         className="shadow-none border-none"
                                         disabled={isWaiting}
@@ -283,9 +283,7 @@ const ClickGame = () => {
                                 );
                             })}
                             {isWaiting && (
-                                <div 
-                                className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-80 flex justify-center items-center z-10"
-                                >
+                                <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-80 flex justify-center items-center z-10">
                                     <img src={grill} alt="Grill overlay" className="max-w-full max-h-full" />
                                     <h2 className="absolute text-white text-2xl">Next round in: {countdown}s</h2>
                                 </div>
@@ -295,7 +293,7 @@ const ClickGame = () => {
                 </div>
             );
         }
-    };
+    }
 };
 
 export default ClickGame;
