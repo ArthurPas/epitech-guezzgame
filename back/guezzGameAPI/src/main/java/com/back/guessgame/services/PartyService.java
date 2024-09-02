@@ -4,7 +4,11 @@ import com.back.guessgame.controllers.PartyController;
 import com.back.guessgame.repository.GameRepository;
 import com.back.guessgame.repository.PartyRepository;
 import com.back.guessgame.repository.UserRepository;
-import com.back.guessgame.repository.dto.*;
+import com.back.guessgame.repository.dto.GeneralPartyDto;
+import com.back.guessgame.repository.dto.NewPartyDto;
+import com.back.guessgame.repository.dto.PartyResultDto;
+import com.back.guessgame.repository.dto.Score;
+import com.back.guessgame.repository.entities.Game;
 import com.back.guessgame.repository.entities.Party;
 import com.back.guessgame.repository.entities.User;
 import org.slf4j.Logger;
@@ -64,6 +68,9 @@ public class PartyService {
 
 	public Long newParty(NewPartyDto partyDto) {
 		Party party = new Party();
+		List<Game> games = new ArrayList<>();
+		games.add(gameRepository.findById(0L).orElse(null));//Add menu
+		party.setGames(games);
 		party.setPartyCode(partyDto.getPartyCode());
 		party.setNbPoints(0);
 		addUserToPartyAlreadyCreated(party, partyDto.getUserLogin());

@@ -15,16 +15,21 @@ const badMerguez = '/wrong_merguezz.png';
 const grill = '/homer_bbq.jpg';
 
 let userLogin = 'anonymous';
+let partyCode = undefined;
 if (typeof window !== 'undefined') {
+    partyCode = localStorage?.getItem('partyCode') || '';
     const token = localStorage.getItem('authToken') || '';
-    const jwtDecoded = jwtDecode(token);
-    userLogin = jwtDecoded.sub || 'anonymous';
+    let jwtDecoded;
+    if (token) {
+        jwtDecoded = jwtDecode(token);
+    }
+    userLogin = jwtDecoded?.sub || 'anonymous';
 }
 const items = [
     { src: goodMerguez, isGood: true },
-    { src: badMerguez, isGood: false }, 
-    { src: badMerguez, isGood: false }, 
-    { src: badMerguez, isGood: false }, 
+    { src: badMerguez, isGood: false },
+    { src: badMerguez, isGood: false },
+    { src: badMerguez, isGood: false },
     { src: badMerguez, isGood: false },
     { src: badMerguez, isGood: false },
     { src: badMerguez, isGood: false },
@@ -91,10 +96,10 @@ const ClickGame = () => {
         nbPoints: score,
         gameName: 'CLICK_GAME',
         roundNumber: round,
-        partyCode: localStorage.getItem('partyCode') || '',
+        partyCode: partyCode || '',
         playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
     };
-    
+
     useEffect(() => {
         if (isWaiting) {
             if (countdown > 0) {
@@ -117,7 +122,7 @@ const ClickGame = () => {
             sendToHost({ actionType: 'END_GAME', gameData });
         }
     };
-    
+
     function sendSocketAfterClick(points: number, playerInfo: { login: string; timestamp: number }, roundNumber: number) {
         gameData.date = Date.now();
         gameData.nbPoints = score;
@@ -131,10 +136,10 @@ const ClickGame = () => {
     const handleClick = (item: { src: string; isGood: boolean }) => {
         const timestamp = Date.now();
         const playerInfo = { login: userLogin, timestamp };
-    
+
         if (item.isGood) {
             console.log('Correct item clicked!', playerInfo);
-    
+
             let points = 10;
             if (round % 2 === 0 || round % 3 === 0) {
                 const bonusOrMalus = getRandomItem(bonuses);
@@ -150,7 +155,6 @@ const ClickGame = () => {
             console.log('Wrong item clicked!', playerInfo);
         }
     };
-    
 
     const getNonOverlappingPosition = (existingPositions: { x: number; y: number }[], maxWidth: number, maxHeight: number) => {
         const size = 50;
@@ -165,9 +169,7 @@ const ClickGame = () => {
                 break;
             }
             position = getRandomPosition(maxWidth - size, maxHeight - size);
-            isOverlappingAny = existingPositions.some(existingPosition =>
-                isOverlapping(existingPosition, position, size)
-            );
+            isOverlappingAny = existingPositions.some((existingPosition) => isOverlapping(existingPosition, position, size));
             attempts++;
         } while (isOverlappingAny);
 
@@ -237,7 +239,6 @@ const ClickGame = () => {
             );
         }
         if (!allPlayersReady && !modalOpen) {
-            //C'est hyper moche
             return (
                 <WaitForPlayers
                     from={gameData.from}
@@ -259,9 +260,9 @@ const ClickGame = () => {
                                     const pos = getRandomPosition(500, 500);
                                     return { x: pos.x, y: pos.y };
                                 });
-                            
+
                                 const { x, y } = getNonOverlappingPosition(existingPositions, 500, 500);
-                            
+
                                 return (
                                     <Button
                                         key={index}
@@ -282,7 +283,7 @@ const ClickGame = () => {
                                 );
                             })}
                             {isWaiting && (
-                                <div
+                                <div 
                                 className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-80 flex justify-center items-center z-10"
                                 >
                                     <img src={grill} alt="Grill overlay" className="max-w-full max-h-full" />

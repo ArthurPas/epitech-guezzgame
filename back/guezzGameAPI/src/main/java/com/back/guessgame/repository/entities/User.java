@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -50,13 +51,17 @@ public class User implements UserDetails {
 
 	private List<User> friendships;
 
-	@HashCodeExclude
-	@OneToMany(mappedBy = "user")
-	private List<Inventory> items;
+	@ManyToMany(targetEntity = Item.class)
+	@JoinTable(name = "items_users", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "item_id"))
+	private List<Item> items;
 
 	@HashCodeExclude
 	@OneToMany(targetEntity = Party.class)
 	private List<Party> parties;
+
+	private Date lastConnection;
+
+	private Integer daySteak = 0;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

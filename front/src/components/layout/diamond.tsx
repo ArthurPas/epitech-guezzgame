@@ -6,7 +6,8 @@ export const Diamond = () => {
 
 export const DiamondWall = () => {
     return (
-        <div className="hidden xl:block absolute top-[25%] left-[50%] -translate-x-[50%] -translate-y-[40%] z-[-1] opacity-40 h-[124vh] overflow-hidden">
+        <div className="block absolute top-[25%] left-[50%] -translate-x-[50%] -translate-y-[40%] z-[-1] opacity-40 h-[124vh] overflow-hidden max-w-full">
+            {/* TODO: Handle the left diamond, visible without max-w-full, but without max-w-full there is responsiveness issues */}
             <svg xmlns="http://www.w3.org/2000/svg" width={2653} height={1702} fill="none">
                 <rect
                     width={342.823}
