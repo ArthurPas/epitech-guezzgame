@@ -91,8 +91,14 @@ public class WebSocketService {
 		}
 		if(message.getActionType().equals(ActionType.END_GAME)) {
 			messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
+			messagingTemplate.convertAndSend("/topic/reply/score", getScore(gameScore));
+			Logger logger = LoggerFactory.getLogger(WebSocketController.class);
+			logger.warn(getScore(gameScore).toString() + "score de toto");
+			for (Party party : partyRepository.findAllByPartyCode(gameScore.getPartyCode())) {
+				party.setNbPoints(party.getNbPoints() + gameScore.getPoints());
+				partyRepository.save(party);
+			}
 			sendNextGame(gameScore, messagingTemplate);
-			clear(gameScore.getPartyCode());
 		}
 		switch (gameScore.getGame().getName()) {
 			case "CLICK_GAME":
@@ -121,15 +127,15 @@ public class WebSocketService {
 			{
 				currentGameIndex++;
 				logger.warn("CURRENT GAME INDEX : " + currentGameIndex);
-				if(currentGameIndex > gameRepository.count()) {
+				if(currentGameIndex > gameRepository.count() + 1) {
 					break;
 				}
 			}
 		}
 
-		if(currentGameIndex > gameRepository.count()) {
-			messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
-			clear(gameScore.getPartyCode());
+		if(currentGameIndex > gameRepository.count() + 1) {
+			messagingTemplate.convertAndSend("/topic/reply/endGame", "END_PARTY");
+			logger.warn("END GAME" + currentGameIndex + " " + gameRepository.count() + " " + gamesId);
 		} else {
 			Game nextGame = gameRepository.findOneById(gamesId.get(gamesId.indexOf(currentGameIndex)));
 			messagingTemplate.convertAndSend("/topic/reply/nextGame", nextGame.getName());
@@ -187,8 +193,24 @@ public class WebSocketService {
 
 	private void movieGuesserGameplay(WebSocketPayload message, User currentUser, GameScore gameScore, SimpMessagingTemplate messagingTemplate) {
 
+
 	}
 
 	private void blindTestGameplay(WebSocketPayload message, User currentUser, GameScore gameScore, SimpMessagingTemplate messagingTemplate) {
+
 	}
+
+	private void cultureGuezzGameplay(WebSocketPayload message, User currentUser, GameScore gameScore, SimpMessagingTemplate messagingTemplate) {
+		ActionType actionType = gameScore.getActionType();
+		switch (actionType) {
+			case START_GAME -> messagingTemplate.convertAndSend("/topic/reply/startGame", "START_GAME");
+			case END_GAME -> {
+				messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
+				messagingTemplate.convertAndSend("/topic/reply/score", getScore(gameScore));
+				clear(gameScore.getPartyCode());
+			}
+		}
+
+	}
+
 }

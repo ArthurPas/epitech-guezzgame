@@ -12,6 +12,7 @@ import { useRegister } from '@/hooks/auth';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 const avatarSelection = [
     'https://res.cloudinary.com/dxaqv2hww/image/upload/v1720513516/shrek_3_ys5had.webp',
@@ -57,10 +58,10 @@ export const RegisterForm = () => {
     };
 
     return (
-        <Card className="w-[90%] xl:w-[1182px] rounded-3xl xl:h-[479px] flex justify-center flex-col bg-purple-300 bg-opacity-75 mb-[6rem]">
+        <Card className="w-[90%] xl:w-[1138px] 2xl:w-[1182px] rounded-3xl xl:h-[449px] flex justify-center flex-col bg-purple-300 bg-opacity-75">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="w-[100%]">
-                    <CardContent className="flex flex-col gap-4 mx-3 justify-evenly my-6 w-full items-center">
+                    <CardContent className="flex flex-col gap-4 mx-3 justify-evenly my-6 w-full items-center mt-12">
                         <div className="flex flex-col xl:flex-row justify-center items-center gap-[48px] space-y-1.5">
                             <div className="flex justify-end items-end gap-[16px]">
                                 <div className="grid grid-cols-2 gap-2 mb-2">
@@ -146,10 +147,13 @@ export const RegisterForm = () => {
                             </div>
                         </div>
                     </CardContent>
-                    <CardFooter className="items-center justify-center justify-self-center">
+                    <CardFooter className="items-center flex flex-col justify-center justify-self-center">
                         <Button type="submit" className="bg-gradient-to-b from-amber-300 to-amber-500 w-36" variant={'default'}>
                             S'inscrire
                         </Button>
+                        <Link href={'/login'} className="flex justify-center h-4">
+                            <Button variant={'link'}>Déjà inscrit ?</Button>
+                        </Link>
                     </CardFooter>
                 </form>
             </Form>

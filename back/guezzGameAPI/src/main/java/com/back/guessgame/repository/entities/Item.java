@@ -22,6 +22,6 @@ public class Item {
 	private Float rarity;
 	private String picture;
 
-	@OneToMany(mappedBy = "item")
-	private List<Inventory> inventories;
+	@ManyToMany(mappedBy = "items")
+	private List<User> users;
 }

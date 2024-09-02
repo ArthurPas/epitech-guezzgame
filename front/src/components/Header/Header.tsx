@@ -42,7 +42,7 @@ export const Header = () => {
                                 <Backpack />
                             </Button>
                         </Link>
-                        <Link href={'/marketplace'}>
+                        <Link href={'/guezzmarket'}>
                             <Button variant="reverse" className="rounded-lg shadow">
                                 <ShoppingBag />
                             </Button>
