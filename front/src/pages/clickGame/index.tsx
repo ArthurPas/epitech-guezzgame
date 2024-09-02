@@ -9,6 +9,7 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import WaitForPlayers from '@/components/gameLayout/waitScreen';
 import useGameWebSockets from '@/hooks/useGameWebSockets';
 import { GameData } from '@/interfaces/gameWebSockets';
+import EndGameScore from '@/components/endGameScore';
 
 const goodMerguez = '/merguezz_OK.png';
 const badMerguez = '/wrong_merguezz.png';
@@ -182,29 +183,7 @@ const ClickGame = () => {
 
     if (isGameOver) {
         return (
-            <>
-                <h1>Résultat !</h1>
-                <div className="flex justify-center items-center h-screen">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">Classement</TableHead>
-                                <TableHead className="w-[100px]">Pseudo</TableHead>
-                                <TableHead>Points</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {scoreResult.map((player, index) => (
-                                <TableRow key={player.login}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{player.login}</TableCell>
-                                    <TableCell>{player.score}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </>
+            <EndGameScore scoreResult={scoreResult} login={gameData.playerInfo.login}/>
         );
     } else {
         if (modalOpen) {

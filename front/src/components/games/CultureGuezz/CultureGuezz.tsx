@@ -1,3 +1,4 @@
+import EndGameScore from '@/components/endGameScore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
@@ -116,31 +117,9 @@ const CultureGuezz = () => {
     };
 
     if (showEndGame){
-            return (
-                <>
-                    <h1>Résultat !</h1>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[100px]">Classement</TableHead>
-                                    <TableHead className="w-[100px]">Pseudo</TableHead>
-                                    <TableHead>Points</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {scoreResult.map((player, index) => (
-                                    <TableRow key={player.login}>
-                                        <TableCell>{index + 1}</TableCell>
-                                        <TableCell>{player.login}</TableCell>
-                                        <TableCell>{player.score}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-                </>
-            );
+        return (
+            <EndGameScore scoreResult={scoreResult} login={gameData.playerInfo.login}/>
+        );
     }
     return (
         <div>
