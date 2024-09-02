@@ -1,6 +1,7 @@
 import { Chat } from '@/components/gameLayout/Chat';
 import { Players } from '@/components/gameLayout/Players';
 import GeoGuezzer from '@/components/games/GeoGuezzer/GeoGuezzer';
+import CultureGuezz from '@/components/games/CultureGuezz/CultureGuezz';
 import { MovieGuesser } from '@/components/games/MovieGuesser/MovieGuesser';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -11,12 +12,11 @@ import { useState } from 'react';
 import { GameData } from '@/interfaces/gameWebSockets';
 import { useGetPartyScores } from '@/hooks/partyScores';
 
-const games = ['BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUEZZER'];
+const games = ['BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUEZZER', 'JUNGLE_SPEED', 'CULTURE_GUEZZ'];
 const Gameplay = () => {
     const { currentGame, sendToHost } = useGameWebSockets();
     const [currentGameDebug, setCurrentGameDebug] = useState('');
-    console.log('currentGame', currentGame);
-    let partyCode = '';
+    let partyCode = ' ';
     if (typeof window !== 'undefined') {
         partyCode = localStorage?.getItem('partyCode') || '';
     }
@@ -66,6 +66,7 @@ const Gameplay = () => {
                             {currentGameDebug === 'MOVIE_GUESSER' && <MovieGuesser />}
                             {currentGameDebug === 'GEO_GUEZZER' && <GeoGuezzer />}
                             {currentGameDebug === 'CLICK_GAME' && <ClickGame />}
+                            {currentGameDebug === 'CULTURE_GUEZZ' && <CultureGuezz />}
                         </Card>
                     </div>
                 </div>
@@ -85,6 +86,7 @@ const Gameplay = () => {
                             {currentGame === 'MOVIE_GUESSER' && <MovieGuesser />}
                             {currentGame === 'GEO_GUEZZER' && <GeoGuezzer />}
                             {currentGame === 'CLICK_GAME' && <ClickGame />}
+                            {currentGame === 'CULTURE_GUEZZ' && <CultureGuezz />}
                         </Card>
                     </div>
                 </div>

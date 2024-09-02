@@ -31,7 +31,7 @@ const gameDataSchema = z.object({
     from: z.string(), // login
     date: z.number(), // timestamp
     nbPoints: z.number(),
-    gameName: z.enum(['MENU','BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUEZZER', 'JUNGLE_SPEED']),
+    gameName: z.enum(['MENU', 'BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUEZZER', 'JUNGLE_SPEED', 'CULTURE_GUEZZ']),
     roundNumber: z.number(),
     partyCode: z.string(),
     playerInfo: playerInfoSchema
