@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode
 @JsonFilter("betOptionFilter")
+@Table(name = "bet_option")
 public class BetOption {
 
 	@Id

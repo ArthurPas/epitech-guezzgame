@@ -6,12 +6,13 @@ import React from 'react';
 
 const Rewards = () => {
     let dataMe;
-
+    let authToken = '';
     if (typeof window !== 'undefined') {
-        const authToken = localStorage.getItem('authToken') ?? '';
-        ({ data: dataMe } = useGetMeUser(authToken));
+         authToken = localStorage.getItem('authToken') ?? '';         
     }
-
+   
+   
+    ({ data: dataMe } = useGetMeUser(authToken));   
     let userDataStockees: UserMeType = {
         daySteak: 0,
         id: 0,
@@ -29,7 +30,7 @@ const Rewards = () => {
 
     if (dataMe != null) {
         userDataStockees = {
-            daySteak: dataMe.daySteak ?? 0,
+            daySteak: dataMe.daySteak,
             id: dataMe.id ?? 0,
             mail: dataMe.mail ?? '',
             login: dataMe.login ?? '',
@@ -68,16 +69,22 @@ const Rewards = () => {
     }
 
     userDataStockees.nbCoin = coins_gagnes;
+    const nbDaymax = userDataStockees.daySteak>11 ? userDataStockees.daySteak+8 : 11
 
     return (
         <div className="grid gap-1 min-h-screen w-full justify-center items-center">
             <div className="grid place-items-center mt-[80px]">
                 <h1 className="text-amber-400 text-[64px]">Récompenses</h1>
                 <br />
-                <h3>
-                    {coins_gagnes} coins - {userDataStockees.daySteak} jour(s)de connexion d'affilés
-                </h3>
-            </div>
+                <h2 className="text-[32px]  text-center font-Bangers text-amber-300 text-cent">
+                            {dataMe?.nbCoin && (
+                                <span>
+                                    <b>{dataMe.nbCoin}</b> $
+                                </span>
+                            )}
+                        </h2>
+                        
+                <h3>{coins_gagnes} coins bonus - {userDataStockees.daySteak } {userDataStockees.daySteak > 2 ? 'jours': 'jour' } de connexion d'affilés</h3>
 
             <div>
                 <Card className="border w-[80vw] h-[280px] rounded-3xl mx-auto mt-[20px] bg-purple-300 bg-opacity-75 flex justify-center items-center">
@@ -85,7 +92,7 @@ const Rewards = () => {
                         <div className="flex w-[64vw] h-[240px] justify-center items-center">
                             <ScrollArea className="h-[230px] w-[100%]">
                                 <div className="flex space-x-4">
-                                    {Array.from({ length: 11 }, (_, index) => {
+                                    {Array.from({ length: nbDaymax  }, (_, index) => {
                                         const nbJours = userDataStockees.daySteak;
                                         const isGray = index <= nbJours;
                                         return (
@@ -126,7 +133,7 @@ const Rewards = () => {
                         <div className="flex w-[64vw] h-[240px] justify-center items-center">
                             <ScrollArea className="h-[230px] w-[100%]">
                                 <div className="flex space-x-4">
-                                    {Array.from({ length: 11 }, (_, index) => {
+                                    {Array.from({ length: nbDaymax }, (_, index) => {
                                         const nbJours = userDataStockees.daySteak;
                                         const isGray = index <= nbJours;
                                         return (
