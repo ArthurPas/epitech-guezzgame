@@ -1,72 +1,119 @@
-import { Button } from '@/components/ui/button';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import React, { useState } from 'react';
+import { useGetMeUser } from '@/hooks/userMe';
+import { UserMeType } from '@/interfaces/userMe';
+import React from 'react';
+
 
 const Rewards = () => {
-    const [clickedButtonsAnonymes, setClickedButtonsAnonymes] = useState(Array(14).fill(false));
-    const [clickedButtonsVIP, setClickedButtonsVIP] = useState(Array(14).fill(false));
 
-    const handleButtonClickAnonymes = (index: number) => {
-        const newClickedButtonsAnonymes = [...clickedButtonsAnonymes];
-        newClickedButtonsAnonymes[index] = true;
-        setClickedButtonsAnonymes(newClickedButtonsAnonymes);
+    let dataMe;
+           
+    if (typeof window !== 'undefined') {
+        const authToken = localStorage.getItem('authToken') ?? '';     
+        ({ data: dataMe } = useGetMeUser(authToken));       
+    }
+   
+   
+    let userDataStockees: UserMeType = {
+        daySteak: 0,
+        id: 0,
+        mail: "",
+        login: "",
+        picture: "",
+        nbCoin: 0,
+        isVip: false,
+        xpPoint: 0,
+        level: {
+            level: 0,
+            badgePictureUrl: []
+        }
+
     };
+  
+    if (dataMe != null) {      
+        userDataStockees = {
+            daySteak: dataMe.daySteak ?? 0,
+            id: dataMe.id ?? 0,
+            mail: dataMe.mail ?? "",
+            login: dataMe.login ?? "",
+            picture: dataMe.picture ?? "",
+            nbCoin: dataMe.nbCoin ?? 0,
+            isVip: dataMe.isVip ?? false, 
+            xpPoint: dataMe.xpPoint ?? 0,
+            level: {
+                level: dataMe.level?.level ?? 0,
+                badgePictureUrl: dataMe.level?.badgePictureUrl ?? "",
+            }
+        };
+    }
+   
+    //Mise à jour des récompenses gagnées 
+    let coins_gagnes =  0
 
-    const handleButtonClickVIP = (index: number) => {
-        const newClickedButtonsVIP = [...clickedButtonsVIP];
-        newClickedButtonsVIP[index] = true;
-        setClickedButtonsVIP(newClickedButtonsVIP);
-    };
+    console.log("les data de l'utilisateur 1 avant les coins: ", userDataStockees);
 
-    return (
+    for(let i = 0; i<userDataStockees.daySteak+1; i++)
+        {
+            if(i == 0)
+            {
+                coins_gagnes = coins_gagnes + 10;
+            }
+            else{
+    
+                coins_gagnes = coins_gagnes + 10*(i+1);
+            }        
+        }
+
+    if(userDataStockees.isVip == true)
+    {        
+        for(let i = 0; i<userDataStockees.daySteak+1; i++)
+            {
+                if(i == 0)
+                {
+                    coins_gagnes = coins_gagnes + 50;
+                }
+                else{
+        
+                    coins_gagnes = coins_gagnes + 50*(i+1);
+                }        
+            }
+    }
+
+    userDataStockees.nbCoin = coins_gagnes;
+  
+  return (
         <div className="grid gap-1 min-h-screen w-full justify-center items-center">
             <div className="grid place-items-center mt-20">
                 <h1 className="text-amber-400 text-[64px]">Récompenses</h1>
                 <br />
-                <h3>Rang 6</h3>
-            </div>
-            <div>
-                <Card className="border w-[1350px] h-[280px] rounded-3xl mx-auto mt-[20px] bg-purple-300 bg-opacity-75 flex justify-center items-center">
-                    <CardContent className="p-2 flex flex-col justify-center items-center">
-                        <div className="flex w-[1280px] h-[240px] justify-center items-center">
-                            <ScrollArea className="h-[255px] w-[100%]">
-                                <div className="flex space-x-4">
-                                    {Array.from({ length: 14 }, (_, index) => {
-                                        const isDisabled = index + 3 > 6; // Désactiver les boutons au-dessus du rang 6
+                <h3>{coins_gagnes} coins - {userDataStockees.daySteak} jour(s)de connexion d'affilés</h3>
+            </div>            
 
+            <div>
+                <Card className="border w-[80vw] h-[280px] rounded-3xl mx-auto mt-[20px] bg-purple-300 bg-opacity-75 flex justify-center items-center">
+                    <CardContent className="p-2 flex flex-col justify-center items-center">
+                        <div className="flex w-[64vw] h-[240px] justify-center items-center">
+                            <ScrollArea className="h-[230px] w-[100%]">
+                                <div className="flex space-x-4">
+                                    {Array.from({ length: 11 }, (_, index) => {
+                                        const nbJours = userDataStockees.daySteak;
+                                        const isGray = index <= nbJours; 
                                         return (
                                             <div key={index}>
-                                                {' '}
-                                                {/* Clé unique appliquée ici */}
-                                                <div className="border-2 rounded-xl bg-white w-[200px] h-[200px] px-2 py-1 text-sm">
-                                                    <div>
+                                                <div className={`border-2 rounded-xl w-60 h-[200px] px-2 py-1 text-sm ${isGray ? 'bg-purple-500' : 'bg-white'}`}>
+                                                    <div className='flex justify-center items-center'>
                                                         <img
-                                                            src="https://e7.pngegg.com/pngimages/612/493/png-clipart-shrek-shot-video-film-shrek-face-head.png"
+                                                            src="/coin.png"
+
                                                             className="h-[130px] rounded-xl"
                                                             alt="Description de l'image"
                                                         />
                                                     </div>
                                                     <div className="text-center">
-                                                        <p className="text-sm">Rang {index + 3}</p>
-                                                        <h4 className="text-xl">Nom de l'asset</h4>
-                                                        <Button
-                                                            className={`mt-5 w-40 ${
-                                                                isDisabled
-                                                                    ? 'bg-gray-400 cursor-not-allowed'
-                                                                    : clickedButtonsAnonymes[index]
-                                                                    ? 'bg-purple-500'
-                                                                    : 'bg-gradient-to-b from-amber-300 to-amber-500'
-                                                            }`}
-                                                            onClick={() => !isDisabled && handleButtonClickAnonymes(index)}
-                                                            disabled={isDisabled}
-                                                        >
-                                                            {isDisabled
-                                                                ? 'À débloquer'
-                                                                : clickedButtonsAnonymes[index]
-                                                                ? 'Récupéré'
-                                                                : 'Récupérer'}
-                                                        </Button>
+                                                        <p className="text-sm">Jour {index}</p>
+                                                        <h4 className="text-xl">{(index+1) * 10} coins</h4>
                                                     </div>
                                                 </div>
                                             </div>
@@ -79,52 +126,31 @@ const Rewards = () => {
                     </CardContent>
                 </Card>
             </div>
-
             <div className="grid place-items-center mt-[60px]">
                 <h1 className="text-amber-400 text-[64px]">VIP</h1>
             </div>
-
             <div>
-                <Card className="border w-[1350px] h-[280px] rounded-3xl mx-auto mt-[10px] mb-60 bg-purple-300 bg-opacity-75 flex justify-center items-center">
+                <Card className="border w-[80vw] h-[280px] rounded-3xl mx-auto mt-[10px] mb-40 bg-purple-300 bg-opacity-75 flex justify-center items-center">
                     <CardContent className="p-2 flex flex-col justify-center items-center">
-                        <div className="flex w-[1280px] h-[240px] justify-center items-center">
-                            <ScrollArea className="h-[255px] w-[100%]">
+                        <div className="flex w-[64vw] h-[240px] justify-center items-center">
+                            <ScrollArea className="h-[230px] w-[100%]">
                                 <div className="flex space-x-4">
-                                    {Array.from({ length: 14 }, (_, index) => {
-                                        const isDisabled = index + 3 > 6; // Désactiver les boutons au-dessus du rang 6
-
+                                    {Array.from({ length: 11 }, (_, index) => {
+                                        const nbJours = userDataStockees.daySteak;
+                                        const isGray = index <= nbJours;
                                         return (
                                             <div key={index}>
-                                                {' '}
-                                                {/* Clé unique appliquée ici */}
-                                                <div className="border-2 rounded-xl bg-amber-400 w-[200px] h-[200px] px-2 py-1 text-sm">
-                                                    <div>
+                                                <div className={`border-2 rounded-xl w-60 h-[200px] px-2 py-1 text-sm ${isGray ? 'bg-purple-500' : 'bg-amber-400'}`}>
+                                                    <div className='flex justify-center items-center'>
                                                         <img
-                                                            src="https://playtv.fr/news/wp-content/uploads/2023/04/Shrek-un-nouveau-film-est-en-preparation-.jpg"
+                                                            src="/coin.png"
                                                             className="h-[130px] rounded-xl"
                                                             alt="Description de l'image"
                                                         />
                                                     </div>
                                                     <div className="text-center">
-                                                        <p className="text-sm">Rang {index + 3}</p>
-                                                        <h4 className="text-xl">Nom de l'asset</h4>
-                                                        <Button
-                                                            className={`mt-5 w-40 ${
-                                                                isDisabled
-                                                                    ? 'bg-gray-400 cursor-not-allowed'
-                                                                    : clickedButtonsVIP[index]
-                                                                    ? 'bg-purple-500'
-                                                                    : 'bg-gradient-to-b from-amber-300 to-amber-500'
-                                                            }`}
-                                                            onClick={() => !isDisabled && handleButtonClickVIP(index)}
-                                                            disabled={isDisabled}
-                                                        >
-                                                            {isDisabled
-                                                                ? 'À débloquer'
-                                                                : clickedButtonsVIP[index]
-                                                                ? 'Récupéré'
-                                                                : 'Récupérer'}
-                                                        </Button>
+                                                        <p className="text-sm">Jour {index}</p>
+                                                        <h4 className="text-xl">{(index+1) * 50} coins</h4>
                                                     </div>
                                                 </div>
                                             </div>
