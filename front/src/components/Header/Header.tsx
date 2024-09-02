@@ -33,40 +33,40 @@ export const Header = () => {
         <nav className="backdrop-blur-sm shadow-lg h-[85px] flex justify-between items-center pl-6 pr-12">
             <div>
                 {isLoggedIn ? (
-                <Link href={'/room'}>
-                    <Image src="/guezgame-logo-horizontal.png" alt="GuezGame logo" width={250} height={100} className="mt-[96px]" />
-                </Link>
+                    <Link href={'/room'} className="hidden md:block">
+                        <Image src="/guezgame-logo-horizontal.png" alt="GuezGame logo" width={250} height={100} className="mt-[96px]" />
+                    </Link>
                 ) : (
-                <Link href={'/'}>
-                    <Image src="/guezgame-logo-horizontal.png" alt="GuezGame logo" width={250} height={100} className="mt-[96px]" />
-                </Link>
+                    <Link href={'/'} className="hidden md:block">
+                        <Image src="/guezgame-logo-horizontal.png" alt="GuezGame logo" width={250} height={100} className="mt-[96px]" />
+                    </Link>
                 )}
             </div>
             <div className="flex gap-2">
                 {isLoggedIn ? (
                     <div className="flex gap-2">
-                        <Link href={'/login'}>
+                        <Link href={'/login'} className="hidden md:block">
                             <Button variant="reverse" onClick={handleLogout} className="rounded-lg shadow">
                                 <LogOut className="rotate-180" />
                             </Button>
                         </Link>
 
-                        <Link href={'/helpcenter'}>
+                        <Link href={'/helpcenter'} className="hidden md:block">
                             <Button variant="reverse" className="rounded-lg shadow">
                                 <CircleHelp />
                             </Button>
                         </Link>
-                        <Link href={'/gambling'}>
+                        <Link href={'/gambling'} className="hidden md:block">
                             <Button variant="reverse" className="rounded-lg shadow">
                                 <Dices />
                             </Button>
                         </Link>
-                        <Link href={'/rewards'}>
+                        <Link href={'/rewards'} className="hidden sm:block">
                             <Button variant="reverse" className="rounded-lg shadow">
                                 <Gift />
                             </Button>
                         </Link>
-                        <Link href={'/guezzmarket'}>
+                        <Link href={'/guezzmarket'} className="hidden xs:block">
                             <Button variant="reverse" className="rounded-lg shadow">
                                 <ShoppingBag />
                             </Button>
