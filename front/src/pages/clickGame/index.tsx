@@ -184,7 +184,7 @@ const ClickGame = () => {
         return (
             <>
                 <h1>Résultat !</h1>
-                <div className="flex justify-center items-center h-screen">
+                <div className="flex justify-center items-center h-full">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -209,7 +209,7 @@ const ClickGame = () => {
     } else {
         if (modalOpen) {
             return (
-                <div className="flex justify-center items-center h-screen">
+                <div className="flex justify-center items-center h-full">
                     <Dialog open={modalOpen} onOpenChange={setModalOpen}>
                         <DialogContent>
                             <div className="flex flex-col items-center justify-center p-6">
