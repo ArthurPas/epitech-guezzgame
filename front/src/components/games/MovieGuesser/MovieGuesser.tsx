@@ -199,9 +199,9 @@ export const MovieGuesser = () => {
             <Dialog open={showModalRules} onOpenChange={() => {}}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle className="text-center">Règles du jeu</DialogTitle>
+                        <DialogTitle className="text-center">Règles du Movie Guesser</DialogTitle>
                     </DialogHeader>
-                    <DialogDescription className="text-center">
+                    <DialogDescription className="text-center text-[16px] leading-[1.5rem]">
                         Devinez le film ou la série le plus rapidement possible. <br />
                         Plus vous serez rapides plus vous gagnerez de points !
                     </DialogDescription>
