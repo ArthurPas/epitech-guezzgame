@@ -75,8 +75,8 @@ const renderQuestions = (questions: QuestionFaq[]) => {
 
 const Index = () => {
     return (
-        <div className="grid gap min-h-screen w-full">
-            <div className="grid place-items-center mb-8 mt-[4rem]">
+        <div className="grid gap min-h-screen w-full mt-[65px]">
+            <div className="grid place-items-center mb-8">
                 <h1 className="text-amber-400 text-[64px]">Helpcenter</h1>
             </div>
 

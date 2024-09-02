@@ -20,9 +20,6 @@ import { useGetMe } from '@/hooks/getMe';
 export type GuessGameProps = {};
 
 export const Bets = () => {
-    // Le jeu consiste en une image fortement zoomée, qui va progressivement dézoomer. Il peut s'agit d'une affiche de film ou du portrait d'un acteur ou actrice.
-    // Les joueurs doivent être les premiers à deviner à quel film ou acteur correspond l'image.
-
     const [betAmount, setbetAmount] = React.useState(10);
     const [authToken, setAuthToken] = useState<string | null>(null);
     useEffect(() => {
@@ -68,13 +65,13 @@ export const Bets = () => {
     }
     return (
         <div className="flex flex-col items-center">
-            <h1 className="text-amber-300 text-[64px] font-Bangers">Guezz GAMBLE</h1>
-            <div className="flex flex-wrap justify-center">
+            <h1 className="text-amber-400 text-[64px] font-Bangers mb-[3rem]">Guezz GAMBLE</h1>
+            <div className="flex justify-center flex-col">
                 <Carousel>
                     <CarouselContent>
                         {data.map((bet: BetType) => (
                             <CarouselItem className="basis-1/2">
-                                <Card key={bet.id}>
+                                <Card key={bet.id} className="rounded-xl">
                                     <CardHeader>
                                         <CardTitle>{bet.title}</CardTitle>
                                         <CardDescription>
@@ -197,8 +194,8 @@ export const Bets = () => {
                     <CarouselNext />
                 </Carousel>
                 <div className="flex flex-col items-center justify-center">
-                    <h1 className="text-amber-300 text-[16px] font-Bangers">Ton solde</h1>
-                    <p className="text-amber-300 text-[32px] font-Bangers">
+                    <h1 className="text-amber-400 text-[16px] font-Bangers">Ton solde</h1>
+                    <p className="text-amber-400 text-[32px] font-Bangers">
                         <b>{user?.nbCoin}</b> coins
                     </p>
                     <p className="p-10">Jouer avec excès comporte des risques pour la santé.</p>

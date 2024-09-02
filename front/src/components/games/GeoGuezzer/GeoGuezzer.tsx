@@ -9,6 +9,11 @@ import { useGetDataPictureGeo } from '@/hooks/dataPictureGeo';
 import { jwtDecode } from 'jwt-decode';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import WaitForPlayers from '@/components/gameLayout/waitScreen';
+import { Card, CardContent } from '@/components/ui/card';
+import { playerData } from '@/lib/mocks/player';
+import { Avatar, AvatarImage, AvatarFallback } from '@radix-ui/react-avatar';
+import { ScrollArea } from '@radix-ui/react-scroll-area';
+import { login } from '@/hooks/auth';
 
 const Map = dynamic(() => import('./Map'), { ssr: false });
 
@@ -43,11 +48,13 @@ const GeoGuezzer = () => {
     const [waitingForOther, setWaitingForOther] = useState<boolean>(false);
     console.log('isWaitingForOther', waitingForOther);
     let userLogin = 'anonymous';
+
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('authToken') || '';
         const jwtDecoded = jwtDecode(token);
         userLogin = jwtDecoded.sub || 'anonymous';
     }
+    
 
     let gameData: GameData = {
         from: userLogin,
@@ -73,7 +80,7 @@ const GeoGuezzer = () => {
 
         if (data) {
             console.log('Images récupérées : ', data);
-
+           
             // Ajouter les nouvelles données au tableau d'images, en s'assurant de ne pas dupliquer les données
             setImages((prevImages) => {
                 const updatedImages = [...prevImages, ...data];
@@ -135,16 +142,6 @@ const GeoGuezzer = () => {
             console.log('Distance : ', distance);
 
             setScore(() => {
-                //baseScore: calcul des points en fonction de la distance
-                //qui sépare la position de l'image et la position du clic
-                // uniquement si on est < 300 km
-                // Exemple :
-                // distance = 100 km => (100 * 1000) / 100 = 1000 points
-                // distance = 200 km => (100 * 1000) / 200 = 500 points
-                // distance = 300 km => (100 * 1000) / 300 = 333 points
-                // distance = 400 km => 0 points
-                // timeBonus: bonus en fonction du temps
-                // Plus le joueur trouve rapidement, plus il gagne de points
                 // /!\ indépendant des autres joueurs
                 const findTime = Date.now() - roundStartTime;
                 const timeBonus = 1000000 / findTime;
@@ -180,8 +177,7 @@ const GeoGuezzer = () => {
             setShowModalFeedback(false);
             setShowModalFeedback(false);
         } else {
-            setShowModalFeedback(false);
-            // TODO: jeux asynchrone, à voir si on garde ou pas
+            setShowModalFeedback(false);            
             // sendToHost({ actionType: 'PERSONAL_GAME_END', gameData });
             // en attendant ...
             setTimeout(() => {
@@ -212,32 +208,56 @@ const GeoGuezzer = () => {
     }
     if (showEndGame) {
         //  return <EndGame />; C'est la fin de la partie ca non ?
+        console.log("resultats : ", scoreResult);
 
-        //Et oui j'avoue c'est pas hyper stylé je suis pas le roi du css
+        // Déclaration d'un type pour un joueur
+        // type Player = {
+        //     login: string;
+        //     score: number;
+        // };
+
+        // Déclaration du tableau scoreResult
+        // const scoreResultTest: Player[] = [
+        //     { login: "Player1", score: 150 },
+        //     { login: "Player2", score: 200 },
+        //     { login: "Player3", score: 120 },
+        //     // Ajoutez autant de joueurs que nécessaire
+        // ];
+
         return (
-            <>
-                <h1>Résultat !</h1>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">Classement</TableHead>
-                                <TableHead className="w-[100px]">Pseudo</TableHead>
-                                <TableHead>Points</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {scoreResult.map((player, index) => (
-                                <TableRow key={player.login}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{player.login}</TableCell>
-                                    <TableCell>{player.score}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </>
+            <div className="grid gap min-h-screen w-full">
+            <div className="grid place-items-center">
+                <h1 className="text-amber-300 text-[64px]">Fin de partie</h1>
+            </div>
+
+            <div className="mt-[2.5rem]">
+              
+            <Card className="w-[50%] h-[60%] mx-auto rounded-[4rem] mb-5 flex flex-col justify-center bg-purple-300 bg-opacity-75">
+                <CardContent className="p-2 max-h-52 overflow-y-auto flex flex-col justify-center items-center mx-4">
+                    <ScrollArea className="h-72 px-4 w-full rounded-md">
+                        {scoreResult
+                            .sort((a, b) => b.score - a.score)
+                            .map((player) => {                                
+                                const backgroundColorClass = player.login === gameData.playerInfo.login ? "bg-amber-300" : "bg-white";
+                                return (
+                                    <div key={player.login} className="flex items-start mb-2">   
+                                        <div className={`flex w-full h-8 justify-between items-center p-4 shadow rounded-full ${backgroundColorClass}`}> 
+                                            <p className="text-left text-sm font-bold">{player.login}</p>
+                                            <p className="text-right text-[#37034E] text-xl font-bold">{player.score}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                    </ScrollArea>
+                </CardContent>
+            </Card>
+            </div>
+
+            <div className="grid place-items-center">
+                <Button className=" bg-orange-300 mb-10">Terminer la partie</Button>
+            </div>
+        </div>
+            
         );
     }
 
@@ -250,7 +270,7 @@ const GeoGuezzer = () => {
                         <DialogHeader>
                             <DialogTitle className="text-center leading-[1.5rem]">Règles du GeoGuezzer</DialogTitle>
                         </DialogHeader>
-                        <DialogDescription className="text-center">
+                        <DialogDescription className="text-center text-[16px]">
                             Devinez le lieu exact où vous êtes en vous basant uniquement sur l'environnement de l'image du haut. Plus votre
                             réponse est précise et rapide, plus vous marquez de points ! <br />
                             Attention, une réponse trop éloignée ne rapporte pas de points !
@@ -263,7 +283,7 @@ const GeoGuezzer = () => {
                             </div>
                         </DialogFooter>
                     </DialogContent>
-                </Dialog>
+                </Dialog>                
             )}
 
             {/* Modale de feedback */}

@@ -1,13 +1,10 @@
-
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { useGetMeUser } from '@/hooks/userMe';
 import { UserMeType } from '@/interfaces/userMe';
 import React from 'react';
 
-
 const Rewards = () => {
-
     let dataMe;
     let authToken = '';
     if (typeof window !== 'undefined') {
@@ -19,9 +16,9 @@ const Rewards = () => {
     let userDataStockees: UserMeType = {
         daySteak: 0,
         id: 0,
-        mail: "",
-        login: "",
-        picture: "",
+        mail: '',
+        login: '',
+        picture: '',
         nbCoin: 0,
         isVip: false,
         xpPoint: 0,
@@ -29,65 +26,54 @@ const Rewards = () => {
             level: 0,
             badgePictureUrl: []
         }
-
     };
-  
-    if (dataMe != null) {      
+
+    if (dataMe != null) {
         userDataStockees = {
             daySteak: dataMe.daySteak,
             id: dataMe.id ?? 0,
-            mail: dataMe.mail ?? "",
-            login: dataMe.login ?? "",
-            picture: dataMe.picture ?? "",
+            mail: dataMe.mail ?? '',
+            login: dataMe.login ?? '',
+            picture: dataMe.picture ?? '',
             nbCoin: dataMe.nbCoin ?? 0,
-            isVip: dataMe.isVip ?? false, 
+            isVip: dataMe.isVip ?? false,
             xpPoint: dataMe.xpPoint ?? 0,
             level: {
                 level: dataMe.level?.level ?? 0,
-                badgePictureUrl: dataMe.level?.badgePictureUrl ?? "",
+                badgePictureUrl: dataMe.level?.badgePictureUrl ?? ''
             }
         };
     }
-   
-    //Mise à jour des récompenses gagnées 
-    let coins_gagnes =  0
+
+    //Mise à jour des récompenses gagnées
+    let coins_gagnes = 0;
 
     console.log("les data de l'utilisateur 1 avant les coins: ", userDataStockees);
 
-    for(let i = 0; i<userDataStockees.daySteak+1; i++)
-        {
-            if(i == 0)
-            {
-                coins_gagnes = coins_gagnes + 10;
-            }
-            else{
-    
-                coins_gagnes = coins_gagnes + 10*(i+1);
-            }        
+    for (let i = 0; i < userDataStockees.daySteak + 1; i++) {
+        if (i == 0) {
+            coins_gagnes = coins_gagnes + 10;
+        } else {
+            coins_gagnes = coins_gagnes + 10 * (i + 1);
         }
+    }
 
-    if(userDataStockees.isVip == true)
-    {        
-        for(let i = 0; i<userDataStockees.daySteak+1; i++)
-            {
-                if(i == 0)
-                {
-                    coins_gagnes = coins_gagnes + 50;
-                }
-                else{
-        
-                    coins_gagnes = coins_gagnes + 50*(i+1);
-                }        
+    if (userDataStockees.isVip == true) {
+        for (let i = 0; i < userDataStockees.daySteak + 1; i++) {
+            if (i == 0) {
+                coins_gagnes = coins_gagnes + 50;
+            } else {
+                coins_gagnes = coins_gagnes + 50 * (i + 1);
             }
+        }
     }
 
     userDataStockees.nbCoin = coins_gagnes;
-
     const nbDaymax = userDataStockees.daySteak>11 ? userDataStockees.daySteak+8 : 11
-  
-  return (
+
+    return (
         <div className="grid gap-1 min-h-screen w-full justify-center items-center">
-            <div className="grid place-items-center mt-20">
+            <div className="grid place-items-center mt-[80px]">
                 <h1 className="text-amber-400 text-[64px]">Récompenses</h1>
                 <br />
                 <h2 className="text-[32px]  text-center font-Bangers text-amber-300 text-cent">
@@ -100,8 +86,6 @@ const Rewards = () => {
                         
                 <h3>{coins_gagnes} coins bonus - {userDataStockees.daySteak } {userDataStockees.daySteak > 2 ? 'jours': 'jour' } de connexion d'affilés</h3>
 
-            </div>            
-
             <div>
                 <Card className="border w-[80vw] h-[280px] rounded-3xl mx-auto mt-[20px] bg-purple-300 bg-opacity-75 flex justify-center items-center">
                     <CardContent className="p-2 flex flex-col justify-center items-center">
@@ -110,21 +94,24 @@ const Rewards = () => {
                                 <div className="flex space-x-4">
                                     {Array.from({ length: nbDaymax  }, (_, index) => {
                                         const nbJours = userDataStockees.daySteak;
-                                        const isGray = index <= nbJours; 
+                                        const isGray = index <= nbJours;
                                         return (
                                             <div key={index}>
-                                                <div className={`border-2 rounded-xl w-60 h-[200px] px-2 py-1 text-sm ${isGray ? 'bg-purple-500' : 'bg-white'}`}>
-                                                    <div className='flex justify-center items-center'>
+                                                <div
+                                                    className={`border-2 rounded-xl w-60 h-[200px] px-2 py-1 text-sm ${
+                                                        isGray ? 'bg-purple-500' : 'bg-white'
+                                                    }`}
+                                                >
+                                                    <div className="flex justify-center items-center">
                                                         <img
                                                             src="/coin.png"
-
                                                             className="h-[130px] rounded-xl"
                                                             alt="Description de l'image"
                                                         />
                                                     </div>
                                                     <div className="text-center">
                                                         <p className="text-sm">Jour {index}</p>
-                                                        <h4 className="text-xl">{(index+1) * 10} coins</h4>
+                                                        <h4 className="text-xl">{(index + 1) * 10} coins</h4>
                                                     </div>
                                                 </div>
                                             </div>
@@ -151,8 +138,12 @@ const Rewards = () => {
                                         const isGray = index <= nbJours;
                                         return (
                                             <div key={index}>
-                                                <div className={`border-2 rounded-xl w-60 h-[200px] px-2 py-1 text-sm ${isGray ? 'bg-purple-500' : 'bg-amber-400'}`}>
-                                                    <div className='flex justify-center items-center'>
+                                                <div
+                                                    className={`border-2 rounded-xl w-60 h-[200px] px-2 py-1 text-sm ${
+                                                        isGray ? 'bg-purple-500' : 'bg-amber-400'
+                                                    }`}
+                                                >
+                                                    <div className="flex justify-center items-center">
                                                         <img
                                                             src="/coin.png"
                                                             className="h-[130px] rounded-xl"
@@ -161,7 +152,7 @@ const Rewards = () => {
                                                     </div>
                                                     <div className="text-center">
                                                         <p className="text-sm">Jour {index}</p>
-                                                        <h4 className="text-xl">{(index+1) * 50} coins</h4>
+                                                        <h4 className="text-xl">{(index + 1) * 50} coins</h4>
                                                     </div>
                                                 </div>
                                             </div>
