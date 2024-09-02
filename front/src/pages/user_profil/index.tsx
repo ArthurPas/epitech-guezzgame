@@ -3,6 +3,7 @@ import { Button } from '../../components/ui/button';
 import { Avatar, AvatarImage } from '../../components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '../../components/ui/card';
+import { Input } from '../../components/ui/input';
 import {
     Dialog,
     DialogTrigger,
@@ -16,12 +17,20 @@ import {
 import { useGetMe } from '@/hooks/getMe';
 import { useGetFriends } from '@/hooks/friends';
 import { useGetUserStat } from '@/hooks/userStats';
+import { useGetUserList } from '@/hooks/userList';
+import useAddFriend from '@/hooks/addFriends';
+import { useToast } from '@/components/ui/use-toast';
+import useDebounce from '@/hooks/useDebounce'; // Import du hook useDebounce
 
 const UserProfile: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
     const [selectedAsset, setSelectedAsset] = useState(null);
     const [tempSelectedAsset, setTempSelectedAsset] = useState(null);
     const [authToken, setAuthToken] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState(''); // État pour la recherche
+    const debouncedSearchQuery = useDebounce(searchQuery, 500); // Application du debounce
+    const { toast } = useToast();
 
     const assets = [
         { url: 'https://example.com/asset1.png' },
@@ -48,8 +57,16 @@ const UserProfile: React.FC = () => {
         setTempSelectedAsset(selectedAsset);
     };
 
+    const handleSearchModalOpen = () => {
+        setIsSearchModalOpen(true);
+    };
+
     const handleModalClose = () => {
         setIsModalOpen(false);
+    };
+
+    const handleSearchModalClose = () => {
+        setIsSearchModalOpen(false);
     };
 
     const handleSave = () => {
@@ -66,6 +83,30 @@ const UserProfile: React.FC = () => {
     const userId = user?.id ?? 0;
     const { data: friendsData, isLoading: friendsLoading, isError: friendsError } = useGetFriends(userId);
     const { data: userStats, isLoading: statsLoading, isError: statsError } = useGetUserStat(userId);
+    const { data: userListData, isLoading: userListLoading, isError: userListError } = useGetUserList(userId);
+
+    const { addFriend, isLoading: isAddingFriend } = useAddFriend(userId);
+    
+    const handleAddFriend = async (friendData: { id: number; login: string; picture: string }) => {
+        try {
+            await addFriend(friendData);
+            toast({ description: 'Ami ajouté avec succès' });
+        } catch (error) {
+            console.error('Erreur lors de l\'ajout de l\'ami:', error);
+            toast({ description: 'Erreur lors de l\'ajout de l\'ami' });
+        }
+    };
+
+    // Créez un Set pour vérifier rapidement si un utilisateur est déjà ami
+    const friendsSet = new Set(friendsData?.map(friend => friend.id));
+
+    // Filtrez les amis pour exclure l'utilisateur courant
+    const filteredFriendsData = friendsData?.filter(friend => friend.id !== userId);
+
+    // Filtrez la liste des utilisateurs pour exclure l'utilisateur courant
+    const filteredUserList = userListData?.filter(user => 
+        user.id !== userId && user.login.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+    );
 
     if (userLoading || friendsLoading || statsLoading) {
         return <div>Loading...</div>;
@@ -176,20 +217,72 @@ const UserProfile: React.FC = () => {
 
                 <Card className="bg-purple-300 bg-opacity-75 rounded-3xl p-5 w-full md:w-1/2 mx-auto md:ml-5">
                     <div className="text-2xl md:text-3xl text-center mb-2 text-[#37034e] font-semibold">Mes amis</div>
-                    <ScrollArea className="h-72 w-full rounded-md">
-                        <div className="flex flex-col gap-4">
-                            {friendsData?.map((friend, index) => (
-                                <div key={index} className="flex items-center bg-purple-100 p-3 rounded-lg">
-                                    <Avatar className="mr-4">
-                                        <AvatarImage src={friend.picture} />
-                                    </Avatar>
-                                    <div className="text-[#37034e]">{friend.login}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </ScrollArea>
+                    {filteredFriendsData?.length === 0 ? (
+                        <div className="text-[#37034e] text-center">Vous n'avez pas encore d'amis</div>
+                    ) : (
+                        <ScrollArea className="h-72 w-full rounded-md">
+                            <div className="flex flex-col gap-4">
+                                {filteredFriendsData?.map((friend, index) => (
+                                    <div key={index} className="flex items-center bg-purple-100 p-3 rounded-lg">
+                                        <Avatar className="mr-4">
+                                            <AvatarImage src={friend.picture} />
+                                        </Avatar>
+                                        <div className="text-[#37034e]">{friend.login}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </ScrollArea>
+                    )}
+                    
+                    <Button onClick={handleSearchModalOpen} className="mt-5">Trouvez des amis</Button>
                 </Card>
             </div>
+
+            <Dialog open={isSearchModalOpen} onOpenChange={setIsSearchModalOpen}>
+                <DialogPortal>
+                    <DialogContent className="p-7 max-w-lg mx-auto">
+                        <DialogHeader>
+                            <DialogTitle>Recherche d'amis</DialogTitle>
+                        </DialogHeader>
+                        <Input
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Rechercher des amis"
+                            className="mb-3 w-full"
+                        />
+                        <div className="mt-5">
+                            {filteredUserList?.length > 0 ? (
+                                filteredUserList.slice(0, 5).map((friend, index) => (
+                                    <div key={index} className="flex items-center bg-purple-100 p-3 rounded-lg mb-2">
+                                        <Avatar className="mr-4">
+                                            <AvatarImage src={friend.picture} />
+                                        </Avatar>
+                                        <div className="text-[#37034e]">{friend.login}</div>
+                                        <Button 
+                                            onClick={() => handleAddFriend({
+                                                id: friend.id,
+                                                login: friend.login,
+                                                picture: friend.picture
+                                            })}
+                                            disabled={isAddingFriend || friendsSet.has(friend.id)}
+                                            className="ml-2"
+                                        >
+                                            {friendsSet.has(friend.id) ? 'Déjà ami' : (isAddingFriend ? 'Adding...' : '+')}
+                                        </Button>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-[#37034e] text-center">Aucun résultat trouvé</div>
+                            )}
+                        </div>
+                        <DialogFooter>
+                            <DialogClose onClick={handleSearchModalClose}>
+                                <Button className="bg-[#eec17e]">Fermer</Button>
+                            </DialogClose>
+                        </DialogFooter>
+                    </DialogContent>
+                </DialogPortal>
+            </Dialog>
         </>
     );
 };
