@@ -1,15 +1,19 @@
 import { Button } from '@/components/ui/button';
 import { useGetPopularMovies } from '@/hooks/tmdbAPI';
 import useGameWebSockets from '@/hooks/useGameWebSockets';
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { GameData } from '@/interfaces/gameWebSockets';
 import { motion, AnimatePresence } from 'framer-motion';
 import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState, useRef } from 'react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import WaitForPlayers from '@/components/gameLayout/waitScreen';
 
 export const MovieGuesser = () => {
-    const { isGameOver, isRoundOver, sendToHost } = useGameWebSockets();
+    const { isGameOver, isRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
     console.log('isGameOver', isGameOver);
     console.log('isRoundOver', isRoundOver);
+    const [showModalRules, setShowModalRules] = useState<boolean>(true);
 
     // TMDB API
     const { data, isError, isPending, refetch } = useGetPopularMovies();
@@ -19,6 +23,7 @@ export const MovieGuesser = () => {
     const [countdown, setCountdown] = useState(3);
     const [gameActive, setGameActive] = useState(false);
     const [gameEnded, setGameEnded] = useState(false);
+    const [showEndGame, setShowEndGame] = useState<boolean>(isGameOver);
 
     // ROUND STATE
     const maxRounds = 5;
@@ -106,6 +111,7 @@ export const MovieGuesser = () => {
             setGameActive(false);
             setGameEnded(true);
             sendToHost({ actionType: 'END_GAME', gameData });
+            setShowEndGame(true);
             console.log('END_GAME sent');
         }
     };
@@ -145,6 +151,71 @@ export const MovieGuesser = () => {
             setHasPlayerGuessed(true);
         }
     };
+
+    if (!allPlayersReady && !showModalRules) {
+        return (
+            <WaitForPlayers
+                from={gameData.from}
+                date={gameData.date}
+                nbPoints={0}
+                gameName={gameData.gameName}
+                roundNumber={0}
+                partyCode={gameData.partyCode}
+                playerInfo={gameData.playerInfo}
+            ></WaitForPlayers>
+        );
+    }
+
+    if (showEndGame) {
+        return (
+            <>
+                <h1>Résultat !</h1>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-[100px]">Classement</TableHead>
+                                <TableHead className="w-[100px]">Pseudo</TableHead>
+                                <TableHead>Points</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {scoreResult.map((player, index) => (
+                                <TableRow key={player.login}>
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>{player.login}</TableCell>
+                                    <TableCell>{player.score}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            </>
+        );
+    }
+
+    if (showModalRules) {
+        return (
+            <Dialog open={showModalRules} onOpenChange={() => {}}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className="text-center">Règles du jeu</DialogTitle>
+                    </DialogHeader>
+                    <DialogDescription className="text-center">
+                        Devinez le film ou la série le plus rapidement possible. <br />
+                        Plus vous serez rapides plus vous gagnerez de points !
+                    </DialogDescription>
+                    <DialogFooter>
+                        <div className="flex justify-center w-full">
+                            <DialogClose asChild>
+                                <Button onClick={() => setShowModalRules(false)}>Jouer</Button>
+                            </DialogClose>
+                        </div>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        );
+    }
 
     return (
         <div className="relative w-full h-full rounded-xl bg-black">
