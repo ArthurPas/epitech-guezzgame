@@ -250,7 +250,7 @@ const GeoGuezzer = () => {
                         <DialogHeader>
                             <DialogTitle className="text-center leading-[1.5rem]">Règles du GeoGuezzer</DialogTitle>
                         </DialogHeader>
-                        <DialogDescription className="text-center">
+                        <DialogDescription className="text-center text-[16px]">
                             Devinez le lieu exact où vous êtes en vous basant uniquement sur l'environnement de l'image du haut. Plus votre
                             réponse est précise et rapide, plus vous marquez de points ! <br />
                             Attention, une réponse trop éloignée ne rapporte pas de points !

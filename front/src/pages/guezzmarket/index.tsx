@@ -133,7 +133,7 @@ const Index = () => {
     return (
         <div className="grid justify-center">
             <div>
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center mt-[20px]">
                     <div>
                         <h1 className="mt-12 text-amber-400">GuezzMarket</h1>
                         <h2 className="text-[32px]  text-center font-Bangers text-amber-300 text-cent">
