@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
-import EndGame from '@/pages/end-game';
 import useGameWebSockets from '@/hooks/useGameWebSockets';
 import { GameData } from '@/interfaces/gameWebSockets';
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { useGetDataPictureGeo } from '@/hooks/dataPictureGeo';
 import { jwtDecode } from 'jwt-decode';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import WaitForPlayers from '@/components/gameLayout/waitScreen';
-import { Card, CardContent } from '@/components/ui/card';
-import { playerData } from '@/lib/mocks/player';
-import { Avatar, AvatarImage, AvatarFallback } from '@radix-ui/react-avatar';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
-import { login } from '@/hooks/auth';
-
 import EndGameScore from '@/components/endGameScore';
-
 
 const Map = dynamic(() => import('./Map'), { ssr: false });
 
@@ -57,7 +48,6 @@ const GeoGuezzer = () => {
         const jwtDecoded = jwtDecode(token);
         userLogin = jwtDecoded.sub || 'anonymous';
     }
-    
 
     let gameData: GameData = {
         from: userLogin,
@@ -180,7 +170,7 @@ const GeoGuezzer = () => {
             setShowModalFeedback(false);
             setShowModalFeedback(false);
         } else {
-            setShowModalFeedback(false);            
+            setShowModalFeedback(false);
             // sendToHost({ actionType: 'PERSONAL_GAME_END', gameData });
             // en attendant ...
             setTimeout(() => {
@@ -211,11 +201,7 @@ const GeoGuezzer = () => {
     }
     if (showEndGame) {
         //  return <EndGame />; C'est la fin de la partie ca non ?
-
-
-        return (
-            <EndGameScore scoreResult={scoreResult} login={gameData.playerInfo.login}/>            
-        );
+        return <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     }
 
     return (
@@ -240,7 +226,7 @@ const GeoGuezzer = () => {
                             </div>
                         </DialogFooter>
                     </DialogContent>
-                </Dialog>                
+                </Dialog>
             )}
 
             {/* Modale de feedback */}

@@ -7,11 +7,13 @@ export const useGameWebSockets = () => {
     const [isRoundOver, setIsRoundOver] = useState(false);
     const [isGameOver, setGameOver] = useState(false);
     //TODO: un type pour le score
-    const [scoreResult, setScoreResult] = useState([{ login: '', score: 0 }]);
+    const [scoreResult, setScoreResult] = useState([{ login: '', score: 0, profilePicture: '' }]);
     const [allPlayersReady, setAllPlayersReady] = useState(false);
     const defaultMessage = 'Votre future guezzTeam';
     //{ userLogin: 'Votre guezzTeam' }]:🤮 mais tant pis ça fonctionne bien
     const [usersJoinedParty, setUsersJoinedParty] = useState([{ userLogin: defaultMessage }]);
+
+    const [isPartyOver, setPartyOver] = useState(false);
 
     const [currentGame, setCurrentGame] = useState('MENU');
     // useSubscription allows to subscribe to a specific topic and execute a function when the back-end sends a new message on it
@@ -70,6 +72,7 @@ export const useGameWebSockets = () => {
         usersJoinedParty,
         allPlayersReady,
         currentGame,
+        isPartyOver,
         setIsRoundOver,
         sendToHost
     };

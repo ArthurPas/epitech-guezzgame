@@ -182,10 +182,7 @@ const ClickGame = () => {
     };
 
     if (isGameOver) {
-        return (
-
-            <EndGameScore scoreResult={scoreResult} login={gameData.playerInfo.login}/>
-        );
+        return <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     } else {
         if (modalOpen) {
             return (

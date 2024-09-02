@@ -98,7 +98,7 @@ public class WebSocketService {
 				party.setNbPoints(party.getNbPoints() + gameScore.getPoints());
 				partyRepository.save(party);
 			}
-			sendNextGame(gameScore, messagingTemplate);
+//			sendNextGame(gameScore, messagingTemplate);
 		}
 		switch (gameScore.getGame().getName()) {
 			case "CLICK_GAME":
