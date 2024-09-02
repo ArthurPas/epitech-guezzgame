@@ -3,6 +3,7 @@ package com.back.guessgame.configuration;
 import com.back.guessgame.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -71,7 +72,9 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf(AbstractHttpConfigurer::disable).cors(Customizer.withDefaults()).authorizeHttpRequests(auth -> {
 			auth.requestMatchers("/register", "/login", "/").permitAll();
-			auth.anyRequest().permitAll(); //TODO secure routep
+			auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
+			auth.anyRequest().permitAll();
+			; //TODO secure routep
 		}).sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(IF_REQUIRED).sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::newSession) //
 				.maximumSessions(2)).logout(out -> out.logoutUrl("/logout").invalidateHttpSession(true).deleteCookies("JSESSIONID").logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())).build();
 	}

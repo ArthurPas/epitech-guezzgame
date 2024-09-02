@@ -8,6 +8,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { useRouter } from 'next/router';
 import { DiamondWall } from '@/components/layout/diamond';
 import { Header } from '@/components/Header/Header';
+import Head from 'next/head';
 
 export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter();
@@ -25,9 +26,17 @@ export default function App({ Component, pageProps }: AppProps) {
     );
 
     return (
-        <StompSessionProvider url="http://localhost:8080/ws-endpoint">
+        <StompSessionProvider url={`${process.env.NEXT_PUBLIC_API_URL}/ws-endpoint`}>
             <QueryClientProvider client={queryClient}>
                 <HydrationBoundary state={pageProps.dehydratedState}>
+                    <Head>
+                        <title>GuezGame</title>
+                        <meta name="description" content="Mini-jeux multijoueurs entre amis 🌭" />
+                        <meta
+                            property="og:image"
+                            content="https://res.cloudinary.com/dxaqv2hww/image/upload/v1725119162/GuezGame_aono4j.webp"
+                        />
+                    </Head>
                     {!isGameplayRoute && <Header />}
                     <Component {...pageProps} />
                     {/* <ReactQueryDevtools initialIsOpen={false} /> */}

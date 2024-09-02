@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useChatWebSocket } from '@/hooks/useChatWebSocket';
 import { cn } from '@/lib/utils';
+import { jwtDecode } from 'jwt-decode';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -12,6 +13,13 @@ export type ChatProps = {
 };
 
 export const Chat = (className: ChatProps) => {
+    let currentPlayerUsername = '';
+    if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('authToken') || '';
+        const jwtDecoded = jwtDecode(token);
+        currentPlayerUsername = jwtDecoded.sub || 'anonymous';
+    }
+
     const { chatMessages, sendChatMessage } = useChatWebSocket();
     const { register, handleSubmit, reset } = useForm<{ message: string }>();
 
@@ -30,23 +38,48 @@ export const Chat = (className: ChatProps) => {
         }
     }, [chatMessages]);
 
+    let previousUsername = '';
+
     return (
         <Card
             className={cn(
-                className,
-                'hidden md:flex flex-col h-full lg:h-[35vh] xl:h-[50vh] 3xl:h-[60vh] bg-purple-300 rounded-[0.9rem] w-[70%] lg:w-auto priority-rounded relative'
+                'hidden md:flex flex-col h-full lg:h-[58vh] xl:h-[58vh] 3xl:h-[60vh] bg-purple-300 rounded-[0.9rem] w-[70%] lg:w-auto priority-rounded relative lg:max-w-[16vw]',
+                className
             )}
         >
             <CardTitle className="px-3 py-3 font-medium">Chat</CardTitle>
             <ScrollArea className="flex-1 px-3 w-full rounded-lg overflow-y-auto max-h-[calc(100vh-150px)]">
-                {chatMessages.map((messageData, index) => (
-                    <div key={index} className="flex flex-col mb-1">
-                        <span className="text-[12px] font-bold ml-[3px]">{messageData.username}</span>
-                        <div className="p-1 bg-purple-100 px-2 rounded-lg text-[14px] break-words font-normal w-full max-w-full">
-                            <span>{messageData.message}</span>
+                {chatMessages.map((messageData, index) => {
+                    const shouldShowUsername = previousUsername !== messageData.username;
+                    previousUsername = messageData.username;
+
+                    return (
+                        <div
+                            key={index}
+                            className={`flex flex-col mb-1 ${currentPlayerUsername === messageData.username ? 'items-end' : 'items-start'}`}
+                        >
+                            {shouldShowUsername && (
+                                <span
+                                    className={`text-[12px] font-semibold text-purple-950 mx-[3px] leading-5 mb-[2px] ${
+                                        currentPlayerUsername === messageData.username ? 'self-end' : 'self-start'
+                                    }`}
+                                >
+                                    {messageData.username}
+                                </span>
+                            )}
+                            <div
+                                className={`inline-block p-1 ${
+                                    currentPlayerUsername === messageData.username
+                                        ? 'bg-purple-100/100 text-end'
+                                        : 'bg-purple-100/100 text-start'
+                                } px-2 rounded-lg text-[14px] break-words font-normal max-w-full 2xl:max-w-[80%]`}
+                                style={{ wordBreak: 'break-word' }}
+                            >
+                                <span>{messageData.message}</span>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
                 <div ref={messagesEndRef}></div>
             </ScrollArea>
             <form onSubmit={handleSubmit(onSubmit)} className="flex w-full px-1 py-2">
