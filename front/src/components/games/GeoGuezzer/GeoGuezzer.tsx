@@ -80,9 +80,7 @@ const GeoGuezzer = () => {
 
         if (data) {
             console.log('Images récupérées : ', data);
-            //A SUPPRIMER
-            setShowEndGame(true);
-
+           
             // Ajouter les nouvelles données au tableau d'images, en s'assurant de ne pas dupliquer les données
             setImages((prevImages) => {
                 const updatedImages = [...prevImages, ...data];
