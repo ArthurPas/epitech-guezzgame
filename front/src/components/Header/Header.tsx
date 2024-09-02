@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import { UserRound, ShoppingBag, CircleHelp, Backpack, Play } from 'lucide-react';
+import { UserRound, ShoppingBag, CircleHelp, Gift, Play, Dices, LogOut } from 'lucide-react';
 import { useIsLoggedIn } from '@/hooks/auth';
+import { useRouter } from 'next/router';
+import { useToast } from '@/components/ui/use-toast';
 
 export const Header = () => {
     const [isMounted, setIsMounted] = useState(false);
     const isLoggedIn = useIsLoggedIn();
+    const router = useRouter();
+    const { toast } = useToast();
 
     useEffect(() => {
         setIsMounted(true);
@@ -16,6 +20,14 @@ export const Header = () => {
     if (!isMounted) {
         return null;
     }
+
+    const handleLogout = () => {
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('partyCode');
+            toast({ description: 'Vous vous êtes déconnecté' });
+        }
+    };
 
     return (
         <nav className="backdrop-blur-sm shadow-lg h-[85px] flex justify-between items-center pl-6 pr-12">
@@ -27,24 +39,35 @@ export const Header = () => {
             <div className="flex gap-2">
                 {isLoggedIn ? (
                     <div className="flex gap-2">
+                        <Link href={'/login'}>
+                            <Button variant="reverse" onClick={handleLogout} className="rounded-lg shadow">
+                                <LogOut className="rotate-180" />
+                            </Button>
+                        </Link>
+
                         <Link href={'/helpcenter'}>
                             <Button variant="reverse" className="rounded-lg shadow">
                                 <CircleHelp />
                             </Button>
                         </Link>
-                        <Link href={'/user_profil'}>
+                        <Link href={'/gambling'}>
                             <Button variant="reverse" className="rounded-lg shadow">
-                                <UserRound />
+                                <Dices />
                             </Button>
                         </Link>
                         <Link href={'/rewards'}>
                             <Button variant="reverse" className="rounded-lg shadow">
-                                <Backpack />
+                                <Gift />
                             </Button>
                         </Link>
                         <Link href={'/guezzmarket'}>
                             <Button variant="reverse" className="rounded-lg shadow">
                                 <ShoppingBag />
+                            </Button>
+                        </Link>
+                        <Link href={'/user_profil'}>
+                            <Button variant="reverse" className="rounded-lg shadow">
+                                <UserRound />
                             </Button>
                         </Link>
                         <Link href={'/room'}>

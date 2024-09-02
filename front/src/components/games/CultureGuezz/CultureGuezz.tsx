@@ -157,7 +157,7 @@ const CultureGuezz = () => {
                 <Dialog open={showModalRules} onOpenChange={() => {}}>
                     <DialogContent>
                         <DialogTitle className="text-center">Règles du CultureGuezz</DialogTitle>
-                        <DialogDescription className="text-center text-[22px] leading-[1.5rem]">
+                        <DialogDescription className="text-center text-[16px] leading-[1.5rem]">
                             Répondez correctement aux questions le plus vite possible. Les questions générales rapportent 1 point, les
                             questions Guezz rapportent 2 points.
                         </DialogDescription>
