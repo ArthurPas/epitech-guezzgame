@@ -8,11 +8,10 @@ const Rewards = () => {
     let dataMe;
     let authToken = '';
     if (typeof window !== 'undefined') {
-         authToken = localStorage.getItem('authToken') ?? '';         
+        authToken = localStorage.getItem('authToken') ?? '';
     }
-   
-   
-    ({ data: dataMe } = useGetMeUser(authToken));   
+
+    ({ data: dataMe } = useGetMeUser(authToken));
     let userDataStockees: UserMeType = {
         daySteak: 0,
         id: 0,
@@ -69,7 +68,7 @@ const Rewards = () => {
     }
 
     userDataStockees.nbCoin = coins_gagnes;
-    const nbDaymax = userDataStockees.daySteak>11 ? userDataStockees.daySteak+8 : 11
+    const nbDaymax = userDataStockees.daySteak > 11 ? userDataStockees.daySteak + 8 : 11;
 
     return (
         <div className="grid gap-1 min-h-screen w-full justify-center items-center">
@@ -77,93 +76,97 @@ const Rewards = () => {
                 <h1 className="text-amber-400 text-[64px]">Récompenses</h1>
                 <br />
                 <h2 className="text-[32px]  text-center font-Bangers text-amber-300 text-cent">
-                            {dataMe?.nbCoin && (
-                                <span>
-                                    <b>{dataMe.nbCoin}</b> $
-                                </span>
-                            )}
-                        </h2>
-                        
-                <h3>{coins_gagnes} coins bonus - {userDataStockees.daySteak } {userDataStockees.daySteak > 2 ? 'jours': 'jour' } de connexion d'affilés</h3>
+                    {dataMe?.nbCoin && (
+                        <span>
+                            <b>{dataMe.nbCoin}</b> $
+                        </span>
+                    )}
+                </h2>
 
-            <div>
-                <Card className="border w-[80vw] h-[280px] rounded-3xl mx-auto mt-[20px] bg-purple-300 bg-opacity-75 flex justify-center items-center">
-                    <CardContent className="p-2 flex flex-col justify-center items-center">
-                        <div className="flex w-[64vw] h-[240px] justify-center items-center">
-                            <ScrollArea className="h-[230px] w-[100%]">
-                                <div className="flex space-x-4">
-                                    {Array.from({ length: nbDaymax  }, (_, index) => {
-                                        const nbJours = userDataStockees.daySteak;
-                                        const isGray = index <= nbJours;
-                                        return (
-                                            <div key={index}>
-                                                <div
-                                                    className={`border-2 rounded-xl w-60 h-[200px] px-2 py-1 text-sm ${
-                                                        isGray ? 'bg-purple-500' : 'bg-white'
-                                                    }`}
-                                                >
-                                                    <div className="flex justify-center items-center">
-                                                        <img
-                                                            src="/coin.png"
-                                                            className="h-[130px] rounded-xl"
-                                                            alt="Description de l'image"
-                                                        />
-                                                    </div>
-                                                    <div className="text-center">
-                                                        <p className="text-sm">Jour {index}</p>
-                                                        <h4 className="text-xl">{(index + 1) * 10} coins</h4>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                                <ScrollBar orientation="horizontal" />
-                            </ScrollArea>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-            <div className="grid place-items-center mt-[60px]">
-                <h1 className="text-amber-400 text-[64px]">VIP</h1>
-            </div>
-            <div>
-                <Card className="border w-[80vw] h-[280px] rounded-3xl mx-auto mt-[10px] mb-40 bg-purple-300 bg-opacity-75 flex justify-center items-center">
-                    <CardContent className="p-2 flex flex-col justify-center items-center">
-                        <div className="flex w-[64vw] h-[240px] justify-center items-center">
-                            <ScrollArea className="h-[230px] w-[100%]">
-                                <div className="flex space-x-4">
-                                    {Array.from({ length: nbDaymax }, (_, index) => {
-                                        const nbJours = userDataStockees.daySteak;
-                                        const isGray = index <= nbJours;
-                                        return (
-                                            <div key={index}>
-                                                <div
-                                                    className={`border-2 rounded-xl w-60 h-[200px] px-2 py-1 text-sm ${
-                                                        isGray ? 'bg-purple-500' : 'bg-amber-400'
-                                                    }`}
-                                                >
-                                                    <div className="flex justify-center items-center">
-                                                        <img
-                                                            src="/coin.png"
-                                                            className="h-[130px] rounded-xl"
-                                                            alt="Description de l'image"
-                                                        />
-                                                    </div>
-                                                    <div className="text-center">
-                                                        <p className="text-sm">Jour {index}</p>
-                                                        <h4 className="text-xl">{(index + 1) * 50} coins</h4>
+                <h3>
+                    {coins_gagnes} coins bonus - {userDataStockees.daySteak} {userDataStockees.daySteak > 2 ? 'jours' : 'jour'} de connexion
+                    d'affilés
+                </h3>
+
+                <div>
+                    <Card className="border w-[80vw] h-[280px] rounded-3xl mx-auto mt-[20px] bg-purple-300 bg-opacity-75 flex justify-center items-center">
+                        <CardContent className="p-2 flex flex-col justify-center items-center">
+                            <div className="flex w-[64vw] h-[240px] justify-center items-center">
+                                <ScrollArea className="h-[230px] w-[100%]">
+                                    <div className="flex space-x-4">
+                                        {Array.from({ length: nbDaymax }, (_, index) => {
+                                            const nbJours = userDataStockees.daySteak;
+                                            const isGray = index <= nbJours;
+                                            return (
+                                                <div key={index}>
+                                                    <div
+                                                        className={`border-2 rounded-xl w-60 h-[200px] px-2 py-1 text-sm ${
+                                                            isGray ? 'bg-purple-500' : 'bg-white'
+                                                        }`}
+                                                    >
+                                                        <div className="flex justify-center items-center">
+                                                            <img
+                                                                src="/coin.png"
+                                                                className="h-[130px] rounded-xl"
+                                                                alt="Description de l'image"
+                                                            />
+                                                        </div>
+                                                        <div className="text-center">
+                                                            <p className="text-sm">Jour {index}</p>
+                                                            <h4 className="text-xl">{(index + 1) * 10} coins</h4>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                                <ScrollBar orientation="horizontal" />
-                            </ScrollArea>
-                        </div>
-                    </CardContent>
-                </Card>
+                                            );
+                                        })}
+                                    </div>
+                                    <ScrollBar orientation="horizontal" />
+                                </ScrollArea>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+                <div className="grid place-items-center mt-[60px]">
+                    <h1 className="text-amber-400 text-[64px]">VIP</h1>
+                </div>
+                <div>
+                    <Card className="border w-[80vw] h-[280px] rounded-3xl mx-auto mt-[10px] mb-40 bg-purple-300 bg-opacity-75 flex justify-center items-center">
+                        <CardContent className="p-2 flex flex-col justify-center items-center">
+                            <div className="flex w-[64vw] h-[240px] justify-center items-center">
+                                <ScrollArea className="h-[230px] w-[100%]">
+                                    <div className="flex space-x-4">
+                                        {Array.from({ length: nbDaymax }, (_, index) => {
+                                            const nbJours = userDataStockees.daySteak;
+                                            const isGray = index <= nbJours;
+                                            return (
+                                                <div key={index}>
+                                                    <div
+                                                        className={`border-2 rounded-xl w-60 h-[200px] px-2 py-1 text-sm ${
+                                                            isGray ? 'bg-purple-500' : 'bg-amber-400'
+                                                        }`}
+                                                    >
+                                                        <div className="flex justify-center items-center">
+                                                            <img
+                                                                src="/coin.png"
+                                                                className="h-[130px] rounded-xl"
+                                                                alt="Description de l'image"
+                                                            />
+                                                        </div>
+                                                        <div className="text-center">
+                                                            <p className="text-sm">Jour {index}</p>
+                                                            <h4 className="text-xl">{(index + 1) * 50} coins</h4>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    <ScrollBar orientation="horizontal" />
+                                </ScrollArea>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </div>
     );
