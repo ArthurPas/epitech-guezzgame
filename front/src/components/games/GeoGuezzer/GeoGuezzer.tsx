@@ -7,7 +7,7 @@ import { GameData } from '@/interfaces/gameWebSockets';
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { useGetDataPictureGeo } from '@/hooks/dataPictureGeo';
 import { jwtDecode } from 'jwt-decode';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import WaitForPlayers from '@/components/gameLayout/waitScreen';
 
 const Map = dynamic(() => import('./Map'), { ssr: false });
@@ -192,7 +192,6 @@ const GeoGuezzer = () => {
     };
     if (!allPlayersReady && !showModalRules) {
         return (
-            //C'est hyper moche
             <WaitForPlayers
                 from={gameData.from}
                 date={gameData.date}
