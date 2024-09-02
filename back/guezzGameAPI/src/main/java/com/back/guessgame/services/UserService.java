@@ -69,7 +69,7 @@ public class UserService implements UserDetailsService {
 			user.setDaySteak(user.getDaySteak() + 1);
 			int nbCoinBonus = user.getNbCoin() + user.getDaySteak()*10;
 			if(user.getIsVip()){
-				nbCoinBonus = nbCoinBonus*2;
+				nbCoinBonus = user.getDaySteak() * 50;
 			}
 			user.setNbCoin(nbCoinBonus);
 

@@ -7,14 +7,16 @@ import { GameData } from '@/interfaces/gameWebSockets';
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { useGetDataPictureGeo } from '@/hooks/dataPictureGeo';
 import { jwtDecode } from 'jwt-decode';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import WaitForPlayers from '@/components/gameLayout/waitScreen';
 import { Card, CardContent } from '@/components/ui/card';
 import { playerData } from '@/lib/mocks/player';
 import { Avatar, AvatarImage, AvatarFallback } from '@radix-ui/react-avatar';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
 import { login } from '@/hooks/auth';
+
 import EndGameScore from '@/components/endGameScore';
+
 
 const Map = dynamic(() => import('./Map'), { ssr: false });
 
@@ -81,8 +83,7 @@ const GeoGuezzer = () => {
 
         if (data) {
             console.log('Images récupérées : ', data);
-           //A SUPPRIMER AVANT DE COMMIT
-           setShowEndGame(true);
+
             // Ajouter les nouvelles données au tableau d'images, en s'assurant de ne pas dupliquer les données
             setImages((prevImages) => {
                 const updatedImages = [...prevImages, ...data];
@@ -190,7 +191,6 @@ const GeoGuezzer = () => {
     };
     if (!allPlayersReady && !showModalRules) {
         return (
-            //C'est hyper moche
             <WaitForPlayers
                 from={gameData.from}
                 date={gameData.date}
@@ -211,25 +211,10 @@ const GeoGuezzer = () => {
     }
     if (showEndGame) {
         //  return <EndGame />; C'est la fin de la partie ca non ?
-        //console.log("resultats : ", scoreResult);
 
-        // Déclaration d'un type pour un joueur
-        //type Player = {
-        //     login: string;
-        //     score: number;
-        // };
-
-        // Déclaration du tableau scoreResult
-        // const scoreResultTest: Player[] = [
-        //     { login: "Player1", score: 150 },
-        //     { login: "Player2", score: 200 },
-        //     { login: "Player3", score: 120 },
-        // //     // Ajoutez autant de joueurs que nécessaire
-        // ];
 
         return (
-            <EndGameScore scoreResult={scoreResult} login={gameData.playerInfo.login}/>
-            
+            <EndGameScore scoreResult={scoreResult} login={gameData.playerInfo.login}/>            
         );
     }
 
@@ -240,9 +225,9 @@ const GeoGuezzer = () => {
                 <Dialog open={showModalRules} onOpenChange={() => {}}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle className="text-center">Règles du jeu</DialogTitle>
+                            <DialogTitle className="text-center leading-[1.5rem]">Règles du GeoGuezzer</DialogTitle>
                         </DialogHeader>
-                        <DialogDescription className="text-center">
+                        <DialogDescription className="text-center text-[16px]">
                             Devinez le lieu exact où vous êtes en vous basant uniquement sur l'environnement de l'image du haut. Plus votre
                             réponse est précise et rapide, plus vous marquez de points ! <br />
                             Attention, une réponse trop éloignée ne rapporte pas de points !

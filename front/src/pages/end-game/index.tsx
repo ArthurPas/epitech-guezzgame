@@ -86,7 +86,7 @@ const EndGame = () => {
     }
 
     return (
-        <div className="grid gap min-h-screen w-full">
+        <div className="grid gap min-h-full w-full">
             <div className="grid place-items-center">
                 <h1 className="text-amber-300 text-[64px]">Fin de partie</h1>
             </div>

@@ -14,7 +14,7 @@ export type ChatProps = {
 
 export const Chat = (className: ChatProps) => {
     let currentPlayerUsername = '';
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && localStorage.getItem('authToken')) {
         const token = localStorage.getItem('authToken') || '';
         const jwtDecoded = jwtDecode(token);
         currentPlayerUsername = jwtDecoded.sub || 'anonymous';

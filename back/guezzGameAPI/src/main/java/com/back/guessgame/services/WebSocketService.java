@@ -186,7 +186,6 @@ public class WebSocketService {
 				messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
 				messagingTemplate.convertAndSend("/topic/reply/score", getScore(gameScore));
 				logger.warn(getScore(gameScore).toString());
-				clear(gameScore.getPartyCode());
 			}
 		}
 	}
@@ -207,7 +206,6 @@ public class WebSocketService {
 			case END_GAME -> {
 				messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
 				messagingTemplate.convertAndSend("/topic/reply/score", getScore(gameScore));
-				clear(gameScore.getPartyCode());
 			}
 		}
 

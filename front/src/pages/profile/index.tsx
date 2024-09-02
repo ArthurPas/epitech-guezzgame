@@ -11,7 +11,7 @@ import {
     DialogHeader,
     DialogFooter,
     DialogTitle,
-    DialogClose
+    DialogClose,
 } from '../../components/ui/dialog';
 import { useGetMe } from '@/hooks/getMe';
 import { useGetFriends } from '@/hooks/friends';
@@ -157,10 +157,10 @@ const UserProfile: React.FC = () => {
                         <div className="mb-5 w-48">
                             <div className="text-2xl md:text-3xl text-center text-[#37034e] font-semibold">Badge</div>
                             <img 
-                            src={user?.level.badgePictureUrl ?? '/default-badge.png'} 
-                            alt="Badge" 
-                            className="mx-auto h-44" 
-                            />
+                              src={user?.level.badgePictureUrl ?? '/default-badge.png'} 
+                              alt="Badge" 
+                              className="mx-auto h-44"
+                              />
                         </div>
                         <div className="mb-5 w-48">
                             <div className="text-2xl md:text-3xl text-center text-[#37034e] font-semibold">Victoires</div>
