@@ -35,7 +35,7 @@ public class StatService {
 
 	private Integer getNbBestDayStreak(User user) {
 		//TODO: implement in database the date of connection
-		return (int) (Math.random() * 100);
+		return (user.getDaySteak());
 	}
 
 	private Integer getNbDayStreak(User user) {

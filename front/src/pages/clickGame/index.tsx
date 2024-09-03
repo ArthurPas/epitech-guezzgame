@@ -71,7 +71,7 @@ const isOverlapping = (pos1: { x: number; y: number }, pos2: { x: number; y: num
 
 const ClickGame = () => {
     const { isGameOver, isRoundOver, sendToHost, allPlayersReady } = useGameWebSockets();
-    const nbRound = 1;
+    const nbRound = 5;
     // const [result, setResult] = useState([{ login: '', score: 0 }]);
     const [targetItem, setTargetItem] = useState('');
     const [shuffledItems, setShuffledItems] = useState<{ src: string; isGood: boolean }[]>([]);
@@ -118,7 +118,7 @@ const ClickGame = () => {
         const newTargetItem = getRandomItem(items);
         setTargetItem(newTargetItem);
         setShuffledItems(shuffleArray([...items]));
-        setCountdown(1);
+        setCountdown(5);
         if (round > nbRound) {
             sendToHost({ actionType: 'END_GAME', gameData });
         }

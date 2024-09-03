@@ -66,7 +66,7 @@ export const MovieGuesser = () => {
             const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
             return () => clearTimeout(timer);
         } else {
-            setPosterIndexToDisplay(Math.floor(Math.random() * 20)); // TODO: Make this work even when the total result API isn't a multiple of 20. 
+            setPosterIndexToDisplay(Math.floor(Math.random() * 20)); // TODO: Make this work even when the total result API isn't a multiple of 20.
             setGameActive(true);
             setRoundTimer(Date.now());
             return;
@@ -164,7 +164,7 @@ export const MovieGuesser = () => {
     }
 
     if (isGameOver) {
-        return <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
+        return <EndGameScore login={userLogin} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     }
 
     if (showModalRules) {

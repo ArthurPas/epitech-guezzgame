@@ -27,7 +27,7 @@ const GeoGuezzer = () => {
 
     //Gestion des tours
     const [nbTours, setNbTours] = useState<number>(1); // Nombre de tours en cours de jeu
-    const nbTotalTours = 1; // Nombre total de tours
+    const nbTotalTours = 3; // Nombre total de tours
 
     // Récupération des images en début de partie
     const { data, isError, isPending } = useGetDataPictureGeo(nbTotalTours);

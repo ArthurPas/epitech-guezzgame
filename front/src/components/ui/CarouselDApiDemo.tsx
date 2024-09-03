@@ -56,7 +56,7 @@ export function CarouselDApiDemo() {
         partyCode: partyCode || '',
         playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
     };
-    const nbRoundMax = 2;
+    const nbRoundMax = 5;
     const [roundNumber, setRoundNumber] = React.useState<number>(0);
 
     React.useEffect(() => {
