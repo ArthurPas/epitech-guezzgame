@@ -48,13 +48,12 @@ const EndGameScore: React.FC<EndGameScoreProps> = ({ login, gameName, partyCode 
             </div>
 
             <div className="mt-[2.5rem]">
-                <Card className="w-[50%] h-[60%] mx-auto rounded-[4rem] mb-5 flex flex-col justify-center bg-purple-300 bg-opacity-75">
-                    <CardContent className="p-2 max-h-52 overflow-y-auto flex flex-col justify-center items-center mx-4">
+                <Card className="w-[90%] md:w-[50%] h-[60%] mx-auto rounded-[1.2rem] mb-5 flex flex-col justify-center bg-purple-300 bg-opacity-75">
+                    <CardContent className="p-2 max-h-52 overflow-y-auto flex flex-col justify-center items-center md:mx-4">
                         <ScrollArea className="h-72 px-4 w-full rounded-md mt-[1vh]">
                             {scoreResult
                                 .sort((a, b) => b.score - a.score)
                                 .map((player) => {
-                                    console.log('player', player);
                                     const backgroundColorClass = player.login === login ? 'bg-amber-300' : 'bg-white';
                                     return (
                                         <div key={player.login} className="flex items-start mb-2">
@@ -79,6 +78,7 @@ const EndGameScore: React.FC<EndGameScoreProps> = ({ login, gameName, partyCode 
             <div className="grid place-items-center">
                 <Button className=" bg-orange-300 mb-10" onClick={navigateRoom}>
                     {isPartyOver && 'Suite de la partie !'}
+                    {isPartyOver && 'Retour au menu'}
                     {!isPartyOver && 'Prochain jeu !'}
                 </Button>
             </div>

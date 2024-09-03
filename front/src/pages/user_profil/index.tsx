@@ -88,7 +88,6 @@ const UserProfile: React.FC = () => {
     const { data: userListData, isLoading: userListLoading, isError: userListError } = useGetUserList(userId);
 
     const { addFriend, isLoading: isAddingFriend } = useAddFriend(userId);
-    
     const handleAddFriend = async (friendData: { id: number; login: string; picture: string }) => {
         try {
             await addFriend(friendData);
@@ -198,7 +197,7 @@ const UserProfile: React.FC = () => {
                             <div className="text-2xl md:text-3xl text-center text-[#37034e] font-semibold">Badge</div>
                             <img src={user?.level.badgePictureUrl ?? '/default-badge.png'} alt="Badge" className="mx-auto h-32" />
                         </div>
-                        <div className="mb-5 w-48">
+                        {/* <div className="mb-5 w-48">
                             <div className="text-2xl md:text-3xl text-center text-[#37034e] font-semibold">Victoires</div>
                             <div className="bg-purple-200 text-[#37034e] p-2 rounded text-3xl md:text-4xl mt-2 text-center">
                                 {userStats?.nbWin}
@@ -209,12 +208,12 @@ const UserProfile: React.FC = () => {
                             <div className="bg-purple-200 text-[#37034e] p-2 rounded text-3xl md:text-4xl mt-2 text-center">
                                 {userStats?.nbParties}
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                     <div className="text-lg flex justify-center">
                         <h3 className="text-[#37034e]">
                             <strong>
-                                Connecté depuis : <span className="text-pink-400 font-bold">{userStats?.nbDayStreak}</span> jours !
+                                Connecté depuis : <span className="text-pink-400 font-bold">{userStats?.nbBestDayStreak}</span> jours !
                             </strong>
                         </h3>
                     </div>

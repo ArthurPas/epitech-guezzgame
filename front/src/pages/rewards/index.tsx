@@ -47,8 +47,6 @@ const Rewards = () => {
     //Mise à jour des récompenses gagnées
     let coins_gagnes = 0;
 
-    console.log("les data de l'utilisateur 1 avant les coins: ", userDataStockees);
-
     for (let i = 0; i < userDataStockees.daySteak + 1; i++) {
         if (i == 0) {
             coins_gagnes = coins_gagnes + 10;

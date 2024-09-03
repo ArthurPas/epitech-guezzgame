@@ -43,18 +43,19 @@ export const Header = () => {
         <nav className="backdrop-blur-sm shadow-lg h-[85px] flex justify-between items-center pl-6 pr-12">
             <div>
                 {isLoggedIn ? (
-                <Link href={'/room'}>
-                    <Image src="/guezgame-logo-horizontal.png" alt="GuezGame logo" width={250} height={100} className="mt-[96px]" />
-                </Link>
+                    <Link href={'/room'} className="hidden md:block">
+                        <Image src="/guezgame-logo-horizontal.png" alt="GuezGame logo" width={250} height={100} className="mt-[96px]" />
+                    </Link>
                 ) : (
-                <Link href={'/'}>
-                    <Image src="/guezgame-logo-horizontal.png" alt="GuezGame logo" width={250} height={100} className="mt-[96px]" />
-                </Link>
+                    <Link href={'/'} className="hidden md:block">
+                        <Image src="/guezgame-logo-horizontal.png" alt="GuezGame logo" width={250} height={100} className="mt-[96px]" />
+                    </Link>
                 )}
             </div>
             <div className="flex gap-2">
                 {isLoggedIn ? (
                     <div className="flex gap-2">
+
                         <div className="flex">
                             <div className="md:hidden">
                                 <DropdownMenu>
@@ -108,8 +109,6 @@ export const Header = () => {
                                 </DropdownMenu>
                             </div>
                         </div>
-
-
                         <Link href={'/login'} className="hidden md:block">
                             <Button variant="reverse" onClick={handleLogout} className="rounded-lg shadow">
                                 <LogOut className="rotate-180" />
