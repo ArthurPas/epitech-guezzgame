@@ -54,7 +54,6 @@ const EndGameScore: React.FC<EndGameScoreProps> = ({ login, gameName, partyCode 
                             {scoreResult
                                 .sort((a, b) => b.score - a.score)
                                 .map((player) => {
-                                    console.log('player', player);
                                     const backgroundColorClass = player.login === login ? 'bg-amber-300' : 'bg-white';
                                     return (
                                         <div key={player.login} className="flex items-start mb-2">

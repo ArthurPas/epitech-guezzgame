@@ -26,7 +26,7 @@ const Gameplay = () => {
         userLogin = jwtDecoded.sub || 'anonymous';
     }
     const { data: partyScoresData, isError: isPartyScoreError, isLoading: isPartyScoresLoading } = useGetPartyScores(partyCode);
-    console.log('partyScoresData', partyScoresData);
+
     if (currentGame === 'MENU') {
         let gameData: GameData = {
             from: '',
@@ -39,7 +39,7 @@ const Gameplay = () => {
         };
         sendToHost({ actionType: 'NEXT_GAME', gameData: gameData });
     }
-    const debugDev = true;
+    const debugDev = false;
     if (debugDev) {
         return (
             <>

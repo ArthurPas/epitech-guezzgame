@@ -139,13 +139,10 @@ const ClickGame = () => {
         const playerInfo = { login: userLogin, timestamp };
 
         if (item.isGood) {
-            console.log('Correct item clicked!', playerInfo);
-
             let points = 10;
             if (round % 2 === 0 || round % 3 === 0) {
                 const bonusOrMalus = getRandomItem(bonuses);
                 points += bonusOrMalus.points;
-                console.log(`${bonusOrMalus.type} applied: ${bonusOrMalus.points} points!`, playerInfo);
             }
             setLog((prevLog) => [...prevLog, playerInfo] as { login: string; timestamp: number }[]);
             setScore((prevScore) => prevScore + points);
@@ -153,7 +150,6 @@ const ClickGame = () => {
             sendSocketEndRound(points, playerInfo, round);
             setIsWaiting(true);
         } else {
-            console.log('Wrong item clicked!', playerInfo);
         }
     };
 

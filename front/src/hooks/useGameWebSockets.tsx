@@ -29,7 +29,6 @@ export const useGameWebSockets = () => {
         setPartyOver(message.body === 'END_PARTY');
     });
     useSubscription('/topic/reply/score', (message) => {
-        console.log(message.body + 'toto');
         const parsedResult = JSON.parse(message.body);
         if (Array.isArray(parsedResult)) {
             setScoreResult(parsedResult);
@@ -38,14 +37,12 @@ export const useGameWebSockets = () => {
         }
     });
     useSubscription('/topic/reply/allPlayerReady', (message) => {
-        console.log(message.body + 'allPlayerReady');
         setAllPlayersReady(message.body === 'true');
     });
 
     useSubscription('/topic/reply/joinParty', (message) => {
-        console.log(message.body + 'joinParty');
         const parsedResult: { userLogin: string } = JSON.parse(message.body);
-        console.log(parsedResult.userLogin + 'toto');
+
         setUsersJoinedParty((prevState) => {
             if (prevState.length === 1 && prevState[0].userLogin === defaultMessage) {
                 return [parsedResult];
@@ -55,7 +52,6 @@ export const useGameWebSockets = () => {
     });
 
     useSubscription('/topic/reply/nextGame', (message) => {
-        console.log(message.body + 'nextGame');
         setCurrentGame(message.body);
     });
 
