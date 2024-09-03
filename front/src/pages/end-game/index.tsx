@@ -26,7 +26,6 @@ const EndGame = () => {
     const { data, isError, isPending } = useGetDataEndGame();
 
     useEffect(() => {
-        console.log('data : ', data);
         if (data && data.scores && Array.isArray(data.scores)) {
             const mappedScores = data.scores.map((score) => ({
                 id: score.userId,
@@ -46,8 +45,6 @@ const EndGame = () => {
     }, [data]);
 
     useEffect(() => {
-        console.log('playerData :', playerData);
-
         const getPosition = () => {
             let tempCurrentPlayer: FriendsData | null = null;
             let pos = 1;

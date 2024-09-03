@@ -40,8 +40,6 @@ const questionsData = [
 
 const CultureGuezz = () => {
     const { isGameOver, isRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
-    console.log('isGameOver', isGameOver);
-    console.log('isRoundOver', isRoundOver);
 
     const nbTotalTours = 2;
     const [tourEnCours, setTourEnCours] = useState(0);
@@ -53,7 +51,7 @@ const CultureGuezz = () => {
     const [availableIndices, setAvailableIndices] = useState<number[]>([]);
 
     const [waitingForOther, setWaitingForOther] = useState<boolean>(false);
-    console.log('isWaitingForOther', waitingForOther);
+
     let userLogin = 'anonymous';
     let partyCode = '';
     if (typeof window !== 'undefined') {
@@ -87,19 +85,15 @@ const CultureGuezz = () => {
 
         //Evaluation de la réponse du joueur
         if (reponse.some((r) => r.toLowerCase() === inputValue.toLowerCase())) {
-            console.log('Bonne réponse !');
             gameData.date = Date.now();
             gameData.nbPoints = type === 'Guezz' ? 2 : 1;
             gameData.roundNumber = tourEnCours;
-            console.log('gameData', gameData);
+
             sendToHost({ actionType: 'FASTER_WIN_BY_ROUND', gameData: gameData });
             sendToHost({ actionType: 'ADD_POINTS', gameData: gameData });
             // const points = type === 'Guezz' ? 2 : 1;
             // setScore(prevScore => prevScore + points + 1); // le +1 n'est que pour le premier qui a répondu
         } else {
-            console.log('Mauvaise réponse 🦁!');
-
-            console.log('tourEnCours', tourEnCours);
         }
 
         // Sélection nouvelle question aléatoire parmi les indices restants
@@ -114,19 +108,19 @@ const CultureGuezz = () => {
         //Mise à jour indice de la question sélectionnée et du tour en cours
         setIndiceQuestion(nextQuestionIndex);
         setTourEnCours((prev) => prev + 1);
-        console.log('tourEnCours', tourEnCours);
+
         setInputValue('');
 
         if (tourEnCours + 1 > nbTotalTours) {
             //C'est la fin du jeu ;)
             sendToHost({ actionType: 'END_GAME', gameData: gameData });
-            console.log('Fin du jeu');
+
             setShowEndGame(true);
             //return;
         }
     };
 
-    if (showEndGame) {
+    if (isGameOver) {
         return <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     }
     return (

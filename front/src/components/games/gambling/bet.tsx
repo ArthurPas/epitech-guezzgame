@@ -35,7 +35,6 @@ export const Bets = () => {
     }, []);
     const { data: user, isLoading: userLoading, isError: userError, error: userErrorDetails, refetch } = useGetMe(authToken);
     const { data, isError, isPending } = useGetBets();
-    console.log(data);
 
     const { mutate } = usePlaceBet();
     const onPlaceBet = async (betData: BetRequestType) => {
@@ -53,8 +52,6 @@ export const Bets = () => {
     function onClick(adjustment: number) {
         setbetAmount(Math.max(0, Math.min(user?.nbCoin ?? 0, betAmount + adjustment)));
     }
-
-    console.log(data);
 
     if (isPending) {
         return <span>Conseil de gagnant : Ne pariez que ce que vous êtes prêt à perdre !</span>;

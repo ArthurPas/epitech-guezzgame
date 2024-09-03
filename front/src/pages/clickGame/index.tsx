@@ -71,7 +71,7 @@ const isOverlapping = (pos1: { x: number; y: number }, pos2: { x: number; y: num
 
 const ClickGame = () => {
     const { isGameOver, isRoundOver, sendToHost, allPlayersReady } = useGameWebSockets();
-    const nbRound = 1;
+    const nbRound = 5;
     // const [result, setResult] = useState([{ login: '', score: 0 }]);
     const [targetItem, setTargetItem] = useState('');
     const [shuffledItems, setShuffledItems] = useState<{ src: string; isGood: boolean }[]>([]);
@@ -118,7 +118,7 @@ const ClickGame = () => {
         const newTargetItem = getRandomItem(items);
         setTargetItem(newTargetItem);
         setShuffledItems(shuffleArray([...items]));
-        setCountdown(1);
+        setCountdown(5);
         if (round > nbRound) {
             sendToHost({ actionType: 'END_GAME', gameData });
         }
@@ -139,13 +139,10 @@ const ClickGame = () => {
         const playerInfo = { login: userLogin, timestamp };
 
         if (item.isGood) {
-            console.log('Correct item clicked!', playerInfo);
-
             let points = 10;
             if (round % 2 === 0 || round % 3 === 0) {
                 const bonusOrMalus = getRandomItem(bonuses);
                 points += bonusOrMalus.points;
-                console.log(`${bonusOrMalus.type} applied: ${bonusOrMalus.points} points!`, playerInfo);
             }
             setLog((prevLog) => [...prevLog, playerInfo] as { login: string; timestamp: number }[]);
             setScore((prevScore) => prevScore + points);
@@ -153,7 +150,6 @@ const ClickGame = () => {
             sendSocketEndRound(points, playerInfo, round);
             setIsWaiting(true);
         } else {
-            console.log('Wrong item clicked!', playerInfo);
         }
     };
 
