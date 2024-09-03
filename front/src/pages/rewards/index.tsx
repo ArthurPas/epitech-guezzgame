@@ -48,17 +48,19 @@ const Rewards = () => {
         };
     }
    
+    userDataStockees.daySteak = 2;
+    userDataStockees.nbCoin = 0;
+
     //Mise à jour des récompenses gagnées 
     let coins_gagnes =  userDataStockees.nbCoin;
-
-    coins_gagnes = coins_gagnes + 10*(userDataStockees.daySteak);
+    coins_gagnes = coins_gagnes + 10*(userDataStockees.daySteak+1);
 
     if(userDataStockees.isVip == true)
     {        
-          coins_gagnes = coins_gagnes + 50*(userDataStockees.daySteak);
+          coins_gagnes = coins_gagnes + 50*(userDataStockees.daySteak+1);
     }
 
-    userDataStockees.nbCoin = coins_gagnes;
+    //userDataStockees.nbCoin = coins_gagnes;
   
   return (
         <div className="grid gap-1 min-h-screen w-full justify-center items-center">
