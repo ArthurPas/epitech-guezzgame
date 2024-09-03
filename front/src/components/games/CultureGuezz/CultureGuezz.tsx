@@ -147,23 +147,23 @@ const CultureGuezz = () => {
                     </DialogContent>
                 </Dialog>
             )}
-            <div className="flex flex-col items-center space-y-4">
-                <h1 className="m-10 mt-32 mb-10 text-amber-300">CultureGuezz</h1>
+            <div className="flex flex-col items-center space-y-4 mb-10">
+                <h1 className="m-10 mt-32 mb-2 text-amber-300">CultureGuezz</h1>
 
                 <h3 className="mt-7 mb-0 text-xl">Question {questionsData[indiceQuestion]?.type}</h3>
-                <Card className={`rounded-full w-[80%] ${questionsData[indiceQuestion].type === 'Guezz' ? 'bg-amber-500' : 'bg-white'}`}>
+                <Card className={`rounded-base w-[80%] ${questionsData[indiceQuestion].type === 'Guezz' ? 'bg-amber-500' : 'bg-white'}`}>
                     <CardContent className="flex flex-col justify-center items-center h-45 space-y-4 mx-20">
-                        <h2 className="text-3xl text-center m-8">{questionsData[indiceQuestion].question} ?</h2>
+                        <h2 className="text-2xl text-center m-8">{questionsData[indiceQuestion].question} ?</h2>
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-full w-[30%]">
+                <Card className="rounded-full w-[60%]">
                     <CardContent className="flex flex-col justify-center items-center h-45 space-y-4 mx-20">
                         <input
                             type="text"
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
-                            className="p-2 border rounded-full text-center mt-5"
+                            className="p-2 border rounded-full text-center mt-5 w-[30vw]"
                         />
                         <Button className="bg-amber-300 w-32" onClick={handleNewQuestion}>
                             Valider
