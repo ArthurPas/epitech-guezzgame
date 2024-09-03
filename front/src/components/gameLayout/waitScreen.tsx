@@ -10,12 +10,12 @@ export const WaitForPlayers = (gameInfo: GameData) => {
         sendToHost({ actionType: 'USER_READY', gameData: gameInfo });
     };
     return (
-        <div className="flex flex-col col-span-1 items-center justify-center h-screen">
+        <div className="flex flex-col col-span-1 items-center justify-center h-full">
             {/* DEBUG */}
             <h2>POV du joueur : {gameInfo.from}</h2>
             {/*  */}
             <div className="flex flex-col items-center">
-                <p className="text-2xl font-bold">On attend que ta guezzTeam soit prête</p>
+                <p className="text-2xl font-bold text-center">On attend que ta guezzTeam soit prête</p>
                 <div className="mt-4">
                     <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
                 </div>

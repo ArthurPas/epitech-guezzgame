@@ -1,24 +1,27 @@
 import { Button } from '@/components/ui/button';
 import { useGetPopularMovies } from '@/hooks/tmdbAPI';
 import useGameWebSockets from '@/hooks/useGameWebSockets';
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { GameData } from '@/interfaces/gameWebSockets';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState, useRef } from 'react';
+import EndGameScore from '@/components/endGameScore';
+import WaitForPlayers from '@/components/gameLayout/waitScreen';
 
 export const MovieGuesser = () => {
-    const { isGameOver, isRoundOver, sendToHost } = useGameWebSockets();
-    console.log('isGameOver', isGameOver);
-    console.log('isRoundOver', isRoundOver);
+    const { isGameOver, isRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
+
+    const [showModalRules, setShowModalRules] = useState<boolean>(true);
 
     // TMDB API
     const { data, isError, isPending, refetch } = useGetPopularMovies();
-    console.log('data', data);
 
     // GAME STATE
     const [countdown, setCountdown] = useState(3);
     const [gameActive, setGameActive] = useState(false);
     const [gameEnded, setGameEnded] = useState(false);
+    const [showEndGame, setShowEndGame] = useState<boolean>(isGameOver);
 
     // ROUND STATE
     const maxRounds = 5;
@@ -34,11 +37,14 @@ export const MovieGuesser = () => {
     const [playerScore, setPlayerScore] = useState(0);
     const [hasPlayerGuessed, setHasPlayerGuessed] = useState(false);
     const [playerGuess, setPlayerGuess] = useState<string>('');
+    const [pointsGained, setPointsGained] = useState<number>(0);
+    const [animatePoints, setAnimatePoints] = useState(false);
 
     const inputRef = useRef<HTMLInputElement>(null);
-
     let userLogin = 'anonymous';
+    let partyCode = '';
     if (typeof window !== 'undefined') {
+        partyCode = localStorage?.getItem('partyCode') || '';
         const token = localStorage.getItem('authToken') || '';
         const jwtDecoded = jwtDecode(token);
         userLogin = jwtDecoded.sub || 'anonymous';
@@ -46,12 +52,12 @@ export const MovieGuesser = () => {
 
     let gameData: GameData = {
         from: userLogin,
-        date: Date.now(), //TODO: Mettre à jour la date avant l'envoi de gameData
+        date: Date.now(),
         nbPoints: playerScore,
         gameName: 'MOVIE_GUESSER',
         roundNumber: currentRound,
-        partyCode: '124',
-        playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
+        partyCode: partyCode || ' ',
+        playerInfo: { login: userLogin, timestamp: Date.now() }
     };
 
     // Game starter
@@ -60,14 +66,14 @@ export const MovieGuesser = () => {
             const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
             return () => clearTimeout(timer);
         } else {
-            setPosterIndexToDisplay(Math.floor(Math.random() * 20));
+            setPosterIndexToDisplay(Math.floor(Math.random() * 20)); // TODO: Make this work even when the total result API isn't a multiple of 20.
             setGameActive(true);
             setRoundTimer(Date.now());
             return;
         }
     }, [countdown]);
 
-    //Reset initial position of the image when round changes
+    // Reset initial position of the image when round changes
     useEffect(() => {
         if (gameActive && currentRound > 1) {
             setInitialX(Math.floor(Math.random() * 500));
@@ -90,8 +96,8 @@ export const MovieGuesser = () => {
     }
 
     const handleRoundEnd = async () => {
-        console.log('Round ended');
-        sendToHost({ actionType: 'ADD_POINTS_BY_DATE', gameData });
+        gameData.nbPoints = playerScore;
+        sendToHost({ actionType: 'ADD_POINTS', gameData });
         if (currentRound < maxRounds) {
             await refetch();
             setCurrentRound(currentRound + 1);
@@ -103,6 +109,7 @@ export const MovieGuesser = () => {
             setGameActive(false);
             setGameEnded(true);
             sendToHost({ actionType: 'END_GAME', gameData });
+            setShowEndGame(true);
         }
     };
 
@@ -136,9 +143,52 @@ export const MovieGuesser = () => {
                 points = 10;
             }
             setPlayerScore(playerScore + points);
+            setPointsGained(points); // Set the points gained
+            setAnimatePoints(true); // Trigger the animation
             setHasPlayerGuessed(true);
         }
     };
+
+    if (!allPlayersReady && !showModalRules) {
+        return (
+            <WaitForPlayers
+                from={gameData.from}
+                date={gameData.date}
+                nbPoints={0}
+                gameName={gameData.gameName}
+                roundNumber={0}
+                partyCode={gameData.partyCode}
+                playerInfo={gameData.playerInfo}
+            ></WaitForPlayers>
+        );
+    }
+
+    if (isGameOver) {
+    return <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
+	}
+
+    if (showModalRules) {
+        return (
+            <Dialog open={showModalRules} onOpenChange={() => {}}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className="text-center">Règles du Movie Guesser</DialogTitle>
+                    </DialogHeader>
+                    <DialogDescription className="text-center text-[16px] leading-[1.5rem]">
+                        Devinez le film ou la série le plus rapidement possible. <br />
+                        Plus vous serez rapides plus vous gagnerez de points !
+                    </DialogDescription>
+                    <DialogFooter>
+                        <div className="flex justify-center w-full">
+                            <DialogClose asChild>
+                                <Button onClick={() => setShowModalRules(false)}>Jouer</Button>
+                            </DialogClose>
+                        </div>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        );
+    }
 
     return (
         <div className="relative w-full h-full rounded-xl bg-black">
@@ -197,9 +247,9 @@ export const MovieGuesser = () => {
 
                     <div className="absolute left-[48.7%] xl:left-[50%] top-4 -mt-[1px] -translate-x-[49%] rounded-xl text-white w-full xl:w-[70%] 3xl:w-[65.3%] flex justify-center overflow-hidden">
                         <p>
-                            Round {currentRound}/{maxRounds} | Score : {playerScore} | Réponse : {data[posterIndexToDisplay]?.title}
-                            {data[posterIndexToDisplay]?.name}
+                            Round {currentRound}/{maxRounds} | Score : {playerScore}
                         </p>
+                        {/* | Réponse : {data[posterIndexToDisplay]?.title} {data[posterIndexToDisplay]?.name} */}
                     </div>
 
                     {/* Form */}
@@ -223,6 +273,21 @@ export const MovieGuesser = () => {
                             </form>
                         </div>
                     </div>
+
+                    <AnimatePresence>
+                        {animatePoints && (
+                            <motion.div
+                                className="absolute font-bold left-[50%] z-[50000] bottom-0 transform -translate-x-1/2 bg-gradient-to-b rounded-xl text-white from-amber-300 to-amber-500 px-4 text-2xl"
+                                initial={{ opacity: 1, x: -80, y: -350 }}
+                                animate={{ opacity: 0, x: -80, y: -500 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 2 }}
+                                onAnimationComplete={() => setAnimatePoints(false)}
+                            >
+                                +{pointsGained} points!
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             )}
 
@@ -235,7 +300,7 @@ export const MovieGuesser = () => {
                         }}
                     />
                     <h2 className="flex justify-center text-white pt-6">Jeu terminé !</h2>
-                    <p className="flex justify-center text-white pt-6">Score final : {playerScore}</p>
+                    <p className="flex justify-center text-white pt-6">Score : {playerScore}</p>
                 </div>
             )}
         </div>

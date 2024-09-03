@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
-import EndGame from '@/pages/end-game';
 import useGameWebSockets from '@/hooks/useGameWebSockets';
 import { GameData } from '@/interfaces/gameWebSockets';
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { useGetDataPictureGeo } from '@/hooks/dataPictureGeo';
 import { jwtDecode } from 'jwt-decode';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import WaitForPlayers from '@/components/gameLayout/waitScreen';
+import EndGameScore from '@/components/endGameScore';
 
 const Map = dynamic(() => import('./Map'), { ssr: false });
 
 const GeoGuezzer = () => {
     const { isGameOver, isRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
-    console.log('isGameOver', isGameOver);
-    console.log('isRoundOver', isRoundOver);
 
     // Gestion des modales
     const [showModalRules, setShowModalRules] = useState<boolean>(true);
@@ -30,7 +27,7 @@ const GeoGuezzer = () => {
 
     //Gestion des tours
     const [nbTours, setNbTours] = useState<number>(1); // Nombre de tours en cours de jeu
-    const nbTotalTours = 2; // Nombre total de tours
+    const nbTotalTours = 3; // Nombre total de tours
 
     // Récupération des images en début de partie
     const { data, isError, isPending } = useGetDataPictureGeo(nbTotalTours);
@@ -41,8 +38,9 @@ const GeoGuezzer = () => {
     const [score, setScore] = useState<number>(0);
     const [showEndGame, setShowEndGame] = useState<boolean>(isGameOver);
     const [waitingForOther, setWaitingForOther] = useState<boolean>(false);
-    console.log('isWaitingForOther', waitingForOther);
+
     let userLogin = 'anonymous';
+
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('authToken') || '';
         const jwtDecoded = jwtDecode(token);
@@ -55,14 +53,13 @@ const GeoGuezzer = () => {
         nbPoints: 0,
         gameName: 'GEO_GUEZZER',
         roundNumber: 0,
-        partyCode: '456',
+        partyCode: localStorage.getItem('partyCode') || '',
         playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
     };
 
     // Récupération des images à retrouver
     useEffect(() => {
         if (isPending) {
-            console.log('Loading data...');
             return;
         }
 
@@ -72,8 +69,6 @@ const GeoGuezzer = () => {
         }
 
         if (data) {
-            console.log('Images récupérées : ', data);
-
             // Ajouter les nouvelles données au tableau d'images, en s'assurant de ne pas dupliquer les données
             setImages((prevImages) => {
                 const updatedImages = [...prevImages, ...data];
@@ -88,8 +83,6 @@ const GeoGuezzer = () => {
             const [lon, lat] = images[nbTours - 1].geometry.coordinates;
             setLatitudeImage(lat);
             setLongitudeImage(lon);
-
-            console.log("Coordonnées de l'image actuelle : ", { lat, lon });
         } else {
             console.warn('Aucune image disponible pour ce tour.');
         }
@@ -116,14 +109,10 @@ const GeoGuezzer = () => {
 
     // Actions au clic sur la map
     const handleMapClick = (latlng: { lat: number; lng: number }) => {
-        console.log('Position du clic :', latlng);
-
         if (latitudeImage !== null && longitudeImage !== null) {
             const calculatedDistance = haversineDistance(latitudeImage, longitudeImage, latlng.lat, latlng.lng);
 
             setDistance(calculatedDistance);
-
-            console.log('Distance calculée :', calculatedDistance);
         } else {
             console.warn("Coordonnées de l'image non disponibles.");
         }
@@ -132,26 +121,14 @@ const GeoGuezzer = () => {
     const ValideClick_1Joueur = () => {
         if (showReponse == false) {
             //Valider position
-            console.log('Distance : ', distance);
 
             setScore(() => {
-                //baseScore: calcul des points en fonction de la distance
-                //qui sépare la position de l'image et la position du clic
-                // uniquement si on est < 300 km
-                // Exemple :
-                // distance = 100 km => (100 * 1000) / 100 = 1000 points
-                // distance = 200 km => (100 * 1000) / 200 = 500 points
-                // distance = 300 km => (100 * 1000) / 300 = 333 points
-                // distance = 400 km => 0 points
-                // timeBonus: bonus en fonction du temps
-                // Plus le joueur trouve rapidement, plus il gagne de points
                 // /!\ indépendant des autres joueurs
                 const findTime = Date.now() - roundStartTime;
                 const timeBonus = 1000000 / findTime;
                 const newScore = distance < 300 ? (100 * 1000) / distance + timeBonus : 0;
                 setRoundFinishTime(Math.round(findTime / 1000));
-                console.log(distance < 300 ? 'Gagné !' : 'Trop loin, pas de points !');
-                console.log('Score :', newScore);
+
                 return newScore;
             });
             setShowReponse(true);
@@ -170,7 +147,6 @@ const GeoGuezzer = () => {
     };
 
     const handleRoundEnd = async () => {
-        console.log('Round ended');
         gameData.date = Date.now();
         gameData.nbPoints = score;
         gameData.roundNumber = nbTours;
@@ -181,7 +157,6 @@ const GeoGuezzer = () => {
             setShowModalFeedback(false);
         } else {
             setShowModalFeedback(false);
-            // TODO: jeux asynchrone, à voir si on garde ou pas
             // sendToHost({ actionType: 'PERSONAL_GAME_END', gameData });
             // en attendant ...
             setTimeout(() => {
@@ -192,7 +167,6 @@ const GeoGuezzer = () => {
     };
     if (!allPlayersReady && !showModalRules) {
         return (
-            //C'est hyper moche
             <WaitForPlayers
                 from={gameData.from}
                 date={gameData.date}
@@ -211,37 +185,10 @@ const GeoGuezzer = () => {
         }
         return <p>En attente des autres joueurs, t'es tellement rapide aussi tu m'étonne...</p>;
     }
-    if (showEndGame) {
-        //  return <EndGame />; C'est la fin de la partie ca non ?
 
-        //Et oui j'avoue c'est pas hyper stylé je suis pas le roi du css
-        return (
-            <>
-                <h1>Résultat !</h1>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">Classement</TableHead>
-                                <TableHead className="w-[100px]">Pseudo</TableHead>
-                                <TableHead>Points</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {scoreResult.map((player, index) => (
-                                <TableRow key={player.login}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{player.login}</TableCell>
-                                    <TableCell>{player.score}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </>
-        );
+    if (isGameOver) {
+        return <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     }
-
     return (
         <div>
             {/* Modale des règles */}
@@ -249,9 +196,9 @@ const GeoGuezzer = () => {
                 <Dialog open={showModalRules} onOpenChange={() => {}}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle className="text-center">Règles du jeu</DialogTitle>
+                            <DialogTitle className="text-center leading-[1.5rem]">Règles du GeoGuezzer</DialogTitle>
                         </DialogHeader>
-                        <DialogDescription className="text-center">
+                        <DialogDescription className="text-center text-[16px]">
                             Devinez le lieu exact où vous êtes en vous basant uniquement sur l'environnement de l'image du haut. Plus votre
                             réponse est précise et rapide, plus vous marquez de points ! <br />
                             Attention, une réponse trop éloignée ne rapporte pas de points !

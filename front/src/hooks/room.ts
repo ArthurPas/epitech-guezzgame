@@ -101,7 +101,7 @@ export const useRemoveGame = () => {
 export const fetchRandomCode= async () => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/party/generateRandomCode`);
   const data = await response.json();
-  console.log(data.code);
+  
   const partyCode:number = data.code;
   return partyCode;
 };

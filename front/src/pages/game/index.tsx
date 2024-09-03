@@ -100,8 +100,8 @@ const index = () => {
                 <div>
                     <Tabs defaultValue="create" className="w-[800px]">
                         <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="create">Crée une room</TabsTrigger>
-                            <TabsTrigger value="join">rejoindre une room</TabsTrigger>
+                            <TabsTrigger value="create">Créer une room</TabsTrigger>
+                            <TabsTrigger value="join">Rejoindre une room</TabsTrigger>
                         </TabsList>
                         <TabsContent value="create">
                             <Card className="p-5">

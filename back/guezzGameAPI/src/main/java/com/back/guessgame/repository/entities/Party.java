@@ -30,7 +30,7 @@ public class Party {
 	@ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
 	private User user;
 
-	@ManyToMany(targetEntity = Game.class)
+	@ManyToMany(targetEntity = Game.class, fetch = FetchType.EAGER)
 	@JoinTable(name = "games_parties", joinColumns = @JoinColumn(name = "game_id"), inverseJoinColumns = @JoinColumn(name = "party_id"))
 	private List<Game> games = new ArrayList<>();
 }

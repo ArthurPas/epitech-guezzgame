@@ -30,6 +30,8 @@ public class UserDto {
 	@JsonProperty("level")
 	private ExpDto expDto;
 
+	private Integer daySteak;
+
 	public UserDto(User user) {
 		this.id = user.getId();
 		this.mail = user.getMail();
@@ -39,5 +41,6 @@ public class UserDto {
 		this.isVip = user.getIsVip();
 		this.xpPoint = user.getXpPoint();
 		this.expDto = new ExpDto(user.getXpPoint());
+		this.daySteak = user.getDaySteak();
 	}
 }

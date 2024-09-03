@@ -8,7 +8,7 @@ const token = 'MLY|7972898332774780|a736b008c14ff5587858c9e0cfc23f05';
 const fetchDataPictureGeo = async (nbImage: number): Promise<DataPictureGeoType> => {
     const response = await fetch(`https://graph.mapillary.com/${keys[nbImage]}?access_token=${token}`);
     const data = await response.json();
-    console.log("Données brutes de l'API pour l'image", nbImage, ": ", data); 
+    
     return dataPictureSchema.parse(data);
 };
 
@@ -29,16 +29,16 @@ const fetchAndHandleImages = async (nbTours: number): Promise<DataPictureGeoType
     try {
 
         const randomIndices = getRandomIndices(nbTours, keys.length);
-        console.log("Indices aléatoires uniques générés : ", randomIndices);
+        
 
         const fetchImagePromises = randomIndices.map(nbImage => 
             fetchDataPictureGeo(nbImage)
         );
 
         const images = await Promise.all(fetchImagePromises);
-        console.log("Les images renvoyées du hook : ", images);
+        
 
-        console.log("Les images envoyées : ", images);
+        
         return images;
 
     } catch (error) {

@@ -7,10 +7,11 @@ import { useGetDataEndGame } from '../../hooks/dataEndGame';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export interface FriendsData {
-    id: number;
-    pseudo: string;
-    score: number;
-    picture?: string;
+    scoreResult: Score[];
+    login: string;
+    gameName: string;
+
+    partyCode: string;
 }
 
 //-----------------------------------------------------------------
@@ -25,7 +26,6 @@ const EndGame = () => {
     const { data, isError, isPending } = useGetDataEndGame();
 
     useEffect(() => {
-        console.log('data : ', data);
         if (data && data.scores && Array.isArray(data.scores)) {
             const mappedScores = data.scores.map((score) => ({
                 id: score.userId,
@@ -45,8 +45,6 @@ const EndGame = () => {
     }, [data]);
 
     useEffect(() => {
-        console.log('playerData :', playerData);
-
         const getPosition = () => {
             let tempCurrentPlayer: FriendsData | null = null;
             let pos = 1;
@@ -86,7 +84,7 @@ const EndGame = () => {
     }
 
     return (
-        <div className="grid gap min-h-screen w-full">
+        <div className="grid gap min-h-full w-full">
             <div className="grid place-items-center">
                 <h1 className="text-amber-300 text-[64px]">Fin de partie</h1>
             </div>

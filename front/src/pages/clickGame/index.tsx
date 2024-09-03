@@ -9,13 +9,33 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import WaitForPlayers from '@/components/gameLayout/waitScreen';
 import useGameWebSockets from '@/hooks/useGameWebSockets';
 import { GameData } from '@/interfaces/gameWebSockets';
+import EndGameScore from '@/components/endGameScore';
+
+const goodMerguez = '/merguezz_OK.png';
+const badMerguez = '/wrong_merguezz.png';
+const grill = '/homer_bbq.jpg';
+
 let userLogin = 'anonymous';
+let partyCode = undefined;
 if (typeof window !== 'undefined') {
+    partyCode = localStorage?.getItem('partyCode') || '';
     const token = localStorage.getItem('authToken') || '';
-    const jwtDecoded = jwtDecode(token);
-    userLogin = jwtDecoded.sub || 'anonymous';
+    let jwtDecoded;
+    if (token) {
+        jwtDecoded = jwtDecode(token);
+    }
+    userLogin = jwtDecoded?.sub || 'anonymous';
 }
-const items = ['1', ' 2', ' 3', ' 4', ' 5'];
+const items = [
+    { src: goodMerguez, isGood: true },
+    { src: badMerguez, isGood: false },
+    { src: badMerguez, isGood: false },
+    { src: badMerguez, isGood: false },
+    { src: badMerguez, isGood: false },
+    { src: badMerguez, isGood: false },
+    { src: badMerguez, isGood: false }
+];
+
 const bonuses = [
     { type: 'Bonus', points: 5 },
     { type: 'Bonus', points: 10 },
@@ -50,11 +70,11 @@ const isOverlapping = (pos1: { x: number; y: number }, pos2: { x: number; y: num
 };
 
 const ClickGame = () => {
-    const { isGameOver, isRoundOver, setIsRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
+    const { isGameOver, isRoundOver, sendToHost, allPlayersReady } = useGameWebSockets();
     const nbRound = 5;
-    const [result, setResult] = useState([{ login: '', score: 0 }]);
+    // const [result, setResult] = useState([{ login: '', score: 0 }]);
     const [targetItem, setTargetItem] = useState('');
-    const [shuffledItems, setShuffledItems] = useState<string[]>([]);
+    const [shuffledItems, setShuffledItems] = useState<{ src: string; isGood: boolean }[]>([]);
     const [log, setLog] = useState<{ login: string; timestamp: number }[]>([]);
     const [countdown, setCountdown] = useState(5);
     const [isWaiting, setIsWaiting] = useState(false);
@@ -62,21 +82,25 @@ const ClickGame = () => {
     const [round, setRound] = useState(1);
     const [modalOpen, setModalOpen] = useState(true);
     const stompClient = useStompClient();
+
     useEffect(() => {
         setNewRound();
     }, []);
+
     useEffect(() => {
         setIsWaiting(isRoundOver);
     }, [isRoundOver]);
+
     let gameData: GameData = {
         from: userLogin,
         date: Date.now(), //TODO: Mettre à jour la date avant l'envoi de gameData
         nbPoints: score,
         gameName: 'CLICK_GAME',
         roundNumber: round,
-        partyCode: '456',
+        partyCode: partyCode || '',
         playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
     };
+
     useEffect(() => {
         if (isWaiting) {
             if (countdown > 0) {
@@ -84,7 +108,6 @@ const ClickGame = () => {
                 return () => clearTimeout(timer);
             } else {
                 setIsWaiting(false);
-                setIsRoundOver(false);
                 setRound(round + 1);
                 setNewRound();
             }
@@ -92,13 +115,15 @@ const ClickGame = () => {
     }, [countdown, isWaiting]);
 
     const setNewRound = () => {
-        setTargetItem(getRandomItem(items));
+        const newTargetItem = getRandomItem(items);
+        setTargetItem(newTargetItem);
         setShuffledItems(shuffleArray([...items]));
         setCountdown(5);
         if (round > nbRound) {
             sendToHost({ actionType: 'END_GAME', gameData });
         }
     };
+
     function sendSocketAfterClick(points: number, playerInfo: { login: string; timestamp: number }, roundNumber: number) {
         gameData.date = Date.now();
         gameData.nbPoints = score;
@@ -109,36 +134,42 @@ const ClickGame = () => {
         sendToHost({ actionType: 'END_ROUND', gameData });
     }
 
-    const handleClick = (item: string) => {
+    const handleClick = (item: { src: string; isGood: boolean }) => {
         const timestamp = Date.now();
         const playerInfo = { login: userLogin, timestamp };
 
-        if (item === targetItem) {
-            console.log('Correct item clicked!', playerInfo);
-
+        if (item.isGood) {
             let points = 10;
             if (round % 2 === 0 || round % 3 === 0) {
                 const bonusOrMalus = getRandomItem(bonuses);
                 points += bonusOrMalus.points;
-                console.log(`${bonusOrMalus.type} applied: ${bonusOrMalus.points} points!`, playerInfo);
             }
             setLog((prevLog) => [...prevLog, playerInfo] as { login: string; timestamp: number }[]);
             setScore((prevScore) => prevScore + points);
             sendSocketAfterClick(points, playerInfo, round);
             sendSocketEndRound(points, playerInfo, round);
-            // setIsWaiting(true);
+            setIsWaiting(true);
         } else {
-            console.log('Wrong item clicked!', playerInfo);
         }
     };
 
-    const getNonOverlappingPosition = (existingPositions: any[], maxWidth: number, maxHeight: number) => {
-        let position: { x: number; y: number };
+    const getNonOverlappingPosition = (existingPositions: { x: number; y: number }[], maxWidth: number, maxHeight: number) => {
+        const size = 50;
+        let position: { x: number; y: number } = { x: 0, y: 0 };
         let isOverlappingAny;
+        let maxAttempts = 100;
+        let attempts = 0;
+
         do {
-            position = getRandomPosition(maxWidth, maxHeight);
-            isOverlappingAny = existingPositions.some((existingPosition) => isOverlapping(existingPosition, position));
+            if (attempts > maxAttempts) {
+                console.warn('Impossible de trouver une position non superposée après plusieurs tentatives.');
+                break;
+            }
+            position = getRandomPosition(maxWidth - size, maxHeight - size);
+            isOverlappingAny = existingPositions.some((existingPosition) => isOverlapping(existingPosition, position, size));
+            attempts++;
         } while (isOverlappingAny);
+
         return position;
     };
 
@@ -147,35 +178,11 @@ const ClickGame = () => {
     };
 
     if (isGameOver) {
-        return (
-            <>
-                <h1>Résultat !</h1>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">Classement</TableHead>
-                                <TableHead className="w-[100px]">Pseudo</TableHead>
-                                <TableHead>Points</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {result.map((player, index) => (
-                                <TableRow key={player.login}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{player.login}</TableCell>
-                                    <TableCell>{player.score}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </>
-        );
+        return <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     } else {
         if (modalOpen) {
             return (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <div className="flex justify-center items-center h-full">
                     <Dialog open={modalOpen} onOpenChange={setModalOpen}>
                         <DialogContent>
                             <div className="flex flex-col items-center justify-center p-6">
@@ -205,7 +212,6 @@ const ClickGame = () => {
             );
         }
         if (!allPlayersReady && !modalOpen) {
-            //C'est hyper moche
             return (
                 <WaitForPlayers
                     from={gameData.from}
@@ -219,31 +225,42 @@ const ClickGame = () => {
             );
         } else {
             return (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                    <div style={{ position: 'absolute', top: '10px', left: '10px' }}>
-                        <h1>Find the item: {targetItem}</h1>
-                        <h2>Score: {score}</h2>
-                    </div>
-                    <Card style={{ position: 'relative', width: '600px', height: '600px', border: '2px solid black', padding: '20px' }}>
-                        <div style={{ position: 'absolute', top: '50px', left: '10px' }}>
-                            {isWaiting ? <h2>Next round in: {countdown}s</h2> : null}
-                        </div>
-                        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                            {shuffledItems.map((item, index) => {
-                                const positions = shuffledItems.slice(0, index).map((_, i) => getRandomPosition(500, 500));
-                                const { x, y } = getNonOverlappingPosition(positions, 500, 500);
+                <div className="relative flex justify-center items-center h-full">
+                    <Card className="relative rounded-[0.9rem] border-2 border-black p-5 w-full h-full">
+                        <div className="relative w-full h-full">
+                            {shuffledItems.map((item: { src: string }, index) => {
+                                const existingPositions = shuffledItems.slice(0, index).map((_, i) => {
+                                    const pos = getRandomPosition(500, 500);
+                                    return { x: pos.x, y: pos.y };
+                                });
+
+                                const { x, y } = getNonOverlappingPosition(existingPositions, 500, 500);
+
                                 return (
                                     <Button
-                                        key={item}
-                                        onClick={() => !isWaiting && handleClick(item)}
-                                        style={{ position: 'absolute', left: `${x}px`, top: `${y}px` }}
+                                        key={index}
+                                        onClick={() => !isWaiting && handleClick({ src: item.src, isGood: true })}
+                                        style={{
+                                            position: 'absolute',
+                                            left: `${x}px`,
+                                            top: `${y}px`,
+                                            width: '150px',
+                                            padding: 0,
+                                            backgroundColor: 'transparent'
+                                        }}
+                                        className="shadow-none border-none"
                                         disabled={isWaiting}
-                                        className="bg-[#eec17e]"
                                     >
-                                        {item}
+                                        <img src={item.src} alt="merguez" style={{ width: '100%' }} />
                                     </Button>
                                 );
                             })}
+                            {isWaiting && (
+                                <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-80 flex justify-center items-center z-10">
+                                    <img src={grill} alt="Grill overlay" className="max-w-full max-h-full" />
+                                    <h2 className="absolute text-white text-2xl">Next round in: {countdown}s</h2>
+                                </div>
+                            )}
                         </div>
                     </Card>
                 </div>

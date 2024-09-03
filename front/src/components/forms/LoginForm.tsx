@@ -11,6 +11,7 @@ import { LoginSchemaType, loginSchema } from '@/interfaces/auth';
 import { useLogin } from '@/hooks/auth';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 export const LoginForm = () => {
     const { mutate } = useLogin();
@@ -29,9 +30,9 @@ export const LoginForm = () => {
         await mutate(data, {
             onSuccess: (response) => {
                 const token = response.token;
-                localStorage.setItem('authToken', token)
+                localStorage.setItem('authToken', token);
                 toast({ description: 'Connexion réussie' });
-                router.push('/');
+                router.push('/room');
             },
             onError: (error) => {
                 toast({ description: error.message });
@@ -40,21 +41,8 @@ export const LoginForm = () => {
     };
 
     return (
-        <Card className="w-[90%] xl:w-[70%] rounded-3xl xl:h-[371px] flex justify-center bg-purple-300 bg-opacity-75 mb-[6rem]">
-            <CardContent className="flex-col xl:flex-row flex mx-3 justify-center gap-[60px] xl:gap-[100px] my-6 w-full items-center">
-                <form>
-                    <div className="grid w-full items-center gap-2">
-                        <div className="flex flex-col items-center">
-                            <Label htmlFor="email">Anonymous</Label>
-                            <Input id="email" placeholder="Identifiant" />
-                        </div>
-                        <Button className="bg-amber-300 mt-3 bg-gradient-to-b from-amber-300 to-yellow-600" variant={'default'}>
-                            Jouer
-                        </Button>
-                    </div>
-                </form>
-                <Separator className="hidden xl:block bg-white w-[1px] h-[200px] rounded-2xl" orientation="vertical" />
-                <Separator className="xl:hidden bg-white w-[200px] h-[1px] rounded-2xl" orientation="horizontal" />
+        <Card className="w-[80%] 2xl:w-[60%] 3xl:w-[50%] rounded-3xl xl:h-[371px] flex justify-center bg-purple-300 bg-opacity-75 mb-[6rem]">
+            <CardContent className="flex-col xl:flex-row flex mx-3 justify-center gap-[60px] xl:gap-[100px] my-6 w-full items-center mt-8">
                 <div>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -65,7 +53,7 @@ export const LoginForm = () => {
                                         name="login"
                                         render={({ field }) => (
                                             <div className="flex flex-col items-center min-w-[220px]">
-                                                <FormLabel htmlFor="mail">Email</FormLabel>
+                                                <FormLabel htmlFor="mail">Pseudo</FormLabel>
                                                 <FormControl>
                                                     <Input id="mail" placeholder="Ton pseudo" {...field} />
                                                 </FormControl>
@@ -89,13 +77,28 @@ export const LoginForm = () => {
                                         )}
                                     />
                                 </div>
-                                <Button type="submit" className="bg-amber-300 mt-3 bg-gradient-to-b from-amber-300 to-yellow-600">
+                                <Button type="submit" className="bg-amber-400 mt-3 bg-gradient-to-b from-amber-300 to-amber-500">
                                     Connexion
                                 </Button>
                             </div>
                         </form>
                     </Form>
+                    <Link href={'/register'} className="flex justify-center h-4">
+                        <Button variant={'link'}>Pas encore de compte ?</Button>
+                    </Link>
+                </div>{' '}
+                {/* <Separator className="hidden xl:block bg-white w-[1px] h-[200px] rounded-2xl" orientation="vertical" />
+                <Separator className="xl:hidden bg-white w-[200px] h-[1px] rounded-2xl" orientation="horizontal" />
+                <form>
+                <div className="grid w-full items-center gap-2">
+                <div className="flex flex-col items-center">
+                <Label htmlFor="email">Pas encore de compte ?</Label>
+                <Input id="email" placeholder="Identifiant" />
                 </div>
+                Pas encore de compte ?
+                </Button>
+                </div>
+                </form> */}
             </CardContent>
         </Card>
     );
