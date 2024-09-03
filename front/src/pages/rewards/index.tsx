@@ -29,13 +29,13 @@ const Rewards = () => {
 
     if (dataMe != null) {
         userDataStockees = {
-            daySteak: dataMe.daySteak,
+            daySteak: dataMe.daySteak ?? 0,
             id: dataMe.id ?? 0,
             mail: dataMe.mail ?? '',
             login: dataMe.login ?? '',
             picture: dataMe.picture ?? '',
             nbCoin: dataMe.nbCoin ?? 0,
-            isVip: dataMe.isVip ?? false,
+            isVip: dataMe.isVip ?? true,
             xpPoint: dataMe.xpPoint ?? 0,
             level: {
                 level: dataMe.level?.level ?? 0,
@@ -45,26 +45,13 @@ const Rewards = () => {
     }
 
     //Mise à jour des récompenses gagnées
-    let coins_gagnes = 0;
+    let coins_gagnes = userDataStockees.nbCoin;
 
-    console.log("les data de l'utilisateur 1 avant les coins: ", userDataStockees);
+    coins_gagnes = coins_gagnes + 10 * (userDataStockees.daySteak + 1)
 
-    for (let i = 0; i < userDataStockees.daySteak + 1; i++) {
-        if (i == 0) {
-            coins_gagnes = coins_gagnes + 10;
-        } else {
-            coins_gagnes = coins_gagnes + 10 * (i + 1);
-        }
-    }
 
     if (userDataStockees.isVip == true) {
-        for (let i = 0; i < userDataStockees.daySteak + 1; i++) {
-            if (i == 0) {
-                coins_gagnes = coins_gagnes + 50;
-            } else {
-                coins_gagnes = coins_gagnes + 50 * (i + 1);
-            }
-        }
+        coins_gagnes = coins_gagnes + 50 * (userDataStockees.daySteak + 1)
     }
 
     userDataStockees.nbCoin = coins_gagnes;
