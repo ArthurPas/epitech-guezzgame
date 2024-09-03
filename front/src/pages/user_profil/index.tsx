@@ -21,6 +21,7 @@ import { useGetUserList } from '@/hooks/userList';
 import useAddFriend from '@/hooks/addFriends';
 import { useToast } from '@/components/ui/use-toast';
 import useDebounce from '@/hooks/useDebounce'; // Import du hook useDebounce
+import { useQueryClient } from '@tanstack/react-query';
 
 const UserProfile: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,6 +32,7 @@ const UserProfile: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState(''); // État pour la recherche
     const debouncedSearchQuery = useDebounce(searchQuery, 500); // Application du debounce
     const { toast } = useToast();
+    const queryClient = useQueryClient();
 
     const assets = [
         { url: 'https://example.com/asset1.png' },
@@ -91,19 +93,22 @@ const UserProfile: React.FC = () => {
         try {
             await addFriend(friendData);
             toast({ description: 'Ami ajouté avec succès' });
+            queryClient.invalidateQueries({
+                queryKey: [`/friendship/${userId}`],
+                exact: true
+            });
         } catch (error) {
-            console.error('Erreur lors de l\'ajout de l\'ami:', error);
-            toast({ description: 'Erreur lors de l\'ajout de l\'ami' });
+            console.error("Erreur lors de l'ajout de l'ami:", error);
+            toast({ description: "Erreur lors de l'ajout de l'ami" });
         }
     };
 
     // Créez un Set pour vérifier rapidement si un utilisateur est déjà ami
-    const friendsSet = new Set(friendsData?.map(friend => friend.id));
+    const friendsSet = new Set(friendsData?.map((friend) => friend.id));
 
     // Filtrez les amis pour exclure l'utilisateur courant
-    const filteredFriendsData = friendsData?.filter(friend => friend.id !== userId);
+    const filteredFriendsData = friendsData?.filter((friend) => friend.id !== userId);
 
-    // Filtrez la liste des utilisateurs pour exclure l'utilisateur courant
     const filteredUserList = userListData?.filter(user => 
         user.id !== userId && user.login.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
     );
@@ -209,7 +214,7 @@ const UserProfile: React.FC = () => {
                     <div className="text-lg flex justify-center">
                         <h3 className="text-[#37034e]">
                             <strong>
-                                Connecté depuis : <span className="text-pink-400 font-bold">{userStats?.nbBestDayStreak}</span> jours !
+                                Connecté depuis : <span className="text-pink-400 font-bold">{userStats?.nbDayStreak}</span> jours !
                             </strong>
                         </h3>
                     </div>
@@ -233,8 +238,10 @@ const UserProfile: React.FC = () => {
                             </div>
                         </ScrollArea>
                     )}
-                    
-                    <Button onClick={handleSearchModalOpen} className="mt-5">Trouvez des amis</Button>
+
+                    <Button onClick={handleSearchModalOpen} className="mt-5">
+                        Trouvez des amis
+                    </Button>
                 </Card>
             </div>
 
@@ -258,16 +265,18 @@ const UserProfile: React.FC = () => {
                                             <AvatarImage src={friend.picture} />
                                         </Avatar>
                                         <div className="text-[#37034e]">{friend.login}</div>
-                                        <Button 
-                                            onClick={() => handleAddFriend({
-                                                id: friend.id,
-                                                login: friend.login,
-                                                picture: friend.picture
-                                            })}
+                                        <Button
+                                            onClick={() =>
+                                                handleAddFriend({
+                                                    id: friend.id,
+                                                    login: friend.login,
+                                                    picture: friend.picture
+                                                })
+                                            }
                                             disabled={isAddingFriend || friendsSet.has(friend.id)}
                                             className="ml-2"
                                         >
-                                            {friendsSet.has(friend.id) ? 'Déjà ami' : (isAddingFriend ? 'Adding...' : '+')}
+                                            {friendsSet.has(friend.id) ? 'Déjà ami' : isAddingFriend ? 'Adding...' : '+'}
                                         </Button>
                                     </div>
                                 ))

@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
-import EndGame from '@/pages/end-game';
 import useGameWebSockets from '@/hooks/useGameWebSockets';
 import { GameData } from '@/interfaces/gameWebSockets';
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { useGetDataPictureGeo } from '@/hooks/dataPictureGeo';
 import { jwtDecode } from 'jwt-decode';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import WaitForPlayers from '@/components/gameLayout/waitScreen';
+import EndGameScore from '@/components/endGameScore';
 
 const Map = dynamic(() => import('./Map'), { ssr: false });
 
@@ -43,6 +42,7 @@ const GeoGuezzer = () => {
     const [waitingForOther, setWaitingForOther] = useState<boolean>(false);
     console.log('isWaitingForOther', waitingForOther);
     let userLogin = 'anonymous';
+
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('authToken') || '';
         const jwtDecoded = jwtDecode(token);
@@ -135,16 +135,6 @@ const GeoGuezzer = () => {
             console.log('Distance : ', distance);
 
             setScore(() => {
-                //baseScore: calcul des points en fonction de la distance
-                //qui sépare la position de l'image et la position du clic
-                // uniquement si on est < 300 km
-                // Exemple :
-                // distance = 100 km => (100 * 1000) / 100 = 1000 points
-                // distance = 200 km => (100 * 1000) / 200 = 500 points
-                // distance = 300 km => (100 * 1000) / 300 = 333 points
-                // distance = 400 km => 0 points
-                // timeBonus: bonus en fonction du temps
-                // Plus le joueur trouve rapidement, plus il gagne de points
                 // /!\ indépendant des autres joueurs
                 const findTime = Date.now() - roundStartTime;
                 const timeBonus = 1000000 / findTime;
@@ -181,7 +171,6 @@ const GeoGuezzer = () => {
             setShowModalFeedback(false);
         } else {
             setShowModalFeedback(false);
-            // TODO: jeux asynchrone, à voir si on garde ou pas
             // sendToHost({ actionType: 'PERSONAL_GAME_END', gameData });
             // en attendant ...
             setTimeout(() => {
@@ -212,33 +201,7 @@ const GeoGuezzer = () => {
     }
     if (showEndGame) {
         //  return <EndGame />; C'est la fin de la partie ca non ?
-
-        //Et oui j'avoue c'est pas hyper stylé je suis pas le roi du css
-        return (
-            <>
-                <h1>Résultat !</h1>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">Classement</TableHead>
-                                <TableHead className="w-[100px]">Pseudo</TableHead>
-                                <TableHead>Points</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {scoreResult.map((player, index) => (
-                                <TableRow key={player.login}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{player.login}</TableCell>
-                                    <TableCell>{player.score}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </>
-        );
+        return <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     }
 
     return (
@@ -250,7 +213,7 @@ const GeoGuezzer = () => {
                         <DialogHeader>
                             <DialogTitle className="text-center leading-[1.5rem]">Règles du GeoGuezzer</DialogTitle>
                         </DialogHeader>
-                        <DialogDescription className="text-center">
+                        <DialogDescription className="text-center text-[16px]">
                             Devinez le lieu exact où vous êtes en vous basant uniquement sur l'environnement de l'image du haut. Plus votre
                             réponse est précise et rapide, plus vous marquez de points ! <br />
                             Attention, une réponse trop éloignée ne rapporte pas de points !

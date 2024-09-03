@@ -122,7 +122,7 @@ public class GamblingService {
 		betOptionRepository.save(betOption);
 		betOption.getGamblerBets().forEach(userBet -> {
 			User user = userBet.getUser();
-			user.setNbCoin((int) (userBet.getUser().getNbCoin() + userBet.getBetAmount() * betOption.getOds()));
+			user.setNbCoin((int) (userBet.getUser().getNbCoin() + userBet.getBetAmount() + (userBet.getBetAmount() * betOption.getOds())));
 			userRepository.save(user);
 		});
 

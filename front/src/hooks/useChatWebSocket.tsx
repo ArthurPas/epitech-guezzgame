@@ -8,7 +8,7 @@ export const useChatWebSocket = () => {
     const [chatMessages, setChatMessages] = useState<{ username: string; message: string }[]>([]);
 
     let userLogin = 'anonymous';
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && localStorage.getItem('authToken')) {
         const token = localStorage.getItem('authToken') || '';
         const jwtDecoded = jwtDecode(token);
         userLogin = jwtDecoded.sub || 'anonymous';

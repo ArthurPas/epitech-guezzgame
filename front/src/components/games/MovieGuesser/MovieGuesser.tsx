@@ -6,7 +6,7 @@ import { GameData } from '@/interfaces/gameWebSockets';
 import { motion, AnimatePresence } from 'framer-motion';
 import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState, useRef } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import EndGameScore from '@/components/endGameScore';
 import WaitForPlayers from '@/components/gameLayout/waitScreen';
 
 export const MovieGuesser = () => {
@@ -99,7 +99,8 @@ export const MovieGuesser = () => {
 
     const handleRoundEnd = async () => {
         console.log('Round ended');
-        sendToHost({ actionType: 'ADD_POINTS_BY_DATE', gameData });
+        gameData.nbPoints = playerScore;
+        sendToHost({ actionType: 'ADD_POINTS', gameData });
         if (currentRound < maxRounds) {
             await refetch();
             setCurrentRound(currentRound + 1);
@@ -167,31 +168,7 @@ export const MovieGuesser = () => {
     }
 
     if (showEndGame) {
-        return (
-            <>
-                <h1>Résultat !</h1>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">Classement</TableHead>
-                                <TableHead className="w-[100px]">Pseudo</TableHead>
-                                <TableHead>Points</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {scoreResult.map((player, index) => (
-                                <TableRow key={player.login}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{player.login}</TableCell>
-                                    <TableCell>{player.score}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </>
-        );
+        <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     }
 
     if (showModalRules) {

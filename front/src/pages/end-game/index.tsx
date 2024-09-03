@@ -7,10 +7,11 @@ import { useGetDataEndGame } from '../../hooks/dataEndGame';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export interface FriendsData {
-    id: number;
-    pseudo: string;
-    score: number;
-    picture?: string;
+    scoreResult: Score[];
+    login: string;
+    gameName: string;
+
+    partyCode: string;
 }
 
 //-----------------------------------------------------------------

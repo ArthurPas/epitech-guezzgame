@@ -98,7 +98,7 @@ public class WebSocketService {
 				party.setNbPoints(party.getNbPoints() + gameScore.getPoints());
 				partyRepository.save(party);
 			}
-			sendNextGame(gameScore, messagingTemplate);
+//			sendNextGame(gameScore, messagingTemplate);
 		}
 		switch (gameScore.getGame().getName()) {
 			case "CLICK_GAME":
@@ -134,7 +134,7 @@ public class WebSocketService {
 		}
 
 		if(currentGameIndex > gameRepository.count() + 1) {
-			messagingTemplate.convertAndSend("/topic/reply/endGame", "END_PARTY");
+			messagingTemplate.convertAndSend("/topic/reply/partyOver", "END_PARTY");
 			logger.warn("END GAME" + currentGameIndex + " " + gameRepository.count() + " " + gamesId);
 		} else {
 			Game nextGame = gameRepository.findOneById(gamesId.get(gamesId.indexOf(currentGameIndex)));
@@ -186,7 +186,6 @@ public class WebSocketService {
 				messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
 				messagingTemplate.convertAndSend("/topic/reply/score", getScore(gameScore));
 				logger.warn(getScore(gameScore).toString());
-				clear(gameScore.getPartyCode());
 			}
 		}
 	}
@@ -207,7 +206,6 @@ public class WebSocketService {
 			case END_GAME -> {
 				messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
 				messagingTemplate.convertAndSend("/topic/reply/score", getScore(gameScore));
-				clear(gameScore.getPartyCode());
 			}
 		}
 
