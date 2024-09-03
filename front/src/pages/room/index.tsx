@@ -41,7 +41,6 @@ const Index = () => {
 
     const router = useRouter();
 
-    console.log(randomCode);
     const addGame = (Game: Game) => {
         addGameQuery({ partyCode: randomCode, gameName: Game.name, userLogin: '' });
         if (!playlistGames.some((g) => g.name === Game.name)) {

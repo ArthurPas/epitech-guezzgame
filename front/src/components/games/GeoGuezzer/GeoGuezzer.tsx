@@ -13,8 +13,6 @@ const Map = dynamic(() => import('./Map'), { ssr: false });
 
 const GeoGuezzer = () => {
     const { isGameOver, isRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
-    console.log('isGameOver', isGameOver);
-    console.log('isRoundOver', isRoundOver);
 
     // Gestion des modales
     const [showModalRules, setShowModalRules] = useState<boolean>(true);
@@ -29,7 +27,7 @@ const GeoGuezzer = () => {
 
     //Gestion des tours
     const [nbTours, setNbTours] = useState<number>(1); // Nombre de tours en cours de jeu
-    const nbTotalTours = 1; // Nombre total de tours
+    const nbTotalTours = 3; // Nombre total de tours
 
     // Récupération des images en début de partie
     const { data, isError, isPending } = useGetDataPictureGeo(nbTotalTours);
@@ -40,7 +38,7 @@ const GeoGuezzer = () => {
     const [score, setScore] = useState<number>(0);
     const [showEndGame, setShowEndGame] = useState<boolean>(isGameOver);
     const [waitingForOther, setWaitingForOther] = useState<boolean>(false);
-    console.log('isWaitingForOther', waitingForOther);
+
     let userLogin = 'anonymous';
 
     if (typeof window !== 'undefined') {
@@ -62,7 +60,6 @@ const GeoGuezzer = () => {
     // Récupération des images à retrouver
     useEffect(() => {
         if (isPending) {
-            console.log('Loading data...');
             return;
         }
 
@@ -72,8 +69,6 @@ const GeoGuezzer = () => {
         }
 
         if (data) {
-            console.log('Images récupérées : ', data);
-
             // Ajouter les nouvelles données au tableau d'images, en s'assurant de ne pas dupliquer les données
             setImages((prevImages) => {
                 const updatedImages = [...prevImages, ...data];
@@ -88,8 +83,6 @@ const GeoGuezzer = () => {
             const [lon, lat] = images[nbTours - 1].geometry.coordinates;
             setLatitudeImage(lat);
             setLongitudeImage(lon);
-
-            console.log("Coordonnées de l'image actuelle : ", { lat, lon });
         } else {
             console.warn('Aucune image disponible pour ce tour.');
         }
@@ -116,14 +109,10 @@ const GeoGuezzer = () => {
 
     // Actions au clic sur la map
     const handleMapClick = (latlng: { lat: number; lng: number }) => {
-        console.log('Position du clic :', latlng);
-
         if (latitudeImage !== null && longitudeImage !== null) {
             const calculatedDistance = haversineDistance(latitudeImage, longitudeImage, latlng.lat, latlng.lng);
 
             setDistance(calculatedDistance);
-
-            console.log('Distance calculée :', calculatedDistance);
         } else {
             console.warn("Coordonnées de l'image non disponibles.");
         }
@@ -132,7 +121,6 @@ const GeoGuezzer = () => {
     const ValideClick_1Joueur = () => {
         if (showReponse == false) {
             //Valider position
-            console.log('Distance : ', distance);
 
             setScore(() => {
                 // /!\ indépendant des autres joueurs
@@ -140,8 +128,7 @@ const GeoGuezzer = () => {
                 const timeBonus = 1000000 / findTime;
                 const newScore = distance < 300 ? (100 * 1000) / distance + timeBonus : 0;
                 setRoundFinishTime(Math.round(findTime / 1000));
-                console.log(distance < 300 ? 'Gagné !' : 'Trop loin, pas de points !');
-                console.log('Score :', newScore);
+
                 return newScore;
             });
             setShowReponse(true);
@@ -160,7 +147,6 @@ const GeoGuezzer = () => {
     };
 
     const handleRoundEnd = async () => {
-        console.log('Round ended');
         gameData.date = Date.now();
         gameData.nbPoints = score;
         gameData.roundNumber = nbTours;
@@ -199,11 +185,9 @@ const GeoGuezzer = () => {
         }
         return <p>En attente des autres joueurs, t'es tellement rapide aussi tu m'étonne...</p>;
     }
-    if (showEndGame) {
-        //  return <EndGame />; C'est la fin de la partie ca non ?
+    if (isGameOver) {
         return <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     }
-
     return (
         <div>
             {/* Modale des règles */}

@@ -11,13 +11,11 @@ import WaitForPlayers from '@/components/gameLayout/waitScreen';
 
 export const MovieGuesser = () => {
     const { isGameOver, isRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
-    console.log('isGameOver', isGameOver);
-    console.log('isRoundOver', isRoundOver);
+
     const [showModalRules, setShowModalRules] = useState<boolean>(true);
 
     // TMDB API
     const { data, isError, isPending, refetch } = useGetPopularMovies();
-    console.log('data', data);
 
     // GAME STATE
     const [countdown, setCountdown] = useState(3);
@@ -68,7 +66,7 @@ export const MovieGuesser = () => {
             const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
             return () => clearTimeout(timer);
         } else {
-            setPosterIndexToDisplay(Math.floor(Math.random() * 20));
+            setPosterIndexToDisplay(Math.floor(Math.random() * 20)); // TODO: Make this work even when the total result API isn't a multiple of 20.
             setGameActive(true);
             setRoundTimer(Date.now());
             return;
@@ -98,7 +96,6 @@ export const MovieGuesser = () => {
     }
 
     const handleRoundEnd = async () => {
-        console.log('Round ended');
         gameData.nbPoints = playerScore;
         sendToHost({ actionType: 'ADD_POINTS', gameData });
         if (currentRound < maxRounds) {
@@ -113,7 +110,6 @@ export const MovieGuesser = () => {
             setGameEnded(true);
             sendToHost({ actionType: 'END_GAME', gameData });
             setShowEndGame(true);
-            console.log('END_GAME sent');
         }
     };
 
@@ -167,8 +163,8 @@ export const MovieGuesser = () => {
         );
     }
 
-    if (showEndGame) {
-        <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
+    if (isGameOver) {
+        return <EndGameScore login={userLogin} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     }
 
     if (showModalRules) {

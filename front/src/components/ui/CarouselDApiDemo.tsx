@@ -11,6 +11,7 @@ import { jwtDecode } from 'jwt-decode';
 import useGameWebSockets from '@/hooks/useGameWebSockets';
 import EndGameScore from '@/components/endGameScore';
 import WaitForPlayers from '@/components/gameLayout/waitScreen';
+import { eventNames } from 'process';
 const shuffleArray = (array: any[]) => {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -20,7 +21,7 @@ const shuffleArray = (array: any[]) => {
 };
 
 export function CarouselDApiDemo() {
-    const { isGameOver, isRoundOver, setIsRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
+    const { isGameOver, isRoundOver, sendToHost, scoreResult, allPlayersReady } = useGameWebSockets();
     const [api, setApi] = React.useState<CarouselApi>();
     const [tracks, setTracks] = React.useState<TrackType>([]);
     const [currentSlide, setCurrentSlide] = React.useState(0);
@@ -34,6 +35,7 @@ export function CarouselDApiDemo() {
     const audioRefs = React.useRef<Array<HTMLAudioElement | null>>([]);
     const visualizerRefs = React.useRef<Array<AudioMotionAnalyzer | null>>([]);
     const { data, error, isLoading } = useGetTracks();
+    const [showEndGame, setShowEndGame] = React.useState<boolean>(isGameOver);
     let userLogin = 'anonymous';
     let partyCode = undefined;
     if (typeof window !== 'undefined') {
@@ -54,13 +56,8 @@ export function CarouselDApiDemo() {
         partyCode: partyCode || '',
         playerInfo: { login: userLogin, timestamp: Date.now() } //TODO: Mettre à jour le timestamp avant l'envoi de gameData
     };
-    const nbRoundMax = 2;
+    const nbRoundMax = 5;
     const [roundNumber, setRoundNumber] = React.useState<number>(0);
-
-    const [isWaiting, setIsWaiting] = React.useState(false);
-    React.useEffect(() => {
-        setIsWaiting(isRoundOver);
-    }, [isRoundOver]);
 
     React.useEffect(() => {
         if (Array.isArray(data)) {
@@ -120,7 +117,6 @@ export function CarouselDApiDemo() {
             if (container) {
                 if (visualizerRefs.current[index]) {
                     visualizerRefs.current[index].destroy();
-                    console.log(`Destroyed visualizer for slide ${index}`);
                 }
                 try {
                     visualizerRefs.current[index] = new AudioMotionAnalyzer(container, {
@@ -179,11 +175,12 @@ export function CarouselDApiDemo() {
     function sendSocketEndRound() {
         sendToHost({ actionType: 'END_ROUND', gameData });
     }
-    const handleSubmit = () => {
-        let counter = 5;
+    const handleSubmit = (event: React.FormEvent) => {
+        event.preventDefault();
+        let counter = 3;
         if (roundNumber >= nbRoundMax) {
             sendToHost({ actionType: 'END_GAME', gameData });
-            return;
+            setShowEndGame(true);
         }
         const originalTitle = tracks[currentSlide]?.name ?? '';
         const correctTitle = cleanTitle(originalTitle.toLowerCase().trim());
@@ -212,10 +209,6 @@ export function CarouselDApiDemo() {
         newSubmittedIndices.add(currentSlide);
         setSubmittedIndices(newSubmittedIndices);
 
-        console.log(`Slide ${currentSlide + 1} - Titre correct: ${correctTitle}, Artistes corrects: ${allPossibleArtists.join(', ')}`);
-        console.log(`Slide ${currentSlide + 1} - Titre soumis: ${userTitle}, Artiste soumis: ${userArtist}`);
-        console.log(`Slide ${currentSlide + 1} - Score : ${score}`);
-
         setGuess({ title: '', artist: '' });
 
         if (audioTimer === null) {
@@ -230,7 +223,6 @@ export function CarouselDApiDemo() {
         if (visualizerRefs.current[currentSlide]) {
             visualizerRefs.current[currentSlide].destroy();
             visualizerRefs.current[currentSlide] = null;
-            console.log(`Disconnected visualizer for slide ${currentSlide}`);
         }
         const countdownInterval = setInterval(() => {
             counter -= 1;
@@ -279,13 +271,11 @@ export function CarouselDApiDemo() {
     React.useEffect(() => {
         if (audioTimer !== null) {
             const elapsedTime = (Date.now() - audioTimer) / 1000;
-            console.log(`Elapsed time: ${elapsedTime.toFixed(2)} seconds`);
         }
     }, [audioTimer]);
 
     const handleCarouselDragStart = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
-        console.log('Carousel drag start event prevented');
     };
 
     if (isLoading) {
@@ -310,7 +300,7 @@ export function CarouselDApiDemo() {
         );
     }
     if (isGameOver) {
-        <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
+        return <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     } else {
         return (
             <div className="relative carousel-container">

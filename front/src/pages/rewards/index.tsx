@@ -46,9 +46,8 @@ const Rewards = () => {
 
     //Mise à jour des récompenses gagnées
     let coins_gagnes = userDataStockees.nbCoin;
-
+  
     coins_gagnes = coins_gagnes + 10 * (userDataStockees.daySteak + 1)
-
 
     if (userDataStockees.isVip == true) {
         coins_gagnes = coins_gagnes + 50 * (userDataStockees.daySteak + 1)

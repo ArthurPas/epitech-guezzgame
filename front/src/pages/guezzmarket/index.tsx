@@ -44,7 +44,7 @@ const Index = () => {
             id: item.id,
             login: userLogin
         };
-        console.log(itemBuy);
+
         await mutate(itemBuy, {
             onSuccess: () => {
                 refetchInventory();
@@ -129,7 +129,7 @@ const Index = () => {
     });
     const randomShoppingItems = shoppingItems.sort(() => Math.random() - 0.5);
 
-    // console.log(randomShoppingItems.forEach((item) => console.log(item.name)));
+    //
     return (
         <div className="grid justify-center">
             <div>

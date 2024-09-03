@@ -20,8 +20,6 @@ export const Players = (playerData: PlayersProps) => {
         return <div>No player data available</div>;
     }
 
-    console.log('playerData', playerData);
-
     return (
         <Card className="bg-purple-300 w-[100%] md:w-[30%] lg:w-auto lg:h-[50%] rounded-[0.9rem] priority-rounded overflow-hidden">
             <CardTitle className="px-3 py-3 font-medium text-xl">Players</CardTitle>

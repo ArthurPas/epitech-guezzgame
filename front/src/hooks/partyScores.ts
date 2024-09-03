@@ -12,6 +12,6 @@ export const useGetPartyScores = (partyCode: string) => {
     return useQuery<PartyScoresAPIType>({
         queryKey: ['partyScores', partyCode],
         queryFn: () => fetchPartyScores(partyCode),
-        refetchInterval: 15000 // 15s
+        refetchInterval: 10000 // 10s
     });
 };
