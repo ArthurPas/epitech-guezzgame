@@ -302,7 +302,7 @@ export function CarouselDApiDemo() {
         );
     }
     if (isGameOver) {
-        return <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
+        return <EndGameScore login={userLogin} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     } else {
         return (
             <div className="relative carousel-container">

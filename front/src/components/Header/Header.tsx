@@ -60,7 +60,7 @@ export const Header = () => {
                             <div className="md:hidden">
                                 <DropdownMenu>
                                 <DropdownMenuTrigger>
-                                    <Image src="/bbq.png" alt="bbq" width={150} height={150} className="rounded-full cursor-pointer" />
+                                    <Image src="/bbq.png" alt="bbq" width={40} height={40} className="rounded-full cursor-pointer" />
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="max-w-full flex flex-col items-center justify-center bg-[#7B23B7]">
                                     <DropdownMenuItem>

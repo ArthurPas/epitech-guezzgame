@@ -2,12 +2,18 @@ import { SendToHostType } from '@/interfaces/gameWebSockets';
 import { useState } from 'react';
 import { useStompClient, useSubscription } from 'react-stomp-hooks';
 
+interface Score {
+    login: string;
+    score: number;
+
+    profilePicture: string;
+}
 export const useGameWebSockets = () => {
     const stompClient = useStompClient();
     const [isRoundOver, setIsRoundOver] = useState(false);
     const [isGameOver, setGameOver] = useState(false);
     //TODO: un type pour le score
-    const [scoreResult, setScoreResult] = useState([{ login: '', score: 0, profilePicture: '' }]);
+    const [scoreResult, setScoreResult] = useState([] as Score[]);
     const [allPlayersReady, setAllPlayersReady] = useState(false);
     const defaultMessage = 'Votre future guezzTeam';
     //{ userLogin: 'Votre guezzTeam' }]:🤮 mais tant pis ça fonctionne bien
@@ -30,11 +36,7 @@ export const useGameWebSockets = () => {
     });
     useSubscription('/topic/reply/score', (message) => {
         const parsedResult = JSON.parse(message.body);
-        if (Array.isArray(parsedResult)) {
-            setScoreResult(parsedResult);
-        } else {
-            setScoreResult([]);
-        }
+        setScoreResult(parsedResult);
     });
     useSubscription('/topic/reply/allPlayerReady', (message) => {
         setAllPlayersReady(message.body === 'true');
@@ -79,3 +81,4 @@ export const useGameWebSockets = () => {
 };
 
 export default useGameWebSockets;
+

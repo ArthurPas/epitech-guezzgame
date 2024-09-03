@@ -88,7 +88,9 @@ public class WebSocketService {
 		}
 		if(message.getActionType().equals(ActionType.NEXT_GAME)) {
 			sendNextGame(gameScore, messagingTemplate);
+			clear(gameScore.getPartyCode());
 		}
+
 		if(message.getActionType().equals(ActionType.END_GAME)) {
 			messagingTemplate.convertAndSend("/topic/reply/endGame", "END_GAME");
 			messagingTemplate.convertAndSend("/topic/reply/score", getScore(gameScore));

@@ -164,8 +164,8 @@ export const MovieGuesser = () => {
     }
 
     if (isGameOver) {
-        return <EndGameScore login={userLogin} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
-    }
+    return <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
+	}
 
     if (showModalRules) {
         return (
