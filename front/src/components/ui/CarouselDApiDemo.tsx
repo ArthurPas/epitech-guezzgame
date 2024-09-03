@@ -9,7 +9,7 @@ import AudioMotionAnalyzer from 'audiomotion-analyzer';
 import { GameData } from '@/interfaces/gameWebSockets';
 import { jwtDecode } from 'jwt-decode';
 import useGameWebSockets from '@/hooks/useGameWebSockets';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import EndGameScore from '@/components/endGameScore';
 import WaitForPlayers from '@/components/gameLayout/waitScreen';
 const shuffleArray = (array: any[]) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -310,31 +310,7 @@ export function CarouselDApiDemo() {
         );
     }
     if (isGameOver) {
-        return (
-            <>
-                <h1>Résultat !</h1>
-                <div className="flex justify-center items-center h-full">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">Classement</TableHead>
-                                <TableHead className="w-[100px]">Pseudo</TableHead>
-                                <TableHead>Points</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {scoreResult.map((player, index) => (
-                                <TableRow key={player.login}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{player.login}</TableCell>
-                                    <TableCell>{player.score}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </>
-        );
+        <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     } else {
         return (
             <div className="relative carousel-container">

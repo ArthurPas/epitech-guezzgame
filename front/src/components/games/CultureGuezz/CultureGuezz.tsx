@@ -1,3 +1,4 @@
+import EndGameScore from '@/components/endGameScore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
@@ -92,6 +93,7 @@ const CultureGuezz = () => {
             gameData.roundNumber = tourEnCours;
             console.log('gameData', gameData);
             sendToHost({ actionType: 'FASTER_WIN_BY_ROUND', gameData: gameData });
+            sendToHost({ actionType: 'ADD_POINTS', gameData: gameData });
             // const points = type === 'Guezz' ? 2 : 1;
             // setScore(prevScore => prevScore + points + 1); // le +1 n'est que pour le premier qui a répondu
         } else {
@@ -125,31 +127,7 @@ const CultureGuezz = () => {
     };
 
     if (showEndGame) {
-        return (
-            <>
-                <h1>Résultat !</h1>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">Classement</TableHead>
-                                <TableHead className="w-[100px]">Pseudo</TableHead>
-                                <TableHead>Points</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {scoreResult.map((player, index) => (
-                                <TableRow key={player.login}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{player.login}</TableCell>
-                                    <TableCell>{player.score}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </>
-        );
+        return <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     }
     return (
         <div>

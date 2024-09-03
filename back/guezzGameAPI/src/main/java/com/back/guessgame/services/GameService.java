@@ -1,6 +1,5 @@
 package com.back.guessgame.services;
 
-import com.back.guessgame.controllers.websockets.WebSocketController;
 import com.back.guessgame.repository.GameRepository;
 import com.back.guessgame.repository.GameScoreRepository;
 import com.back.guessgame.repository.PartyRepository;
@@ -13,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,13 +70,13 @@ public class GameService {
 
 	public long getTheFasterUserId(Game game, Long partyCode) {
 		List<GameScore> gameScore = gameScoreRepository.findAllByPartyCodeAndGame(partyCode, game);
-		List<GameScore> orderedByTime = gameScore.stream().sorted((gs1, gs2) -> gs1.getDate().compareTo(gs2.getDate())).toList();
+		List<GameScore> orderedByTime = gameScore.stream().sorted(Comparator.comparing(GameScore::getDate)).toList();
 		return orderedByTime.get(0).getUser().getId();
 	}
 
 	public long getTheFasterUserIdByRound(Game game, Long partyCode, int nbRound) {
 		List<GameScore> gameScore = gameScoreRepository.findAllByPartyCodeAndGameAndNbRound(partyCode, game, nbRound);
-		List<GameScore> orderedByTime = gameScore.stream().sorted((gs1, gs2) -> gs1.getDate().compareTo(gs2.getDate())).toList();
+		List<GameScore> orderedByTime = gameScore.stream().sorted(Comparator.comparing(GameScore::getDate)).toList();
 		return orderedByTime.get(0).getUser().getId();
 	}
 

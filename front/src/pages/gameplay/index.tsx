@@ -11,18 +11,22 @@ import ClickGame from '@/pages/clickGame';
 import { useState } from 'react';
 import { GameData } from '@/interfaces/gameWebSockets';
 import { useGetPartyScores } from '@/hooks/partyScores';
-
+import EndGameScore from '@/components/endGameScore';
+import { jwtDecode } from 'jwt-decode';
 const games = ['BLIND_TEST', 'MOVIE_GUESSER', 'CLICK_GAME', 'TITRE', 'GEO_GUEZZER', 'JUNGLE_SPEED', 'CULTURE_GUEZZ'];
 const Gameplay = () => {
-    const { currentGame, sendToHost } = useGameWebSockets();
+    const { currentGame, sendToHost, isPartyOver, scoreResult } = useGameWebSockets();
     const [currentGameDebug, setCurrentGameDebug] = useState('');
     let partyCode = ' ';
+    let userLogin = 'anonymous';
     if (typeof window !== 'undefined') {
         partyCode = localStorage?.getItem('partyCode') || '';
+        const token = localStorage.getItem('authToken') || '';
+        const jwtDecoded = jwtDecode(token);
+        userLogin = jwtDecoded.sub || 'anonymous';
     }
     const { data: partyScoresData, isError: isPartyScoreError, isLoading: isPartyScoresLoading } = useGetPartyScores(partyCode);
     console.log('partyScoresData', partyScoresData);
-
     if (currentGame === 'MENU') {
         let gameData: GameData = {
             from: '',
