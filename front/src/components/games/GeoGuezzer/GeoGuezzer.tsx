@@ -185,6 +185,7 @@ const GeoGuezzer = () => {
         }
         return <p>En attente des autres joueurs, t'es tellement rapide aussi tu m'étonne...</p>;
     }
+
     if (isGameOver) {
         return <EndGameScore login={gameData.playerInfo.login} gameName={gameData.gameName} partyCode={gameData.partyCode} />;
     }

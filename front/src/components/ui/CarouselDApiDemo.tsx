@@ -12,6 +12,7 @@ import useGameWebSockets from '@/hooks/useGameWebSockets';
 import EndGameScore from '@/components/endGameScore';
 import WaitForPlayers from '@/components/gameLayout/waitScreen';
 import { eventNames } from 'process';
+
 const shuffleArray = (array: any[]) => {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -36,6 +37,7 @@ export function CarouselDApiDemo() {
     const visualizerRefs = React.useRef<Array<AudioMotionAnalyzer | null>>([]);
     const { data, error, isLoading } = useGetTracks();
     const [showEndGame, setShowEndGame] = React.useState<boolean>(isGameOver);
+
     let userLogin = 'anonymous';
     let partyCode = undefined;
     if (typeof window !== 'undefined') {

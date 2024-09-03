@@ -77,6 +77,7 @@ const EndGameScore: React.FC<EndGameScoreProps> = ({ login, gameName, partyCode 
 
             <div className="grid place-items-center">
                 <Button className=" bg-orange-300 mb-10" onClick={navigateRoom}>
+                    {isPartyOver && 'Suite de la partie !'}
                     {isPartyOver && 'Retour au menu'}
                     {!isPartyOver && 'Prochain jeu !'}
                 </Button>

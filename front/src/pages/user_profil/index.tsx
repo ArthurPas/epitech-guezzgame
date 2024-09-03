@@ -108,9 +108,8 @@ const UserProfile: React.FC = () => {
     // Filtrez les amis pour exclure l'utilisateur courant
     const filteredFriendsData = friendsData?.filter((friend) => friend.id !== userId);
 
-    // Filtrez la liste des utilisateurs pour exclure l'utilisateur courant
-    const filteredUserList = userListData?.filter(
-        (user) => user.id !== userId && user.login.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+    const filteredUserList = userListData?.filter(user => 
+        user.id !== userId && user.login.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
     );
 
     if (userLoading || friendsLoading || statsLoading) {
